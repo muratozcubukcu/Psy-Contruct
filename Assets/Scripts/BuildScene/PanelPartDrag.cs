@@ -49,6 +49,9 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         DragHintAnimator hint = FindAnyObjectByType<DragHintAnimator>();
         if (hint != null) hint.StopHint();
 
+        // Advance the tutorial if necessary
+        Tutorial.instance.partAdded(partData.part.name);
+
         ghostPreview = Instantiate(partData.part);
         ghostPreview.name = "GhostPreview";
         ghostSprite = ghostPreview.GetComponentInChildren<SpriteRenderer>();
