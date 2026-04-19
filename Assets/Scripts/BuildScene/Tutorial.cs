@@ -93,7 +93,7 @@ public class Tutorial : MonoBehaviour
         }
         else if (!SatelliteDishAdded)
         {
-            text.text = "A sattelite dish will allow you to contact earth for help with repairs when faced toward it!";
+            text.text = "A sattelite dish will allow you to contact earth for help with repairs when faced toward it! Use it with the spacebar!";
         }
         else if (!(GammaRayAdded && MagnetometerAdded && NeutronSpectrometerAdded && MultispectralImagerAdded))
         {
