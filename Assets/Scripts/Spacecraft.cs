@@ -89,8 +89,13 @@ public class Spacecraft : MonoBehaviour {
     }
 
     private void OnSceneUnloaded(Scene scene) {
-        if (scene.name == "BuildScene") IsBuildMode = false;
-        else if (scene.name == "FlightScene") IsFlightMode = false;
+        if (scene.name == "BuildScene") {
+            IsBuildMode = false;
+            PrepareForFlight();
+            return;
+        }
+        
+        if (scene.name == "FlightScene") IsFlightMode = false;
     }
 
     private System.Collections.IEnumerator UpdatePhysicsModeDelayed() {

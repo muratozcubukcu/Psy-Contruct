@@ -135,7 +135,6 @@ public class GameInput : MonoBehaviour {
 
     public void SetFlightScene() {
         SceneManager.LoadScene("FlightScene");
-        Spacecraft.GetInstance().PrepareForFlight();
         
         inputActions.SpacecraftBuilding.Disable();
         inputActions.Spacecraft.Enable();
@@ -144,19 +143,18 @@ public class GameInput : MonoBehaviour {
     }
 
     public void SetFlightFactsScene() {
-        // Only enforce requirements if we are currently in the BuildScene
-        if (SceneManager.GetActiveScene().name == "BuildScene") {
-            BuildRequirements requirements = BuildRequirements.Instance;
-
-            if (!requirements.IsReadyForFlight(out string message)) {
-                Debug.Log(message); // Example: "Missing parts: SolarPanel, SatelliteDish"
-                return; // Stop here -> do NOT load FlightScene
-            }
-            if (ShipBuildingGrid.Instance != null && ShipBuildingGrid.Instance.HighlightDisconnectedParts()) {
-                Debug.Log("Warning: Some ship parts are not connected to the spacecraft core.");
-                return; // Stop here -> do NOT load FlightScene
-            }
+        
+        BuildRequirements requirements = BuildRequirements.Instance;
+        
+        if (!requirements.IsReadyForFlight(out string message)) {
+            Debug.Log(message); // Example: "Missing parts: SolarPanel, SatelliteDish"
+            return; // Stop here -> do NOT load FlightScene
         }
+        if (ShipBuildingGrid.Instance != null && ShipBuildingGrid.Instance.HighlightDisconnectedParts()) {
+            Debug.Log("Warning: Some ship parts are not connected to the spacecraft core.");
+            return; // Stop here -> do NOT load FlightScene
+        }
+        
         
         // Passed requirements -> go to FlightFactsScene
         SceneManager.LoadScene("FlightFactsScene");
@@ -179,8 +177,7 @@ public class GameInput : MonoBehaviour {
         inputActions.SpacecraftBuilding.Disable();
     }
 
-    public void SetSettingsScene()
-    {
+    public void SetSettingsScene() {
         SceneManager.LoadScene("SettingsScene");
 
         inputActions.Spacecraft.Disable();
