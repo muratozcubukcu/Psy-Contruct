@@ -10,4 +10,18 @@ public class SceneNavigator : MonoBehaviour
     public void SetMissionDetailsScene() => GameInput.Instance.SetMissionDetailsScene();
     public void SetCreditsScene() => GameInput.Instance.SetCreditsScene();
     public void SetSettingsScene() => GameInput.Instance.SetSettingsScene();
+
+    public void Restart() {
+        Spacecraft existing = Spacecraft.GetInstance();
+        if (existing != null) Destroy(existing.gameObject);
+
+        SpacecraftPartDatabase partDB = SpacecraftPartDatabase.Instance;
+        if (partDB != null) {
+            partDB.hasSavedGridState = false;
+            partDB.savedGridState = null;
+            partDB.savedPlacedParts = null;
+        }
+
+        GameInput.Instance.SetBuildScene();
+    }
 }
