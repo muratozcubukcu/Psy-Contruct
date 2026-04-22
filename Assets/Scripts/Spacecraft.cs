@@ -39,8 +39,7 @@ public class Spacecraft : MonoBehaviour {
     [SerializeField] private float currentEnergy;
 
     public event EventHandler<float> OnEnergyChanged; // Passes current energy percentage (0-1)
-
-    // Energy system
+    
     [Header("Fuel Settings")]
     [SerializeField] private float fuelPerTank = 50f;
     private float maxFuel = 0f;

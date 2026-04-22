@@ -151,6 +151,7 @@ public class GameInput : MonoBehaviour {
             return; // Stop here -> do NOT load FlightScene
         }
         if (ShipBuildingGrid.Instance != null && ShipBuildingGrid.Instance.HighlightDisconnectedParts()) {
+            DisconnectedPartsWarningManager.Instance.DisplayWarning();
             Debug.Log("Warning: Some ship parts are not connected to the spacecraft core.");
             return; // Stop here -> do NOT load FlightScene
         }
