@@ -42,10 +42,9 @@ public class ScoreBreakdownPopup : MonoBehaviour {
 
         if (breakdownText != null) {
             breakdownText.text =
-                $"Base Score:        {Mathf.RoundToInt(b.baseScore)}\n" +
-                $"Time Penalty:     -{Mathf.RoundToInt(b.timePenalty)}  ({b.elapsedSeconds:F1}s)\n" +
-                $"Fuel Penalty:      -{Mathf.RoundToInt(b.fuelPenalty)}  ({b.fuelUsedPercent:F0}%)\n" +
-                $"Damage Penalty: -{Mathf.RoundToInt(b.damagePenalty)}  ({b.damageTakenPercent:F0}%)\n" +
+                $"Time Bonus:         +{Mathf.RoundToInt(b.timeBonus)}  ({b.elapsedSeconds:F1}s)\n" +
+                $"Fuel Bonus:         +{Mathf.RoundToInt(b.fuelBonus)}  ({100f - b.fuelUsedPercent:F0}% remaining)\n" +
+                $"Health Bonus:       +{Mathf.RoundToInt(b.healthBonus)}  ({100f - b.damageTakenPercent:F0}% remaining)\n" +
                 $"Completion Bonus: +{Mathf.RoundToInt(b.completionBonus)}\n" +
                 $"\n" +
                 $"FINAL SCORE: {Mathf.RoundToInt(b.finalScore)}";

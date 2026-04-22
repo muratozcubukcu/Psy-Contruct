@@ -126,25 +126,23 @@ public class ScoreManager : MonoBehaviour {
     public ScoreBreakdown FinalizeRun(bool completed, bool died) {
         StopRun();
 
-        float timePenalty = elapsedTimeAtStop * (config != null ? config.timeWeightPerSecond : 0f);
-        float fuelPenalty = fuelUsedPercent * (config != null ? config.fuelWeightPerPercent : 0f);
-        float dmgPenalty  = damageTakenPercent * (config != null ? config.damageWeightPerPercent : 0f);
-        float baseScore   = config != null ? config.baseScore : 0f;
-        float bonus       = completed && config != null ? config.completionBonus : 0f;
-        float minScore    = config != null ? config.minScore : 0f;
+        float timeBonus     = ComputeTimeBonus(elapsedTimeAtStop);
+        float fuelBonus     = ComputeFuelBonus(fuelUsedPercent);
+        float healthBonus   = ComputeHealthBonus(damageTakenPercent);
+        float completion    = completed && config != null ? config.completionBonus : 0f;
+        float minScore      = config != null ? config.minScore : 0f;
 
-        float total = baseScore - timePenalty - fuelPenalty - dmgPenalty + bonus;
+        float total = timeBonus + fuelBonus + healthBonus + completion;
 
         if (died && config != null && config.zeroScoreOnDeath) total = minScore;
 
         total = Mathf.Max(minScore, total);
 
         var breakdown = new ScoreBreakdown {
-            baseScore = baseScore,
-            timePenalty = timePenalty,
-            fuelPenalty = fuelPenalty,
-            damagePenalty = dmgPenalty,
-            completionBonus = bonus,
+            timeBonus = timeBonus,
+            fuelBonus = fuelBonus,
+            healthBonus = healthBonus,
+            completionBonus = completion,
             finalScore = total,
             elapsedSeconds = elapsedTimeAtStop,
             fuelUsedPercent = fuelUsedPercent,
@@ -157,13 +155,30 @@ public class ScoreManager : MonoBehaviour {
 
     private float ComputeScore(float seconds, float fuelPct, float dmgPct, bool completed, bool died) {
         if (config == null) return 0f;
-        float total = config.baseScore
-                      - seconds * config.timeWeightPerSecond
-                      - fuelPct * config.fuelWeightPerPercent
-                      - dmgPct  * config.damageWeightPerPercent
+        float total = ComputeTimeBonus(seconds)
+                      + ComputeFuelBonus(fuelPct)
+                      + ComputeHealthBonus(dmgPct)
                       + (completed ? config.completionBonus : 0f);
         if (died && config.zeroScoreOnDeath) total = config.minScore;
         return Mathf.Max(config.minScore, total);
+    }
+
+    private float ComputeTimeBonus(float seconds) {
+        if (config == null || config.timeBonusDurationSeconds <= 0f) return 0f;
+        float remaining = 1f - seconds / config.timeBonusDurationSeconds;
+        return Mathf.Max(0f, config.timeBonusMax * remaining);
+    }
+
+    private float ComputeFuelBonus(float fuelUsedPct) {
+        if (config == null) return 0f;
+        float remainingFraction = Mathf.Clamp01((100f - fuelUsedPct) / 100f);
+        return config.fuelBonusMax * remainingFraction;
+    }
+
+    private float ComputeHealthBonus(float damageTakenPct) {
+        if (config == null) return 0f;
+        float remainingFraction = Mathf.Clamp01((100f - damageTakenPct) / 100f);
+        return config.healthBonusMax * remainingFraction;
     }
 
     private void OnDestroy() {
@@ -174,10 +189,9 @@ public class ScoreManager : MonoBehaviour {
     }
 
     public struct ScoreBreakdown {
-        public float baseScore;
-        public float timePenalty;
-        public float fuelPenalty;
-        public float damagePenalty;
+        public float timeBonus;
+        public float fuelBonus;
+        public float healthBonus;
         public float completionBonus;
         public float finalScore;
         public float elapsedSeconds;
