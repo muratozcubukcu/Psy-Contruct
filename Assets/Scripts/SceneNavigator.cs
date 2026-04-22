@@ -15,13 +15,6 @@ public class SceneNavigator : MonoBehaviour
         Spacecraft existing = Spacecraft.GetInstance();
         if (existing != null) Destroy(existing.gameObject);
 
-        SpacecraftPartDatabase partDB = SpacecraftPartDatabase.Instance;
-        if (partDB != null) {
-            partDB.hasSavedGridState = false;
-            partDB.savedGridState = null;
-            partDB.savedPlacedParts = null;
-        }
-
         GameInput.Instance.SetBuildScene();
     }
 }
