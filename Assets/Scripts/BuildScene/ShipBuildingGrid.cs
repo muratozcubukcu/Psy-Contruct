@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Class that controls the ship building grid. allows the user to place objects and connect them to the base part.
@@ -424,7 +426,7 @@ public class ShipBuildingGrid : MonoBehaviour {
     // Restores all ship parts to their original sprite colors.
     // This is called before we check for disconnected parts so that
     // previously highlighted parts do not stay red after the ship is fixed.
-    private void ClearDisconnectedHighlights() {
+    public void ClearDisconnectedHighlights() {
 
         // Loop through every part currently placed on the ship grid
         foreach (var placedPart in placedParts) {
@@ -446,6 +448,30 @@ public class ShipBuildingGrid : MonoBehaviour {
                     sr.color = originalColor;
                 }
             }
+        }
+    }
+
+    public IEnumerator FadeClearDisconnectedHighlights() {
+        float fadeTime = 2f;
+        float elapsedTime = 0f;
+        List<SpriteRenderer> srList = new List<SpriteRenderer>();
+
+        foreach (var placedPart in placedParts) {
+            SpriteRenderer sr = placedPart.Value.GetComponentInChildren<SpriteRenderer>();
+            if(sr.color == colorDisconnected) srList.Add(sr);
+        }
+        
+        yield return new WaitForSeconds(0.5f);
+
+        while (fadeTime > elapsedTime) {
+            elapsedTime += Time.deltaTime;
+            foreach (SpriteRenderer sr in srList) {
+                if (sr.gameObject == null) continue; //In case object gets deleted during coroutine
+                
+                float t = Mathf.SmoothStep(0f, 1f, elapsedTime / fadeTime);
+                sr.color = Color.Lerp(colorDisconnected, originalSpriteColors[sr], t);
+            }
+            yield return null;
         }
     }
 

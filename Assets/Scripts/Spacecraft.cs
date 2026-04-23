@@ -114,7 +114,6 @@ public class Spacecraft : MonoBehaviour {
     }
     
     private void SetBuildingMode() {
-        Debug.Log("BuildingMode");
         IsBuildMode = true;
         IsFlightMode = false;
         

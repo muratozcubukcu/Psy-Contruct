@@ -17,6 +17,7 @@ public class DisconnectedPartsWarningManager : MonoBehaviour {
     
     public void KeepBuildingButtonClicked() {
         canvas.enabled = false;
+        StartCoroutine(ShipBuildingGrid.Instance.FadeClearDisconnectedHighlights());
     }
 
     public void DisplayWarning() {
