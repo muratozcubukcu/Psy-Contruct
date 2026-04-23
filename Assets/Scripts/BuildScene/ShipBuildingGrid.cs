@@ -82,21 +82,53 @@ public class ShipBuildingGrid : MonoBehaviour {
 
     private void LoadSpacecraft() {
         grid.LoadGridState();
-        placedParts = partDB.savedPlacedParts;
 
         Rigidbody2D spacecraftRB = spacecraft.GetComponent<Rigidbody2D>();
         spacecraftRB.linearVelocity = Vector2.zero;
         spacecraftRB.angularVelocity = 0f;
-        
+
         Transform shipTransform = spacecraft.transform;
         shipTransform.rotation = Quaternion.Euler(0, 0, 0);
         shipTransform.position = GridCoordinatesToUnityPosition(gridWidth / 2, gridHeight / 2);
-        
-        foreach (Transform part in shipTransform) {
-            part.position += spacecraft.GetComponent<Spacecraft>().centerOfMass;
+
+        if (SavedPlacedPartsValid()) {
+            placedParts = partDB.savedPlacedParts;
+            foreach (Transform part in shipTransform) {
+                part.position += spacecraft.GetComponent<Spacecraft>().centerOfMass;
+            }
+        } else {
+            // Spacecraft was destroyed along with its parts. Rebuild from grid IDs.
+            placedParts = new Dictionary<(int, int), GameObject>();
+            (int, int) baseCoords = (gridWidth / 2, gridHeight / 2);
+
+            for (int x = 0; x < gridWidth; x++) {
+                for (int y = 0; y < gridHeight; y++) {
+                    if ((x, y) == baseCoords) continue;
+
+                    int partID = grid.GetValue((x, y));
+                    if (partID <= 0) continue;
+
+                    GameObject prefab = partDB.GetPartGameObject(partID);
+                    if (prefab == null) continue;
+
+                    GameObject partObject = Instantiate(prefab, spacecraft.transform);
+                    partObject.SetActive(true);
+                    partObject.transform.position = GridCoordinatesToUnityPosition(x, y);
+                    CacheOriginalSpriteColors(partObject);
+                    placedParts[(x, y)] = partObject;
+                }
+            }
         }
-        
+
         spacecraft.GetComponent<Spacecraft>().SetPartRigidBodies(true, RigidbodyType2D.Kinematic);
+    }
+
+    private bool SavedPlacedPartsValid() {
+        if (partDB.savedPlacedParts == null || partDB.savedPlacedParts.Count == 0) return false;
+        foreach (var kvp in partDB.savedPlacedParts) {
+            if (kvp.Value == null) return false;
+        }
+        return true;
     }
 
     public void ResetGrid() {
