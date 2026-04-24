@@ -156,7 +156,6 @@ public class GameInput : MonoBehaviour {
             return; // Stop here -> do NOT load FlightScene
         }
         
-        
         // Passed requirements -> go to FlightFactsScene
         SceneManager.LoadScene("FlightFactsScene");
         
