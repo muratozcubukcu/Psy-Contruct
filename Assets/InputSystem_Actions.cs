@@ -111,7 +111,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""ActivateEngine"",
+                    ""name"": ""RepairShip"",
                     ""type"": ""Button"",
                     ""id"": ""3716a841-c800-45d4-be2d-0301f9589931"",
                     ""expectedControlType"": """",
@@ -338,7 +338,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""ActivateEngine"",
+                    ""action"": ""RepairShip"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1241,7 +1241,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Spacecraft = asset.FindActionMap("Spacecraft", throwIfNotFound: true);
         m_Spacecraft_Move = m_Spacecraft.FindAction("Move", throwIfNotFound: true);
         m_Spacecraft_Look = m_Spacecraft.FindAction("Look", throwIfNotFound: true);
-        m_Spacecraft_ActivateEngine = m_Spacecraft.FindAction("ActivateEngine", throwIfNotFound: true);
+        m_Spacecraft_RepairShip = m_Spacecraft.FindAction("RepairShip", throwIfNotFound: true);
         m_Spacecraft_LeftMouseClick = m_Spacecraft.FindAction("LeftMouseClick", throwIfNotFound: true);
         m_Spacecraft_EngineOne = m_Spacecraft.FindAction("EngineOne", throwIfNotFound: true);
         m_Spacecraft_EngineTwo = m_Spacecraft.FindAction("EngineTwo", throwIfNotFound: true);
@@ -1359,7 +1359,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private List<ISpacecraftActions> m_SpacecraftActionsCallbackInterfaces = new List<ISpacecraftActions>();
     private readonly InputAction m_Spacecraft_Move;
     private readonly InputAction m_Spacecraft_Look;
-    private readonly InputAction m_Spacecraft_ActivateEngine;
+    private readonly InputAction m_Spacecraft_RepairShip;
     private readonly InputAction m_Spacecraft_LeftMouseClick;
     private readonly InputAction m_Spacecraft_EngineOne;
     private readonly InputAction m_Spacecraft_EngineTwo;
@@ -1385,9 +1385,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Look => m_Wrapper.m_Spacecraft_Look;
         /// <summary>
-        /// Provides access to the underlying input action "Spacecraft/ActivateEngine".
+        /// Provides access to the underlying input action "Spacecraft/RepairShip".
         /// </summary>
-        public InputAction @ActivateEngine => m_Wrapper.m_Spacecraft_ActivateEngine;
+        public InputAction @RepairShip => m_Wrapper.m_Spacecraft_RepairShip;
         /// <summary>
         /// Provides access to the underlying input action "Spacecraft/LeftMouseClick".
         /// </summary>
@@ -1440,9 +1440,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
-            @ActivateEngine.started += instance.OnActivateEngine;
-            @ActivateEngine.performed += instance.OnActivateEngine;
-            @ActivateEngine.canceled += instance.OnActivateEngine;
+            @RepairShip.started += instance.OnRepairShip;
+            @RepairShip.performed += instance.OnRepairShip;
+            @RepairShip.canceled += instance.OnRepairShip;
             @LeftMouseClick.started += instance.OnLeftMouseClick;
             @LeftMouseClick.performed += instance.OnLeftMouseClick;
             @LeftMouseClick.canceled += instance.OnLeftMouseClick;
@@ -1475,9 +1475,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
-            @ActivateEngine.started -= instance.OnActivateEngine;
-            @ActivateEngine.performed -= instance.OnActivateEngine;
-            @ActivateEngine.canceled -= instance.OnActivateEngine;
+            @RepairShip.started -= instance.OnRepairShip;
+            @RepairShip.performed -= instance.OnRepairShip;
+            @RepairShip.canceled -= instance.OnRepairShip;
             @LeftMouseClick.started -= instance.OnLeftMouseClick;
             @LeftMouseClick.performed -= instance.OnLeftMouseClick;
             @LeftMouseClick.canceled -= instance.OnLeftMouseClick;
@@ -2099,12 +2099,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnLook(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "ActivateEngine" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "RepairShip" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnActivateEngine(InputAction.CallbackContext context);
+        void OnRepairShip(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "LeftMouseClick" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

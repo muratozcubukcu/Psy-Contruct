@@ -426,6 +426,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectedObject: {fileID: 6762445239661676325}
   objectVisual: {fileID: 1067822573587299252}
+  highlight: {fileID: 0}
   colorblindValid: {fileID: 21300000, guid: ae673aca304d84144b31cd1cc0bdb981, type: 3}
   colorblindInvalid: {fileID: 21300000, guid: 27410deb8893e984e880da0c4fe8c771, type: 3}
 --- !u!114 &8090201097484984832
@@ -440,10 +441,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 850c3c51dbcba4bec9934c8a05b0f594, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 70
+  speed: 50
+  initialSpeedRampUpLength: 3
+  softSpeedLimit: 10
+  thrustFalloffStrength: 8
+  stabilizationStrength: 0
   engineVisual: {fileID: 383230240694097690}
   idUI: {fileID: 1516800545626777781}
-  maxFuel: 10
+  fuelCostPerSecond: 1
   energyCostPerSecond: 2
   _engineID: 0
 --- !u!50 &-866892011188099394

@@ -18,3 +18,5 @@ MonoBehaviour:
   connectingDirections:
   - above
   - below
+  - left
+  - right

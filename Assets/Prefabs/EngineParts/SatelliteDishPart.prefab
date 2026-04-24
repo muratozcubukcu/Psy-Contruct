@@ -78,6 +78,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectedObject: {fileID: 2624134581080421435}
   objectVisual: {fileID: 8605709923386684600}
+  highlight: {fileID: 0}
   colorblindValid: {fileID: 21300000, guid: ae673aca304d84144b31cd1cc0bdb981, type: 3}
   colorblindInvalid: {fileID: 21300000, guid: 27410deb8893e984e880da0c4fe8c771, type: 3}
 --- !u!114 &6773643651935359739
@@ -92,7 +93,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fec44e774d7c58742b433d6687185893, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spacecraft: {fileID: 0}
+  facingThreshold: 0
+  repairQuickTimeUI: {fileID: 7473417725410852117, guid: 7ac9c5cf252654359a5c7b11791e6440, type: 3}
 --- !u!58 &-8092308245803106723
 CircleCollider2D:
   m_ObjectHideFlags: 0

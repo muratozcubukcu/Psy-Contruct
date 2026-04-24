@@ -1,16 +1,35 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-//Class defines the behavior of the satellite dish part. 
+public class SatelliteDish : MonoBehaviour {
+    
+    [SerializeField] private float facingThreshold;
+    private RepairQuickTimeUI repairQuickTimeUI;
+    
+    private GameInput gameInput;
+    private bool doQuickTime = false;
 
-public class SatelliteDish : MonoBehaviour
-{
-    [SerializeField] private Spacecraft spacecraft;
+    private void Awake() {
+        gameInput = GameInput.Instance;
+    }
+    
+    private void Start() {
+        gameInput.OnRepairShipPerformedAction += GameInput_OnRepairShipPerformedAction;
+    }
 
-    public void Awake() => enabled = false;
+    private bool IsFacingEarth() {
+        Vector2 directionToEarth = (Earth.Instance.transform.position - transform.position).normalized;
+        float dot = Vector2.Dot(transform.up, directionToEarth);
 
-    // No behavior yet � just a marker component.
-    void Update()
-    {
+        return dot > facingThreshold;
+    }
 
+    private void GameInput_OnRepairShipPerformedAction(object sender, System.EventArgs e) {
+        Debug.Log($"Satellite facing earth: {IsFacingEarth()}");
+        RepairQuickTimeUI.Instance.gameObject.SetActive(IsFacingEarth());
+    }
+    
+    private void OnDestroy() {
+        gameInput.OnRepairShipPerformedAction -= GameInput_OnRepairShipPerformedAction;
     }
 }

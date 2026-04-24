@@ -5,6 +5,10 @@ using UnityEngine;
 //Class defines the behavior of the engine part. 
 public class Engine : MonoBehaviour {
     [SerializeField] private int speed;
+    [SerializeField] private float initialSpeedRampUpLength;
+    [SerializeField] private float softSpeedLimit;
+    [SerializeField] private float thrustFalloffStrength;
+    [SerializeField] private float stabilizationStrength;
     [SerializeField] private SpriteRenderer engineVisual;
     [SerializeField] private TextMeshProUGUI idUI;
     
@@ -29,6 +33,7 @@ public class Engine : MonoBehaviour {
     private Rigidbody2D spacecraftRB;
     private bool active;
     private float fuelAmount;
+    private float engineActiveTime;
 
     public event System.EventHandler<float> OnFuelChanged;
 
@@ -51,12 +56,54 @@ public class Engine : MonoBehaviour {
         if (active && TryConsumeEnergy() && TryConsumeFuel()) ActivateEngine();
     }
 
-    private void ActivateEngine() => spacecraftRB.AddForceAtPosition(transform.up * speed, transform.position);
+    private void ActivateEngine() {
+        Vector2 initialThrust = speed * InitialSpeedRampUp() * transform.up;
+        Vector2 finalThrust = SoftSpeedLimitMultiplier(initialThrust);
+        
+        spacecraftRB.AddForceAtPosition(finalThrust, transform.position);
+        spacecraftRB.AddTorque(-spacecraftRB.angularVelocity * stabilizationStrength);
+    }
+
+    //Makes gaining speed increasingly difficult as speed increases, especially past the soft speed limit. Only applies
+    //to the thrust in the direction of motion, minimizing the effect when thrusters are used for either turning or
+    //slowing down.
+    private Vector2 SoftSpeedLimitMultiplier(Vector2 initialThrust) {
+        Vector2 velocityDir = spacecraftRB.linearVelocity.normalized;
+        
+        //Thrusts parallel and perpendicular to the current motion
+        Vector2 parallelThrust = Vector3.Project(initialThrust, velocityDir);
+        Vector2 perpendicularThrust = initialThrust - parallelThrust;
+
+        //Range between 0 and 1 where 1 is the engines thrust is completely facing the direction of motion, and 0 is
+        //the thrust is facing the opposite
+        float forceFacingMotion = (Vector2.Dot(parallelThrust.normalized, velocityDir) + 1f) / 2f;
+        
+        float speedRatio = spacecraftRB.linearVelocity.magnitude / softSpeedLimit; //(Current speed)/(soft speed limit)
+        float initialParallelThrustMultiplier = 1f / (1f + Mathf.Pow(speedRatio, thrustFalloffStrength));
+
+        //Uses Mathf.Lerp to allow for a smooth transition from the soft speed limit effecting the engine thrust when
+        //the thrust is facing in the direction of motion, to a non-existent soft speed limit effect when the thrust is
+        //facing opposite the direction of motion.
+        float finalParallelThrustMultiplier = Mathf.Lerp(1f, initialParallelThrustMultiplier, forceFacingMotion);
+        
+        return (parallelThrust * finalParallelThrustMultiplier) + perpendicularThrust;
+    }
+
+    private float InitialSpeedRampUp() {
+        engineActiveTime += Time.fixedDeltaTime;
+        
+        if (engineActiveTime >= initialSpeedRampUpLength) return 1f;
+
+        return (engineActiveTime + initialSpeedRampUpLength) / (initialSpeedRampUpLength * 2);
+    }
     
     private void GameInput_OnEngineAction(object sender, GameInput.EngineEventArgs e) { 
         if(engineID == e.engineNum) active = e.activated;
             
-        if (active) engineVisual.color = Color.red;
+        if (active) {
+            engineVisual.color = Color.red;
+            engineActiveTime = 0f;
+        }
         else engineVisual.color = Color.yellow;
     }
 

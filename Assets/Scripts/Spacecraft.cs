@@ -14,6 +14,7 @@ public class Spacecraft : MonoBehaviour {
     public static Spacecraft GetInstance() => Instance;
     
     public static bool IsBuildMode { get; private set; }
+    public static bool IsFlightMode { get; private set; }
     
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private OrbitAssist orbitAssist;
@@ -38,8 +39,7 @@ public class Spacecraft : MonoBehaviour {
     [SerializeField] private float currentEnergy;
 
     public event EventHandler<float> OnEnergyChanged; // Passes current energy percentage (0-1)
-
-    // Energy system
+    
     [Header("Fuel Settings")]
     [SerializeField] private float fuelPerTank = 50f;
     private float maxFuel = 0f;
@@ -70,9 +70,14 @@ public class Spacecraft : MonoBehaviour {
     private void Start() {
         // Listen for scene changes to update physics mode
         SceneManager.sceneLoaded += OnSceneLoaded;
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
 
         // Initialize physics mode based on current scene
         UpdatePhysicsMode();
+    }
+
+    private void Update() {
+       if(IsFlightMode) SpacecraftMotionUI.Instance.UpdateMotion(rb.linearVelocity.magnitude, rb.linearVelocity.normalized);
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
@@ -80,6 +85,16 @@ public class Spacecraft : MonoBehaviour {
         
         // Delay physics update to next frame to ensure all children are initialized
         StartCoroutine(UpdatePhysicsModeDelayed());
+    }
+
+    private void OnSceneUnloaded(Scene scene) {
+        if (scene.name == "BuildScene") {
+            IsBuildMode = false;
+            PrepareForFlight();
+            return;
+        }
+        
+        if (scene.name == "FlightScene") IsFlightMode = false;
     }
 
     private System.Collections.IEnumerator UpdatePhysicsModeDelayed() {
@@ -100,6 +115,7 @@ public class Spacecraft : MonoBehaviour {
     
     private void SetBuildingMode() {
         IsBuildMode = true;
+        IsFlightMode = false;
         
         Engine[] engineScripts = GetComponentsInChildren<Engine>();
         
@@ -127,9 +143,10 @@ public class Spacecraft : MonoBehaviour {
     
     private void SetFlightMode() {
         IsBuildMode = false;
+        IsFlightMode = true;
         
         Engine[] engineScripts = GetComponentsInChildren<Engine>();
-
+        
         // DISABLE PartDrag components in flight mode so parts can't be dragged
         PartDrag[] partDrags = GetComponentsInChildren<PartDrag>();
         foreach (PartDrag partDrag in partDrags) {
@@ -183,6 +200,8 @@ public class Spacecraft : MonoBehaviour {
     
     public void Heal(float healAmount) {
         if (healAmount <= 0) return;
+        
+        Debug.Log($"Healing {healAmount}");
         
         currentHealth = Mathf.Min(maxHealth, currentHealth + healAmount);
         OnHealthChanged?.Invoke(this, HealthPercentage);
@@ -240,7 +259,7 @@ public class Spacecraft : MonoBehaviour {
             partMass = partDb.GetMass(partDb.GetPartGameObject(part.name));
             totalMass += partMass;
 
-            numerator += partMass * (Vector2)part.localPosition;
+            numerator += partMass * (Vector2)part.position;
         }
 
         rb.mass = totalMass;

@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Class that controls the ship building grid. allows the user to place objects and connect them to the base part.
@@ -82,21 +84,53 @@ public class ShipBuildingGrid : MonoBehaviour {
 
     private void LoadSpacecraft() {
         grid.LoadGridState();
-        placedParts = partDB.savedPlacedParts;
 
         Rigidbody2D spacecraftRB = spacecraft.GetComponent<Rigidbody2D>();
         spacecraftRB.linearVelocity = Vector2.zero;
         spacecraftRB.angularVelocity = 0f;
-        
+
         Transform shipTransform = spacecraft.transform;
         shipTransform.rotation = Quaternion.Euler(0, 0, 0);
         shipTransform.position = GridCoordinatesToUnityPosition(gridWidth / 2, gridHeight / 2);
-        
-        foreach (Transform part in shipTransform) {
-            part.position += spacecraft.GetComponent<Spacecraft>().centerOfMass;
+
+        if (SavedPlacedPartsValid()) {
+            placedParts = partDB.savedPlacedParts;
+            foreach (Transform part in shipTransform) {
+                part.position += spacecraft.GetComponent<Spacecraft>().centerOfMass;
+            }
+        } else {
+            // Spacecraft was destroyed along with its parts. Rebuild from grid IDs.
+            placedParts = new Dictionary<(int, int), GameObject>();
+            (int, int) baseCoords = (gridWidth / 2, gridHeight / 2);
+
+            for (int x = 0; x < gridWidth; x++) {
+                for (int y = 0; y < gridHeight; y++) {
+                    if ((x, y) == baseCoords) continue;
+
+                    int partID = grid.GetValue((x, y));
+                    if (partID <= 0) continue;
+
+                    GameObject prefab = partDB.GetPartGameObject(partID);
+                    if (prefab == null) continue;
+
+                    GameObject partObject = Instantiate(prefab, spacecraft.transform);
+                    partObject.SetActive(true);
+                    partObject.transform.position = GridCoordinatesToUnityPosition(x, y);
+                    CacheOriginalSpriteColors(partObject);
+                    placedParts[(x, y)] = partObject;
+                }
+            }
         }
-        
+
         spacecraft.GetComponent<Spacecraft>().SetPartRigidBodies(true, RigidbodyType2D.Kinematic);
+    }
+
+    private bool SavedPlacedPartsValid() {
+        if (partDB.savedPlacedParts == null || partDB.savedPlacedParts.Count == 0) return false;
+        foreach (var kvp in partDB.savedPlacedParts) {
+            if (kvp.Value == null) return false;
+        }
+        return true;
     }
 
     public void ResetGrid() {
@@ -424,7 +458,7 @@ public class ShipBuildingGrid : MonoBehaviour {
     // Restores all ship parts to their original sprite colors.
     // This is called before we check for disconnected parts so that
     // previously highlighted parts do not stay red after the ship is fixed.
-    private void ClearDisconnectedHighlights() {
+    public void ClearDisconnectedHighlights() {
 
         // Loop through every part currently placed on the ship grid
         foreach (var placedPart in placedParts) {
@@ -446,6 +480,30 @@ public class ShipBuildingGrid : MonoBehaviour {
                     sr.color = originalColor;
                 }
             }
+        }
+    }
+
+    public IEnumerator FadeClearDisconnectedHighlights() {
+        float fadeTime = 2f;
+        float elapsedTime = 0f;
+        List<SpriteRenderer> srList = new List<SpriteRenderer>();
+
+        foreach (var placedPart in placedParts) {
+            SpriteRenderer sr = placedPart.Value.GetComponentInChildren<SpriteRenderer>();
+            if(sr.color == colorDisconnected) srList.Add(sr);
+        }
+        
+        yield return new WaitForSeconds(0.5f);
+
+        while (fadeTime > elapsedTime) {
+            elapsedTime += Time.deltaTime;
+            foreach (SpriteRenderer sr in srList) {
+                if (sr.gameObject == null) continue; //In case object gets deleted during coroutine
+                
+                float t = Mathf.SmoothStep(0f, 1f, elapsedTime / fadeTime);
+                sr.color = Color.Lerp(colorDisconnected, originalSpriteColors[sr], t);
+            }
+            yield return null;
         }
     }
 

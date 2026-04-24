@@ -9,6 +9,10 @@ public class GameInput : MonoBehaviour {
     public static GameInput Instance { get; private set; }
     public event EventHandler<EngineEventArgs> OnEnginePerformedAction;
     public event EventHandler<EngineEventArgs> OnEngineCanceledAction;
+
+    public event EventHandler OnRepairShipPerformedAction;
+    public event EventHandler OnRepairShipCanceledAction;
+    
     public event EventHandler OnLeftMouseClickPerformedAction;
 
     public event EventHandler OnDeletePartPerformedAction;
@@ -28,7 +32,7 @@ public class GameInput : MonoBehaviour {
     }
     
     public void Awake() {
-        if (Instance != null) {
+        if (Instance != null && Instance != this) {
             Destroy(gameObject);
             return;
         }
@@ -52,6 +56,9 @@ public class GameInput : MonoBehaviour {
         inputActions.Spacecraft.EngineThree.canceled += EngineThree_canceled;
         inputActions.Spacecraft.EngineFour.performed += EngineFour_performed;
         inputActions.Spacecraft.EngineFour.canceled += EngineFour_canceled;
+
+        inputActions.Spacecraft.RepairShip.performed += RepairShip_performed;
+        inputActions.Spacecraft.RepairShip.canceled += RepairShip_canceled;
 
         inputActions.SpacecraftBuilding.DeletePart.performed += DeletePart_performed;
         inputActions.SpacecraftBuilding.LeftMouseClick.performed += LeftMouseClick_performed;
@@ -94,6 +101,14 @@ public class GameInput : MonoBehaviour {
     private void EngineFour_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
         OnEngineCanceledAction?.Invoke(this, new EngineEventArgs(false, 4)); 
     }
+
+    private void RepairShip_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+        OnRepairShipPerformedAction?.Invoke(this, EventArgs.Empty);
+    }
+    
+    private void RepairShip_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+        OnRepairShipCanceledAction?.Invoke(this, EventArgs.Empty);
+    }
     
 
     private void DeletePart_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
@@ -120,7 +135,6 @@ public class GameInput : MonoBehaviour {
 
     public void SetFlightScene() {
         SceneManager.LoadScene("FlightScene");
-        Spacecraft.GetInstance().PrepareForFlight();
         
         inputActions.SpacecraftBuilding.Disable();
         inputActions.Spacecraft.Enable();
@@ -129,18 +143,17 @@ public class GameInput : MonoBehaviour {
     }
 
     public void SetFlightFactsScene() {
-        // Only enforce requirements if we are currently in the BuildScene
-        if (SceneManager.GetActiveScene().name == "BuildScene") {
-            BuildRequirements requirements = BuildRequirements.Instance;
-
-            if (!requirements.IsReadyForFlight(out string message)) {
-                Debug.Log(message); // Example: "Missing parts: SolarPanel, SatelliteDish"
-                return; // Stop here -> do NOT load FlightScene
-            }
-            if (ShipBuildingGrid.Instance != null && ShipBuildingGrid.Instance.HighlightDisconnectedParts()) {
-                Debug.Log("Warning: Some ship parts are not connected to the spacecraft core.");
-                return; // Stop here -> do NOT load FlightScene
-            }
+        
+        BuildRequirements requirements = BuildRequirements.Instance;
+        
+        if (!requirements.IsReadyForFlight(out string message)) {
+            Debug.Log(message); // Example: "Missing parts: SolarPanel, SatelliteDish"
+            return; // Stop here -> do NOT load FlightScene
+        }
+        if (ShipBuildingGrid.Instance != null && ShipBuildingGrid.Instance.HighlightDisconnectedParts()) {
+            DisconnectedPartsWarningManager.Instance.DisplayWarning();
+            Debug.Log("Warning: Some ship parts are not connected to the spacecraft core.");
+            return; // Stop here -> do NOT load FlightScene
         }
         
         // Passed requirements -> go to FlightFactsScene
@@ -165,8 +178,7 @@ public class GameInput : MonoBehaviour {
         inputActions.SpacecraftBuilding.Disable();
     }
 
-    public void SetSettingsScene()
-    {
+    public void SetSettingsScene() {
         SceneManager.LoadScene("SettingsScene");
 
         inputActions.Spacecraft.Disable();

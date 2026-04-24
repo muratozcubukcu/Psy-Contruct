@@ -65,6 +65,7 @@ public class SpacecraftPartDatabase : MonoBehaviour {
     public List<string> GetSnapableDirections(GameObject part) => GetSnapableDirections(GetPartID(part));
 
     public float GetMass(GameObject part) {
+        if (part == null) return -1;
         foreach (PartScriptableObject partSO in allParts) {
             if (partSO.part.name == part.name) return partSO.mass;
         }

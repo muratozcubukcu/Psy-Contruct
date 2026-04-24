@@ -9,7 +9,7 @@ public class SolarPanel : MonoBehaviour {
     [SerializeField] private Spacecraft spacecraft;
 
     [Header("Charging Settings")]
-    [SerializeField] private float chargeRate = 0.1f;
+    [SerializeField] private float chargeRate;
     [SerializeField] private float facingThreshold = 0f;
 
     private Sun sun;
@@ -19,14 +19,14 @@ public class SolarPanel : MonoBehaviour {
     public void Awake() => enabled = false;
 
     private void OnEnable() {
-        sun = Sun.GetInstance();
+        sun = Sun.Instance;
         if (spacecraft == null)
             spacecraft = GetComponentInParent<Spacecraft>();
     }
 
     private void Update() {
         if (sun == null) {
-            sun = Sun.GetInstance();
+            sun = Sun.Instance;
             if (sun == null) {
                 IsCharging = false;
                 return;

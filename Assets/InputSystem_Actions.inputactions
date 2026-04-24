@@ -25,7 +25,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "ActivateEngine",
+                    "name": "RepairShip",
                     "type": "Button",
                     "id": "3716a841-c800-45d4-be2d-0301f9589931",
                     "expectedControlType": "",
@@ -252,7 +252,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "ActivateEngine",
+                    "action": "RepairShip",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
