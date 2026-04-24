@@ -42,6 +42,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: StackablePart
+    uniqueID: 4184583543
+    locked: 0
   - name: MidDrag
     uniqueID: 2786281251
     locked: 0
