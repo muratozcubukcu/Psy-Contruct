@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using TMPro;
 using UnityEditor;
 using UnityEditor.U2D;
@@ -19,7 +21,9 @@ public class PartDrag : MonoBehaviour {
     private static readonly Color colorValid   = new Color(0.3f, 1f, 0.3f, 0.6f);
     private static readonly Color colorInvalid = new Color(1f, 0.3f, 0.3f, 0.6f);
 
+    private GameObject stackedPart;
     private bool colorblindMode;
+    private bool draggingStackablePart;
     private Vector3 screenPoint;
     private Vector3 offset;
     private Vector3 originalPosition;
@@ -29,8 +33,10 @@ public class PartDrag : MonoBehaviour {
     private SpacecraftPartDatabase partDB;
     private SpriteRenderer objectSprite;
     private Color baseColor;
+    private Color stackablePartBaseColor;
     private Sprite baseHighlightSprite;
     private string midDragLayer = "MidDrag";
+    private string stackablePartLayer = "StackablePart";
     private string defaultLayer = "Default";
     private string spacecraftLayer = "SpaceCraft";
 
@@ -59,12 +65,26 @@ public class PartDrag : MonoBehaviour {
 
     private void OnMouseDown() {
         if (!Spacecraft.IsBuildMode) return;
-
-        if (highlight == null)
-        {
+        
+        (int, int) currCoords = shipGrid.UnityPositionToGridCoordinates(transform.position);
+        draggingStackablePart = false;
+        stackedPart = null;
+        
+        if (highlight == null) {
             highlight = GameObject.Find("Highlight");
             highlightSprite = highlight.GetComponent<SpriteRenderer>();
             colorblindMode = Settings.Instance.colorblindMode;
+        }
+
+        if (partDB.PartIsStackable(shipGrid.GetGridCellValueByWorldPosition(transform.position))) {
+            if(partDB.GetPartID(gameObject) == 1) {
+                stackedPart = shipGrid.GetPlacedPartByWorldPosition(transform.position);
+                stackedPart.GetComponent<PartDrag>().OnMouseDown();
+            } else {
+                draggingStackablePart = true;
+                shipGrid.placedParts[currCoords] = shipGrid.partStackedOn[gameObject];
+                shipGrid.partStackedOn.Remove(gameObject);
+            }
         }
 
         originalPosition = transform.position;
@@ -75,12 +95,11 @@ public class PartDrag : MonoBehaviour {
             new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z)
         );
 
-        Debug.Log($"Part is connected: {shipGrid.PartIsConnected(shipGrid.UnityPositionToGridCoordinates(transform.position))}");
+        Debug.Log($"Part is connected: {shipGrid.PartIsConnected(currCoords)}");
 
-        // Clear BOTH grid + dictionary at the original cell
-        shipGrid.SetGridCellValueByUnityPosition(originalPosition, -1);
-        shipGrid.RemovePlacedPartAtWorldPosition(originalPosition);
-
+        if(!draggingStackablePart) shipGrid.RemovePlacedPartAtWorldPosition(originalPosition);
+        shipGrid.SetGridCellValueByUnityPosition(originalPosition, draggingStackablePart ? 1 : -1);
+        
         shipGrid.SetSelectedPart(gameObject);
 
         SetSortingLayer(midDragLayer);
@@ -96,7 +115,7 @@ public class PartDrag : MonoBehaviour {
 
     void OnMouseDrag() {
         if (!Spacecraft.IsBuildMode) return;
-
+        
         Vector3 curScreenPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z);
         Vector3 curPosition = Camera.main.ScreenToWorldPoint(curScreenPoint) + offset;
         transform.rotation = lockedRotation;
@@ -109,9 +128,9 @@ public class PartDrag : MonoBehaviour {
             if (snapPos != null) {
                 transform.position = (Vector3)snapPos;
                 (int, int) coords = shipGrid.UnityPositionToGridCoordinates((Vector3)snapPos);
-                GameObject part = partDB.GetPartGameObject(selectedObject.name);
-                bool valid = shipGrid.CanPlacePart(part, coords) || CanSwapPart(part, originalPosition);
+                bool valid = shipGrid.CanPlacePart(gameObject, coords) || CanSwapPart(gameObject, originalPosition);
                 objectSprite.color = valid ? colorValid : colorInvalid;
+                
                 highlight.transform.position = transform.position;
                 highlightSprite.color = colorblindMode ? Color.white : ShipBuildingGrid.colorHighlightInvisible;
                 if (colorblindMode) highlightSprite.sprite = valid ? colorblindValid : colorblindInvalid;
@@ -126,42 +145,51 @@ public class PartDrag : MonoBehaviour {
             highlight.transform.position = curPosition;
             highlightSprite.color = ShipBuildingGrid.colorHighlightInvisible;
         }
+        
+        if(stackedPart != null) stackedPart.GetComponent<PartDrag>().OnMouseDrag();
     }
 
     void OnMouseUp() {
         if (!Spacecraft.IsBuildMode) return;
         if (shipGrid == null || partCollider == null) return;
-
+        
         objectSprite.color = baseColor;
 
         transform.rotation = lockedRotation;
-
-        GameObject part = gameObject;
+        
 
         Vector3? nullableGridSnapPosition = shipGrid.PostionToGridPosition(transform.position);
         if (nullableGridSnapPosition == null) {
             PlacePart(gameObject, originalPosition); //Place part bc the part needs to be placed to be deleted
+            if(stackedPart != null) stackedPart.GetComponent<PartDrag>().OnMouseUp();
             shipGrid.DeletePart(shipGrid.UnityPositionToGridCoordinates(originalPosition));
             return;
         }
 
         Vector3 gridSnapPosition = (Vector3)nullableGridSnapPosition;
 
-        if (shipGrid.GetGridCellValue(shipGrid.UnityPositionToGridCoordinates(gridSnapPosition)) == -1) {
-            if (TryPlacePart(part, gridSnapPosition)) return;
+        int gridCellValue = shipGrid.GetGridCellValue(shipGrid.UnityPositionToGridCoordinates(gridSnapPosition));
+        if (gridCellValue == -1 || (draggingStackablePart && gridCellValue == 1)) {
+            if (TryPlacePart(gameObject, gridSnapPosition)) {
+                if(stackedPart != null) stackedPart.GetComponent<PartDrag>().OnMouseUp();
+                return;
+            }
         } else {
-            Collider2D partToBeSwapped = Physics2D.OverlapPoint(gridSnapPosition, LayerMask.GetMask(spacecraftLayer));
-            if (partToBeSwapped != null && TrySwapPart(part, originalPosition, partToBeSwapped.gameObject, gridSnapPosition)) return;
+            GameObject partToBeSwapped = shipGrid.GetPlacedPartByWorldPosition(gridSnapPosition);
+            if (partToBeSwapped != null && TrySwapPart(gameObject, originalPosition, partToBeSwapped.gameObject, gridSnapPosition)) {
+                if(stackedPart != null) stackedPart.GetComponent<PartDrag>().OnMouseUp();
+                return;
+            }
         }
         
         PlacePart(gameObject, originalPosition);
         shipGrid.HandleLeftClick();
         highlightSprite.color = ShipBuildingGrid.colorHighlight;
+
+        if(stackedPart != null) stackedPart.GetComponent<PartDrag>().OnMouseUp();
     }
 
     private bool TryPlacePart(GameObject part, Vector3 worldPosition) {
-        GameObject partPrefab = partDB.GetPartGameObject(selectedObject.name);
-
         if (!shipGrid.CanPlacePart(part, shipGrid.UnityPositionToGridCoordinates(worldPosition))) return false;
         
         PlacePart(part, worldPosition);
@@ -175,11 +203,12 @@ public class PartDrag : MonoBehaviour {
         shipGrid.SetGridCellValueByUnityPosition(part.transform.position, partDB.GetPartID(part));
         shipGrid.SetPlacedPartAtWorldPosition(part.transform.position, part.gameObject);
 
-        SetSortingLayer(defaultLayer);
+        if(partDB.PartIsStackable(part)) SetSortingLayer(stackablePartLayer);
+        else SetSortingLayer(defaultLayer);
+        
         SetLayer(spacecraftLayer);
-
-        // Reconnect joint and disable physics
-        ReconnectPart();
+        
+        SetKinematicRB();
     }
 
     private bool CanSwapPart(GameObject draggedPart, Vector3 draggedOGPosition, GameObject otherPart, Vector3 otherOGPosition) {
@@ -187,6 +216,12 @@ public class PartDrag : MonoBehaviour {
         
         int otherID = partDB.GetPartID(otherPart);
         int draggedID = partDB.GetPartID(draggedPart);
+
+        if (partDB.PartIsStackable(otherID)) {
+            if (partDB.PartIsStackable(draggedID)) return true;
+            otherID = 1;
+            otherPart = partDB.GetPartGameObject(otherID);
+        }
         
         shipGrid.SetGridCellValueByUnityPosition(otherOGPosition, -1);
         shipGrid.SetGridCellValueByUnityPosition(draggedOGPosition, otherID);
@@ -209,22 +244,32 @@ public class PartDrag : MonoBehaviour {
         if (nullableGridSnapPosition == null) return false;
         Vector3 gridSnapPosition = (Vector3)nullableGridSnapPosition;
         
-        Collider2D partToBeSwapped = Physics2D.OverlapPoint(gridSnapPosition, LayerMask.GetMask(spacecraftLayer));
+        GameObject partToBeSwapped = shipGrid.GetPlacedPartByWorldPosition(gridSnapPosition);
         if (partToBeSwapped == null) return false;
 
-        return CanSwapPart(draggedPart, draggedOGPosition, partToBeSwapped.gameObject, gridSnapPosition);
+        return CanSwapPart(draggedPart, draggedOGPosition, partToBeSwapped, gridSnapPosition);
     }
 
     private bool TrySwapPart(GameObject draggedPart, Vector3 draggedOGPosition, GameObject otherPart, Vector3 otherOGPosition) {
         if (!CanSwapPart(draggedPart, draggedOGPosition, otherPart, otherOGPosition)) return false;
         
-        PlacePart(draggedPart, otherOGPosition);
+        //When swapping with a stackable part, we need to swap the ship part that is stacked on first
+        if (partDB.PartIsStackable(otherPart) && !partDB.PartIsStackable(draggedPart)) {
+            foreach (Transform part in Spacecraft.GetInstance().transform) {
+                if(part.position == otherOGPosition && part.gameObject != draggedPart && part.gameObject != otherPart) {
+                    PlacePart(part.gameObject, draggedOGPosition);
+                }
+            }
+        }
+        
         PlacePart(otherPart, draggedOGPosition);
+        PlacePart(draggedPart, otherOGPosition);
+        
         
         return true;
     }
 
-    private void ReconnectPart() {
+    private void SetKinematicRB() {
         if (!Spacecraft.IsBuildMode) return;
 
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
@@ -249,7 +294,7 @@ public class PartDrag : MonoBehaviour {
         if (transform.rotation != lockedRotation) transform.rotation = lockedRotation;
     }
 
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
         if (scene.name == "BuildScene") {
             shipGrid = ShipBuildingGrid.Instance;
         }
