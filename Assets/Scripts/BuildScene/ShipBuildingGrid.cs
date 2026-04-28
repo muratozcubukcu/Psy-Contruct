@@ -30,7 +30,6 @@ public class ShipBuildingGrid : MonoBehaviour {
     private static Color colorDisconnected = new Color(1f, 0.4f, 0.4f, 1f);
     private readonly Dictionary<SpriteRenderer, Color> originalSpriteColors = new();
 
-
     private GameObject selectedPart;
     private (int, int) selectedTileCoords;
     public Dictionary<(int, int), GameObject> placedParts = new();
@@ -80,8 +79,7 @@ public class ShipBuildingGrid : MonoBehaviour {
         int baseID = partDB.GetPartID(partDB.GetPartGameObject(0));
         (int, int) baseCoords = (gridWidth / 2, gridHeight / 2);
 
-        // Mark the base tile as occupied in the int grid
-        grid.SetValue(baseCoords.Item1, baseCoords.Item2, baseID);
+        SetGridCellValue(baseCoords, baseID);
     }
 
     private void LoadSpacecraft() {
@@ -117,7 +115,7 @@ public class ShipBuildingGrid : MonoBehaviour {
 
         for (int x = 0; x < gridWidth; x++) {
             for (int y = 0; y < gridHeight; y++) {
-                grid.SetValue(x, y, -1);
+                SetGridCellValue((x, y), -1);
             }
         }
 
@@ -128,7 +126,7 @@ public class ShipBuildingGrid : MonoBehaviour {
         DeselectPart();
     }
 
-    public void SetGridCellValue((int, int) coordinates, int value) {
+    private void SetGridCellValue((int, int) coordinates, int value) { 
         grid.SetValue(coordinates.Item1, coordinates.Item2, value);
     }
     
@@ -182,7 +180,7 @@ public class ShipBuildingGrid : MonoBehaviour {
         Destroy(partToDelete);
 
         int newGridValue = placedParts.ContainsKey(partCoords) ? partDB.GetPartID(placedParts[partCoords]) : -1;
-        grid.SetValue(partCoords.Item1, partCoords.Item2, newGridValue);
+        SetGridCellValue(partCoords, newGridValue);
     }
 
     private void GameInput_OnLeftMouseClickAction(object sender, System.EventArgs e) {
@@ -305,11 +303,10 @@ public class ShipBuildingGrid : MonoBehaviour {
 
             Destroy(existing);
             placedParts.Remove(coordinates);
-            grid.SetValue(coordinates.Item1, coordinates.Item2, -1);
+            SetGridCellValue(coordinates, -1);
         }
-
-        // Set grid value
-        grid.SetValue(coordinates.Item1, coordinates.Item2, partDB.GetPartID(part));
+        
+        SetGridCellValue(coordinates, partDB.GetPartID(part));
 
         // Spawn part
         GameObject spacecraftPart = Instantiate(part, spacecraft.transform);

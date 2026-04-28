@@ -17,5 +17,7 @@ MonoBehaviour:
   mass: 1
   isStackable: 1
   connectingDirections:
+  - above
   - below
   - left
+  - right

@@ -223,11 +223,7 @@ public class PartDrag : MonoBehaviour {
         int otherID = partDB.GetPartID(otherPart);
         int draggedID = partDB.GetPartID(draggedPart);
 
-        if (partDB.PartIsStackable(otherID)) {
-            if (partDB.PartIsStackable(draggedID)) return true;
-            otherID = 1;
-            otherPart = partDB.GetPartGameObject(otherID);
-        }
+        if (partDB.PartIsStackable(otherID) && partDB.PartIsStackable(draggedID)) return true;
         
         shipGrid.SetGridCellValueByUnityPosition(otherOGPosition, -1);
         shipGrid.SetGridCellValueByUnityPosition(draggedOGPosition, otherID);
