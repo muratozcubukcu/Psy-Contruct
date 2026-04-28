@@ -15,6 +15,7 @@ MonoBehaviour:
   part: {fileID: 6269006834175180344, guid: 9d31b909ed3c6fa45ae0abc631f32e0e, type: 3}
   partID: 4
   mass: 1
+  isStackable: 1
   connectingDirections:
   - above
   - below

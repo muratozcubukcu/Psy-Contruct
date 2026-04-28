@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -29,10 +30,10 @@ public class ShipBuildingGrid : MonoBehaviour {
     private static Color colorDisconnected = new Color(1f, 0.4f, 0.4f, 1f);
     private readonly Dictionary<SpriteRenderer, Color> originalSpriteColors = new();
 
-
     private GameObject selectedPart;
     private (int, int) selectedTileCoords;
-    private Dictionary<(int, int), GameObject> placedParts = new();
+    public Dictionary<(int, int), GameObject> placedParts = new();
+    public Dictionary<GameObject, GameObject> partStackedOn = new(); //Key: stacked part, value: ship part
     private bool someTileSelected = false;
     private SpriteRenderer highlightSprite;
     
@@ -78,8 +79,7 @@ public class ShipBuildingGrid : MonoBehaviour {
         int baseID = partDB.GetPartID(partDB.GetPartGameObject(0));
         (int, int) baseCoords = (gridWidth / 2, gridHeight / 2);
 
-        // Mark the base tile as occupied in the int grid
-        grid.SetValue(baseCoords.Item1, baseCoords.Item2, baseID);
+        SetGridCellValue(baseCoords, baseID);
     }
 
     private void LoadSpacecraft() {
@@ -88,13 +88,14 @@ public class ShipBuildingGrid : MonoBehaviour {
         Rigidbody2D spacecraftRB = spacecraft.GetComponent<Rigidbody2D>();
         spacecraftRB.linearVelocity = Vector2.zero;
         spacecraftRB.angularVelocity = 0f;
-
+        
         Transform shipTransform = spacecraft.transform;
         shipTransform.rotation = Quaternion.Euler(0, 0, 0);
         shipTransform.position = GridCoordinatesToUnityPosition(gridWidth / 2, gridHeight / 2);
 
         if (SavedPlacedPartsValid()) {
             placedParts = partDB.savedPlacedParts;
+            partStackedOn = partDB.savedPartStackedOn;
             foreach (Transform part in shipTransform) {
                 part.position += spacecraft.GetComponent<Spacecraft>().centerOfMass;
             }
@@ -121,7 +122,7 @@ public class ShipBuildingGrid : MonoBehaviour {
                 }
             }
         }
-
+        
         spacecraft.GetComponent<Spacecraft>().SetPartRigidBodies(true, RigidbodyType2D.Kinematic);
     }
 
@@ -141,18 +142,23 @@ public class ShipBuildingGrid : MonoBehaviour {
         }
 
         placedParts.Clear();
+        partStackedOn.Clear();
         originalSpriteColors.Clear();
 
         for (int x = 0; x < gridWidth; x++) {
             for (int y = 0; y < gridHeight; y++) {
-                grid.SetValue(x, y, -1);
+                SetGridCellValue((x, y), -1);
             }
+        }
+
+        foreach (Transform part in spacecraft.transform) {
+            if(partDB.GetPartID(part.gameObject) != 0) Destroy(part.gameObject);
         }
         CreateSpacecraft();
         DeselectPart();
     }
 
-    public void SetGridCellValue((int, int) coordinates, int value) {
+    private void SetGridCellValue((int, int) coordinates, int value) { 
         grid.SetValue(coordinates.Item1, coordinates.Item2, value);
     }
     
@@ -195,12 +201,18 @@ public class ShipBuildingGrid : MonoBehaviour {
         // Don't allow deleting the base/root part (optional safety)
         if (partToDelete == spacecraft) return;
         
-        if(selectedPart == partToDelete) DeselectPart();
-
-        Destroy(partToDelete);
+        if (partToDelete == selectedPart) DeselectPart();
         
-        placedParts.Remove(partCoords);
-        grid.SetValue(partCoords.Item1, partCoords.Item2, -1);
+        if (partDB.PartIsStackable(partToDelete)) {
+            placedParts[partCoords] = partStackedOn[partToDelete];
+            partStackedOn.Remove(partToDelete);
+        } 
+        else placedParts.Remove(partCoords);
+        
+        Destroy(partToDelete);
+
+        int newGridValue = placedParts.ContainsKey(partCoords) ? partDB.GetPartID(placedParts[partCoords]) : -1;
+        SetGridCellValue(partCoords, newGridValue);
     }
 
     private void GameInput_OnLeftMouseClickAction(object sender, System.EventArgs e) {
@@ -251,6 +263,8 @@ public class ShipBuildingGrid : MonoBehaviour {
     }
 
     public bool CanPlacePart(GameObject partToBePlaced, (int, int) coords) {
+        if (partDB.PartIsStackable(partToBePlaced)) return CanPlaceStackablePart(partToBePlaced, coords);
+        
         List<string> possibleConnectionsOfPartToBePlaced = partDB.GetSnapableDirections(partToBePlaced);
         int x = coords.Item1;
         int y = coords.Item2;
@@ -279,6 +293,19 @@ public class ShipBuildingGrid : MonoBehaviour {
         return false;
     }
 
+    private bool CanPlaceStackablePart(GameObject partToBePlaced, (int, int) coords) {
+        if (grid.GetValue(coords) == 1) return true;
+
+        foreach (Transform p in spacecraft.transform) {
+            GameObject part = p.gameObject;
+            if (part.GetComponent<Rigidbody2D>().bodyType == RigidbodyType2D.Dynamic && part != partToBePlaced) {
+                return CanPlacePart(part, coords);
+            }
+        }
+        
+        return false;
+    }
+
     //Ex: If part is bottomEngine, and the connectingDirection is "above" it can connect
     private bool PartCanConnect(int partID, string connectingDirection) {
         if (partID < 0) return false;
@@ -300,18 +327,18 @@ public class ShipBuildingGrid : MonoBehaviour {
     public void SetSelectedPart(GameObject part) => selectedPart = part;
 
     public void PlacePartAtCoordinates(GameObject part, (int, int) coordinates) {
-        // If something already exists here, destroy it first (true swap)
-        if (placedParts.TryGetValue(coordinates, out GameObject existing) && existing != null) {
+        if (!partDB.PartIsStackable(part) && 
+            placedParts.TryGetValue(coordinates, out GameObject existing) && existing != null) {
+            
             // Don't allow swapping the base/root part (optional safety)
             if (existing == spacecraft) return;
 
             Destroy(existing);
             placedParts.Remove(coordinates);
-            grid.SetValue(coordinates.Item1, coordinates.Item2, -1);
+            SetGridCellValue(coordinates, -1);
         }
-
-        // Set grid value
-        grid.SetValue(coordinates.Item1, coordinates.Item2, partDB.GetPartID(part));
+        
+        SetGridCellValue(coordinates, partDB.GetPartID(part));
 
         // Spawn part
         GameObject spacecraftPart = Instantiate(part, spacecraft.transform);
@@ -320,6 +347,7 @@ public class ShipBuildingGrid : MonoBehaviour {
         CacheOriginalSpriteColors(spacecraftPart);
 
         // Track in dictionary
+        if (partDB.PartIsStackable(part)) partStackedOn[spacecraftPart] = placedParts[coordinates];
         placedParts[coordinates] = spacecraftPart;
 
         // Keep selection synced if placing in selected tile
@@ -340,21 +368,36 @@ public class ShipBuildingGrid : MonoBehaviour {
     }
 
 
-    public void RemovePlacedPartAtWorldPosition(Vector3 worldPos){
+    public void RemovePlacedPartAtWorldPosition(Vector3 worldPos) {
         (int, int) coords = UnityPositionToGridCoordinates(worldPos);
         placedParts.Remove(coords);
     }
 
-    public void SetPlacedPartAtWorldPosition(Vector3 worldPos, GameObject partObject){
+    public void SetPlacedPartAtWorldPosition(Vector3 worldPos, GameObject partObject) {
         (int, int) coords = UnityPositionToGridCoordinates(worldPos);
+        
+        if(partDB.PartIsStackable(partObject)) partStackedOn[partObject] = placedParts[coords];
         placedParts[coords] = partObject;
     }
 
+    public GameObject GetPlacedPartByWorldPosition(Vector3 worldPos) {
+        (int, int) coords = UnityPositionToGridCoordinates(worldPos);
+        
+        return placedParts.ContainsKey(coords) ? placedParts[coords] : null;
+    }
+
+    public int GetGridCellValueByWorldPosition(Vector3 worldPos) {
+        (int, int) coords = UnityPositionToGridCoordinates(worldPos);
+        return GetGridCellValue(coords);
+    }
+
     public void RemoveDisconnectedParts() {
-        for (int i = 0; i < gridWidth; i++) {
-            for (int j = 0; j < gridHeight; j++) {
-                if(!PartIsConnected((i, j))) DeletePart((i, j));
-            }
+        List<GameObject> allParts = placedParts.Values.ToList();
+        allParts.AddRange(partStackedOn.Values.ToList());
+        
+        foreach (GameObject partObject in allParts) {
+            (int, int) partCoords = UnityPositionToGridCoordinates(partObject.transform.position);
+            if(!PartIsConnected(partCoords)) DeletePart(partCoords);
         }
     }
 
@@ -437,14 +480,8 @@ public class ShipBuildingGrid : MonoBehaviour {
             // Use the existing connectivity function to check
             // whether this part can reach the spacecraft core
             if (!PartIsConnected(coords)) {
-                // Get all sprite renderers belonging to this part
-                // (some parts may have sprites on child objects)
-                SpriteRenderer[] spriteRenderers = partObject.GetComponentsInChildren<SpriteRenderer>();
-
-                // Highlight the disconnected part by setting its color
-                foreach (SpriteRenderer sr in spriteRenderers) {
-                    sr.color = colorDisconnected;
-                }
+                HighlightDisconnectedPart(partObject);
+                if(partStackedOn.TryGetValue(partObject, out GameObject shipPart)) HighlightDisconnectedPart(shipPart);
 
                 // Mark that we found at least one disconnected part
                 foundDisconnectedPart = true;
@@ -455,16 +492,25 @@ public class ShipBuildingGrid : MonoBehaviour {
         return foundDisconnectedPart;
     }
 
+    private void HighlightDisconnectedPart(GameObject part) {
+        SpriteRenderer[] spriteRenderers = part.GetComponentsInChildren<SpriteRenderer>();
+
+        // Highlight the disconnected part by setting its color
+        foreach (SpriteRenderer sr in spriteRenderers) {
+            sr.color = colorDisconnected;
+        }
+    }
+
     // Restores all ship parts to their original sprite colors.
     // This is called before we check for disconnected parts so that
     // previously highlighted parts do not stay red after the ship is fixed.
     public void ClearDisconnectedHighlights() {
 
-        // Loop through every part currently placed on the ship grid
-        foreach (var placedPart in placedParts) {
-            // Get the actual GameObject for the part
-            GameObject partObject = placedPart.Value;
+        List<GameObject> allParts = placedParts.Values.ToList();
+        allParts.AddRange(partStackedOn.Values.ToList());
 
+        // Loop through every part currently placed on the ship grid
+        foreach (GameObject partObject in allParts) {
             // Skip if the object was destroyed or is missing
             if (partObject == null) continue;
 
@@ -488,8 +534,11 @@ public class ShipBuildingGrid : MonoBehaviour {
         float elapsedTime = 0f;
         List<SpriteRenderer> srList = new List<SpriteRenderer>();
 
-        foreach (var placedPart in placedParts) {
-            SpriteRenderer sr = placedPart.Value.GetComponentInChildren<SpriteRenderer>();
+        List<GameObject> allParts = placedParts.Values.ToList();
+        allParts.AddRange(partStackedOn.Values.ToList());
+                
+        foreach (GameObject placedPart in allParts) {
+            SpriteRenderer sr = placedPart.GetComponentInChildren<SpriteRenderer>();
             if(sr.color == colorDisconnected) srList.Add(sr);
         }
         
@@ -531,6 +580,7 @@ public class ShipBuildingGrid : MonoBehaviour {
     public void SaveGridState(bool save = true) {
         grid.SaveGridState(save);
         partDB.savedPlacedParts = placedParts;
+        partDB.savedPartStackedOn = partStackedOn;
     }
     
     private void OnDisable() => SaveGridState();
