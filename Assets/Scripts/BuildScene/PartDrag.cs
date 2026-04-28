@@ -20,7 +20,7 @@ public class PartDrag : MonoBehaviour {
     [SerializeField] private Sprite colorblindInvalid;
     private static readonly Color colorValid   = new Color(0.3f, 1f, 0.3f, 0.6f);
     private static readonly Color colorInvalid = new Color(1f, 0.3f, 0.3f, 0.6f);
-
+    
     private GameObject stackedPart;
     private bool colorblindMode;
     private bool draggingStackablePart;
@@ -198,17 +198,23 @@ public class PartDrag : MonoBehaviour {
 
     private void PlacePart(GameObject part, Vector3 worldPosition) {
         part.transform.position = worldPosition;
+        
+        if(partDB.PartIsStackable(part)) {
+            SetSortingLayer(stackablePartLayer, part);
+            shipGrid.partStackedOn[part] = shipGrid.GetPlacedPartByWorldPosition(worldPosition);
+        }
+        else SetSortingLayer(defaultLayer, part);
 
         // Update BOTH grid + dictionary at the new cell
         shipGrid.SetGridCellValueByUnityPosition(part.transform.position, partDB.GetPartID(part));
         shipGrid.SetPlacedPartAtWorldPosition(part.transform.position, part.gameObject);
-
-        if(partDB.PartIsStackable(part)) SetSortingLayer(stackablePartLayer);
-        else SetSortingLayer(defaultLayer);
         
-        SetLayer(spacecraftLayer);
+        if(partDB.PartIsStackable(part)) SetSortingLayer(stackablePartLayer, part);
+        else SetSortingLayer(defaultLayer, part);
         
-        SetKinematicRB();
+        SetLayer(spacecraftLayer, part);
+        
+        SetKinematicRB(part);
     }
 
     private bool CanSwapPart(GameObject draggedPart, Vector3 draggedOGPosition, GameObject otherPart, Vector3 otherOGPosition) {
@@ -251,9 +257,18 @@ public class PartDrag : MonoBehaviour {
     }
 
     private bool TrySwapPart(GameObject draggedPart, Vector3 draggedOGPosition, GameObject otherPart, Vector3 otherOGPosition) {
+        if (draggedPart == otherPart) return true;
         if (!CanSwapPart(draggedPart, draggedOGPosition, otherPart, otherOGPosition)) return false;
         
-        //When swapping with a stackable part, we need to swap the ship part that is stacked on first
+        //If swapping a part that has a stacked part on top of it with another stacked part,
+        //just swap the stacked parts and leave the ship parts where they are.
+        GameObject draggedStackedPart = draggedPart.GetComponent<PartDrag>().stackedPart;
+        if (draggedStackedPart != null && partDB.PartIsStackable(otherPart)) {
+            PlacePart(draggedPart, draggedOGPosition);
+            return TrySwapPart(draggedStackedPart, draggedOGPosition, otherPart, otherOGPosition);
+        }
+        
+        //When swapping with a stackable part, we need to swap the ship part that it is stacked on first
         if (partDB.PartIsStackable(otherPart) && !partDB.PartIsStackable(draggedPart)) {
             foreach (Transform part in Spacecraft.GetInstance().transform) {
                 if(part.position == otherOGPosition && part.gameObject != draggedPart && part.gameObject != otherPart) {
@@ -269,26 +284,32 @@ public class PartDrag : MonoBehaviour {
         return true;
     }
 
-    private void SetKinematicRB() {
+    private void SetKinematicRB(GameObject obj = null) {
         if (!Spacecraft.IsBuildMode) return;
+        if(obj == null) obj = gameObject;
 
-        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        Rigidbody2D rb = obj.GetComponent<Rigidbody2D>();
         if (rb != null) {
             rb.bodyType = RigidbodyType2D.Kinematic;
             rb.simulated = true; 
         }
     }
 
-    private void SetSortingLayer(string layer) {
-        objectSprite.sortingLayerName = layer;
+    private void SetSortingLayer(string layer, GameObject obj = null) {
+        if (obj == null) obj = gameObject;
+        
+        obj.GetComponent<PartDrag>().objectSprite.sortingLayerName = layer;
 
-        Canvas canvas = GetComponentInChildren<Canvas>();
+        Canvas canvas = obj.GetComponentInChildren<Canvas>();
         if (canvas == null) return;
 
         canvas.sortingLayerName = layer;
     }
 
-    private void SetLayer(string layer) => gameObject.layer = LayerMask.NameToLayer(layer);
+    private void SetLayer(string layer, GameObject obj = null) {
+        if (obj == null) obj = gameObject;
+        obj.layer = LayerMask.NameToLayer(layer);
+    }
     
     private void Update() {
         if (transform.rotation != lockedRotation) transform.rotation = lockedRotation;

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -263,8 +264,14 @@ public class ShipBuildingGrid : MonoBehaviour {
     }
 
     private bool CanPlaceStackablePart(GameObject partToBePlaced, (int, int) coords) {
-        if(grid.GetValue(coords) == 1) return true;
-        if (partStackedOn.ContainsKey(partToBePlaced)) return CanPlacePart(partStackedOn[partToBePlaced], coords);
+        if (grid.GetValue(coords) == 1) return true;
+
+        foreach (Transform p in spacecraft.transform) {
+            GameObject part = p.gameObject;
+            if (part.GetComponent<Rigidbody2D>().bodyType == RigidbodyType2D.Dynamic && part != partToBePlaced) {
+                return CanPlacePart(part, coords);
+            }
+        }
         
         return false;
     }
@@ -332,7 +339,7 @@ public class ShipBuildingGrid : MonoBehaviour {
     }
 
 
-    public void RemovePlacedPartAtWorldPosition(Vector3 worldPos){
+    public void RemovePlacedPartAtWorldPosition(Vector3 worldPos) {
         (int, int) coords = UnityPositionToGridCoordinates(worldPos);
         placedParts.Remove(coords);
     }
@@ -356,10 +363,12 @@ public class ShipBuildingGrid : MonoBehaviour {
     }
 
     public void RemoveDisconnectedParts() {
-        for (int i = 0; i < gridWidth; i++) {
-            for (int j = 0; j < gridHeight; j++) {
-                if(!PartIsConnected((i, j))) DeletePart((i, j));
-            }
+        List<GameObject> allParts = placedParts.Values.ToList();
+        allParts.AddRange(partStackedOn.Values.ToList());
+        
+        foreach (GameObject partObject in allParts) {
+            (int, int) partCoords = UnityPositionToGridCoordinates(partObject.transform.position);
+            if(!PartIsConnected(partCoords)) DeletePart(partCoords);
         }
     }
 
@@ -442,14 +451,8 @@ public class ShipBuildingGrid : MonoBehaviour {
             // Use the existing connectivity function to check
             // whether this part can reach the spacecraft core
             if (!PartIsConnected(coords)) {
-                // Get all sprite renderers belonging to this part
-                // (some parts may have sprites on child objects)
-                SpriteRenderer[] spriteRenderers = partObject.GetComponentsInChildren<SpriteRenderer>();
-
-                // Highlight the disconnected part by setting its color
-                foreach (SpriteRenderer sr in spriteRenderers) {
-                    sr.color = colorDisconnected;
-                }
+                HighlightDisconnectedPart(partObject);
+                if(partStackedOn.TryGetValue(partObject, out GameObject shipPart)) HighlightDisconnectedPart(shipPart);
 
                 // Mark that we found at least one disconnected part
                 foundDisconnectedPart = true;
@@ -460,16 +463,25 @@ public class ShipBuildingGrid : MonoBehaviour {
         return foundDisconnectedPart;
     }
 
+    private void HighlightDisconnectedPart(GameObject part) {
+        SpriteRenderer[] spriteRenderers = part.GetComponentsInChildren<SpriteRenderer>();
+
+        // Highlight the disconnected part by setting its color
+        foreach (SpriteRenderer sr in spriteRenderers) {
+            sr.color = colorDisconnected;
+        }
+    }
+
     // Restores all ship parts to their original sprite colors.
     // This is called before we check for disconnected parts so that
     // previously highlighted parts do not stay red after the ship is fixed.
     public void ClearDisconnectedHighlights() {
 
-        // Loop through every part currently placed on the ship grid
-        foreach (var placedPart in placedParts) {
-            // Get the actual GameObject for the part
-            GameObject partObject = placedPart.Value;
+        List<GameObject> allParts = placedParts.Values.ToList();
+        allParts.AddRange(partStackedOn.Values.ToList());
 
+        // Loop through every part currently placed on the ship grid
+        foreach (GameObject partObject in allParts) {
             // Skip if the object was destroyed or is missing
             if (partObject == null) continue;
 
@@ -493,8 +505,11 @@ public class ShipBuildingGrid : MonoBehaviour {
         float elapsedTime = 0f;
         List<SpriteRenderer> srList = new List<SpriteRenderer>();
 
-        foreach (var placedPart in placedParts) {
-            SpriteRenderer sr = placedPart.Value.GetComponentInChildren<SpriteRenderer>();
+        List<GameObject> allParts = placedParts.Values.ToList();
+        allParts.AddRange(partStackedOn.Values.ToList());
+                
+        foreach (GameObject placedPart in allParts) {
+            SpriteRenderer sr = placedPart.GetComponentInChildren<SpriteRenderer>();
             if(sr.color == colorDisconnected) srList.Add(sr);
         }
         
