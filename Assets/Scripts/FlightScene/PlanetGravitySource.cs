@@ -103,6 +103,17 @@ public class PlanetGravitySource : MonoBehaviour
         return nearPlanetGravity * smooth;
     }
 
+    /// <summary>Acceleration this gravity source applies at worldPos. Zero outside the gravity radius.</summary>
+    public Vector2 GetAccelerationAt(Vector2 worldPos)
+    {
+        Vector2 toPlanet = (Vector2)transform.position - worldPos;
+        float distance = toPlanet.magnitude;
+        if (distance < 0.001f || distance > gravityRadius) return Vector2.zero;
+        return (toPlanet / distance) * CalculateGravity(distance);
+    }
+
+    public bool IsEnabled => enabled && gameObject.activeInHierarchy;
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (((1 << other.gameObject.layer) & affectedLayers) == 0)
