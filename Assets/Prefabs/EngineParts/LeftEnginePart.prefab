@@ -468,13 +468,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 850c3c51dbcba4bec9934c8a05b0f594, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 50
+  speed: 80
   initialSpeedRampUpLength: 3
   softSpeedLimit: 10
   thrustFalloffStrength: 8
   stabilizationStrength: 0
   engineVisual: {fileID: 383230240694097690}
   idUI: {fileID: 1516800545626777781}
+  respondsTo: 8
   fuelCostPerSecond: 1
   energyCostPerSecond: 2
   _engineID: 0

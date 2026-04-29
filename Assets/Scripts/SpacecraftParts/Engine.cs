@@ -2,7 +2,19 @@ using System;
 using TMPro;
 using UnityEngine;
 
-//Class defines the behavior of the engine part. 
+/// <summary>WASDQE intents an engine can respond to. Bitmask.</summary>
+[Flags]
+public enum ThrustRole {
+    None        = 0,
+    Forward     = 1 << 0, // W
+    Reverse     = 1 << 1, // S
+    StrafeLeft  = 1 << 2, // A
+    StrafeRight = 1 << 3, // D
+    TurnLeft    = 1 << 4, // Q
+    TurnRight   = 1 << 5, // E
+}
+
+//Class defines the behavior of the engine part.
 public class Engine : MonoBehaviour {
     [SerializeField] private int speed;
     [SerializeField] private float initialSpeedRampUpLength;
@@ -11,7 +23,14 @@ public class Engine : MonoBehaviour {
     [SerializeField] private float stabilizationStrength;
     [SerializeField] private SpriteRenderer engineVisual;
     [SerializeField] private TextMeshProUGUI idUI;
-    
+
+    [Header("Control Bindings")]
+    [Tooltip("WASDQE actions that fire this engine. Q/E auto-fires off-center engines via torque sign.")]
+    [SerializeField] private ThrustRole respondsTo = ThrustRole.None;
+
+    [Tooltip("Min torque magnitude for an engine to fire on Q/E (lets centered engines stay quiet).")]
+    [SerializeField] private float turnTorqueThreshold = 0.1f;
+
     [Header("Fuel Settings")]
     [SerializeField] float fuelCostPerSecond = 1f;
 
@@ -48,8 +67,9 @@ public class Engine : MonoBehaviour {
     }
 
     public void Start() {
-        gameInput.OnEnginePerformedAction += GameInput_OnEngineAction; //Adds GameInput_OnEngineAction() as a listener to the OnEngineAction event. 
-        gameInput.OnEngineCanceledAction += GameInput_OnEngineAction;
+        gameInput.OnThrustRolesChanged += GameInput_OnThrustRolesChanged;
+        gameInput.OnEnginePerformedAction += GameInput_OnNumericEngineAction;
+        gameInput.OnEngineCanceledAction += GameInput_OnNumericEngineAction;
     }
     
     private void FixedUpdate() {
@@ -97,14 +117,50 @@ public class Engine : MonoBehaviour {
         return (engineActiveTime + initialSpeedRampUpLength) / (initialSpeedRampUpLength * 2);
     }
     
-    private void GameInput_OnEngineAction(object sender, GameInput.EngineEventArgs e) { 
-        if(engineID == e.engineNum) active = e.activated;
-            
+    private void GameInput_OnThrustRolesChanged(object sender, GameInput.ThrustEventArgs e) {
+        bool wasActive = active;
+        active = ShouldFireForRoles(e.activeRoles);
+
+        if (active == wasActive) return;
         if (active) {
             engineVisual.color = Color.red;
             engineActiveTime = 0f;
+        } else {
+            engineVisual.color = Color.yellow;
         }
-        else engineVisual.color = Color.yellow;
+    }
+
+    private void GameInput_OnNumericEngineAction(object sender, GameInput.EngineEventArgs e) {
+        if (e.engineNum != engineID) return;
+
+        bool wasActive = active;
+        active = e.activated;
+        if (active == wasActive) return;
+        if (active) {
+            engineVisual.color = Color.red;
+            engineActiveTime = 0f;
+        } else {
+            engineVisual.color = Color.yellow;
+        }
+    }
+
+    private bool ShouldFireForRoles(ThrustRole active) {
+        if ((respondsTo & active) != ThrustRole.None) return true;
+
+        // Q/E: fire any off-center engine whose torque sign matches the requested direction.
+        bool turnLeft = (active & ThrustRole.TurnLeft) != ThrustRole.None;
+        bool turnRight = (active & ThrustRole.TurnRight) != ThrustRole.None;
+        if (!turnLeft && !turnRight) return false;
+        if (spacecraftRB == null) return false;
+
+        // 2D torque = r × F. Sign is invariant under ship rotation.
+        Vector2 r = (Vector2)transform.position - spacecraftRB.worldCenterOfMass;
+        Vector2 F = transform.up;
+        float torque = r.x * F.y - r.y * F.x;
+
+        if (turnLeft && torque > turnTorqueThreshold) return true;
+        if (turnRight && torque < -turnTorqueThreshold) return true;
+        return false;
     }
 
     private bool TryConsumeFuel() {
@@ -137,8 +193,11 @@ public class Engine : MonoBehaviour {
     }
 
     private void OnDestroy() {
-        gameInput.OnEnginePerformedAction -= GameInput_OnEngineAction;
-        gameInput.OnEngineCanceledAction -= GameInput_OnEngineAction;
+        if (gameInput != null) {
+            gameInput.OnThrustRolesChanged -= GameInput_OnThrustRolesChanged;
+            gameInput.OnEnginePerformedAction -= GameInput_OnNumericEngineAction;
+            gameInput.OnEngineCanceledAction -= GameInput_OnNumericEngineAction;
+        }
         AdjustEngineIDsForDeletion(gameObject);
     }
 }
