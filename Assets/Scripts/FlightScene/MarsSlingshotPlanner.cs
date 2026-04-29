@@ -154,6 +154,72 @@ public class MarsSlingshotPlanner : MonoBehaviour {
         return cross >= 0f ? +1f : -1f;
     }
 
+    /// <summary>
+    /// Orbital rotation sign from the ship's effective heading about Mars (r × heading).
+    /// Heading is velocity when the ship is moving, otherwise the ship's facing direction
+    /// (transform.up) so the path matches player intent on slow entries.
+    /// Falls back to the geometric Psyche-based sign only as a last resort.
+    /// </summary>
+    private float PickRotationSignFromMotion(Vector2 ship, Vector2 mars, Vector2 psy) {
+        Vector2 heading = EffectiveHeading;
+        float sign;
+        if (heading.sqrMagnitude > 1e-6f) {
+            Vector2 r = ship - mars;
+            float angMomZ = r.x * heading.y - r.y * heading.x;
+            if (Mathf.Abs(angMomZ) > 1e-4f) {
+                sign = angMomZ >= 0f ? +1f : -1f;
+                return invertSlingshotSide ? -sign : sign;
+            }
+        }
+        sign = PickRotationSign(ship, mars, psy);
+        return invertSlingshotSide ? -sign : sign;
+    }
+
+    public enum HeadingSource { FacingOnly, VelocityOnly, FacingPreferred, VelocityPreferred }
+    [Header("Heading Source")]
+    [Tooltip("Which signal drives which side of Mars the path wraps. FacingOnly = always use transform.up.")]
+    [SerializeField] private HeadingSource headingSource = HeadingSource.FacingPreferred;
+    [Tooltip("Velocity² threshold for the *Preferred* modes; below this the secondary signal is used instead.")]
+    [SerializeField] private float velocityHeadingThresholdSqr = 4f;
+    [Tooltip("Flip which side of Mars the path wraps around. Toggle if the visualization is mirrored.")]
+    [SerializeField] private bool invertSlingshotSide = false;
+
+    private Vector2 ShipVelocity {
+        get {
+            Transform t = ShipTf;
+            if (t == null) return Vector2.zero;
+            Rigidbody2D rb = t.GetComponent<Rigidbody2D>();
+            return rb != null ? rb.linearVelocity : Vector2.zero;
+        }
+    }
+
+    private Vector2 EffectiveHeading {
+        get {
+            Transform t = ShipTf;
+            Vector2 facing = t != null ? (Vector2)t.up : Vector2.zero;
+            Vector2 v = ShipVelocity;
+            switch (headingSource) {
+                case HeadingSource.FacingOnly:
+                    return facing;
+                case HeadingSource.VelocityOnly:
+                    return v;
+                case HeadingSource.VelocityPreferred:
+                    return v.sqrMagnitude > velocityHeadingThresholdSqr ? v.normalized : facing;
+                case HeadingSource.FacingPreferred:
+                default:
+                    return facing.sqrMagnitude > 1e-6f ? facing
+                        : (v.sqrMagnitude > velocityHeadingThresholdSqr ? v.normalized : v);
+            }
+        }
+    }
+
+    private static float OrbitalDirectionSign(float omega, float theta_s, float theta_p) {
+        float nu_s = WrapPi(theta_s - omega);
+        float nu_p = WrapPi(theta_p - omega);
+        float diff = nu_p - nu_s;
+        return diff >= 0f ? +1f : -1f;
+    }
+
     private bool TrySolveConic(Vector2 ship, Vector2 mars, Vector2 psy, out Conic conic) {
         conic = default;
         Vector2 toShip = ship - mars;
@@ -190,11 +256,11 @@ public class MarsSlingshotPlanner : MonoBehaviour {
         if (aValid && !bValid) { conic = candA; return true; }
         if (bValid && !aValid) { conic = candB; return true; }
 
-        float rotSign = PickRotationSign(ship, mars, psy);
-        float sideA = SignOfPeriSide(candA.omega, theta_p);
-        float sideB = SignOfPeriSide(candB.omega, theta_p);
-        if (Mathf.Sign(sideA) == Mathf.Sign(rotSign)) { conic = candA; return true; }
-        if (Mathf.Sign(sideB) == Mathf.Sign(rotSign)) { conic = candB; return true; }
+        float rotSign = PickRotationSignFromMotion(ship, mars, psy);
+        float dirA = OrbitalDirectionSign(candA.omega, theta_s, theta_p);
+        float dirB = OrbitalDirectionSign(candB.omega, theta_s, theta_p);
+        if (Mathf.Sign(dirA) == Mathf.Sign(rotSign)) { conic = candA; return true; }
+        if (Mathf.Sign(dirB) == Mathf.Sign(rotSign)) { conic = candB; return true; }
         conic = candA;
         return true;
     }
@@ -259,7 +325,7 @@ public class MarsSlingshotPlanner : MonoBehaviour {
         float dPsy = (psy - mars).magnitude;
         if (dShip <= r || dPsy <= r) return new Vector3[] { ship, psy };
 
-        float sign = PickRotationSign(ship, mars, psy);
+        float sign = PickRotationSignFromMotion(ship, mars, psy);
         Vector2 toShipDir = (ship - mars) / dShip;
         Vector2 toPsyDir = (psy - mars) / dPsy;
         Vector2 perpShip = new Vector2(-toShipDir.y * sign, toShipDir.x * sign);
