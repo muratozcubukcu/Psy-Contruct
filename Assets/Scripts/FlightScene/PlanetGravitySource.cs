@@ -114,6 +114,8 @@ public class PlanetGravitySource : MonoBehaviour
 
     public bool IsEnabled => enabled && gameObject.activeInHierarchy;
 
+    public float GetGravityRadius() => gravityRadius;
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (((1 << other.gameObject.layer) & affectedLayers) == 0)
