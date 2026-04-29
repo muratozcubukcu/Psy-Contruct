@@ -24,6 +24,16 @@ public class Engine : MonoBehaviour {
     [SerializeField] private SpriteRenderer engineVisual;
     [SerializeField] private TextMeshProUGUI idUI;
 
+    [Header("Engine Visuals")]
+    [Tooltip("Sprite shown when the engine is idle.")]
+    [SerializeField] private Sprite engineOffSprite;
+    [Tooltip("Sprite shown when the engine is firing.")]
+    [SerializeField] private Sprite engineOnSprite;
+    [Tooltip("EngineFire flame prefab (Animator-driven) spawned as a child and toggled when firing.")]
+    [SerializeField] private Animator engineFirePrefab;
+    [Tooltip("Local-space offset from the engine root where the flame is anchored (top-pivot of the flame sprite).")]
+    [SerializeField] private Vector2 engineFireOffset = new Vector2(0f, -0.5f);
+
     [Header("Control Bindings")]
     [Tooltip("WASDQE actions that fire this engine. Q/E auto-fires off-center engines via torque sign.")]
     [SerializeField] private ThrustRole respondsTo = ThrustRole.None;
@@ -53,6 +63,8 @@ public class Engine : MonoBehaviour {
     private bool active;
     private float fuelAmount;
     private float engineActiveTime;
+    private Animator engineFireAnimator;
+    private bool firingVisual;
 
     public event System.EventHandler<float> OnFuelChanged;
 
@@ -64,6 +76,15 @@ public class Engine : MonoBehaviour {
         gameInput = GameInput.Instance;
         spacecraft = Spacecraft.GetInstance();
         spacecraftRB = spacecraft.gameObject.GetComponent<Rigidbody2D>();
+
+        if (engineFirePrefab != null) {
+            engineFireAnimator = Instantiate(engineFirePrefab, transform);
+            engineFireAnimator.transform.localPosition = engineFireOffset;
+            engineFireAnimator.transform.localRotation = Quaternion.identity;
+            engineFireAnimator.gameObject.SetActive(false);
+        }
+
+        ApplyVisualState(false);
     }
 
     public void Start() {
@@ -73,7 +94,14 @@ public class Engine : MonoBehaviour {
     }
     
     private void FixedUpdate() {
-        if (active && TryConsumeEnergy() && TryConsumeFuel()) ActivateEngine();
+        bool thrusting = active && TryConsumeEnergy() && TryConsumeFuel();
+        if (thrusting) ActivateEngine();
+        else if (active) engineActiveTime = 0f; // starve out the ramp-up while resources are missing
+
+        if (thrusting != firingVisual) {
+            firingVisual = thrusting;
+            ApplyVisualState(thrusting);
+        }
     }
 
     private void ActivateEngine() {
@@ -122,11 +150,10 @@ public class Engine : MonoBehaviour {
         active = ShouldFireForRoles(e.activeRoles);
 
         if (active == wasActive) return;
-        if (active) {
-            engineVisual.color = Color.red;
-            engineActiveTime = 0f;
-        } else {
-            engineVisual.color = Color.yellow;
+        if (active) engineActiveTime = 0f;
+        if (!active && firingVisual) {
+            firingVisual = false;
+            ApplyVisualState(false);
         }
     }
 
@@ -136,12 +163,24 @@ public class Engine : MonoBehaviour {
         bool wasActive = active;
         active = e.activated;
         if (active == wasActive) return;
-        if (active) {
-            engineVisual.color = Color.red;
-            engineActiveTime = 0f;
-        } else {
-            engineVisual.color = Color.yellow;
+        if (active) engineActiveTime = 0f;
+        if (!active && firingVisual) {
+            firingVisual = false;
+            ApplyVisualState(false);
         }
+    }
+
+    private void ApplyVisualState(bool firing) {
+        if (engineVisual != null) {
+            Sprite target = firing ? engineOnSprite : engineOffSprite;
+            if (target != null) {
+                engineVisual.sprite = target;
+                engineVisual.color = Color.white;
+            } else {
+                engineVisual.color = firing ? Color.red : Color.yellow;
+            }
+        }
+        if (engineFireAnimator != null) engineFireAnimator.gameObject.SetActive(firing);
     }
 
     private bool ShouldFireForRoles(ThrustRole active) {

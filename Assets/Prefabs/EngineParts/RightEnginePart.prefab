@@ -25,13 +25,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1067822573587299252}
   serializedVersion: 2
-  m_LocalRotation: {x: 1, y: 0, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0.21, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1824758996045960176}
-  m_LocalEulerAnglesHint: {x: 180, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &383230240694097690
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -76,8 +76,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
-  m_Color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  m_Sprite: {fileID: 7482667652216324306, guid: b2e8d3c4a5f60708091a2b3c4d5e6f7a, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -475,7 +475,12 @@ MonoBehaviour:
   stabilizationStrength: 0
   engineVisual: {fileID: 383230240694097690}
   idUI: {fileID: 1516800545626777781}
+  engineOffSprite: {fileID: 7482667652216324306, guid: b2e8d3c4a5f60708091a2b3c4d5e6f7a, type: 3}
+  engineOnSprite: {fileID: 7482667652216324306, guid: c3d9e4f50a1b2c3d4e5f6a7b8c9d0e1f, type: 3}
+  engineFirePrefab: {fileID: 7991122334455667792, guid: e3f4a5b6c7d8e9f01a2b3c4d5e6f7081, type: 3}
+  engineFireOffset: {x: 0, y: -0.5}
   respondsTo: 4
+  turnTorqueThreshold: 0.1
   fuelCostPerSecond: 1
   energyCostPerSecond: 2
   _engineID: 0
