@@ -96,20 +96,20 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         Vector3? snapPos = shipGrid.PostionToGridPosition(worldPos);
 
         if (snapPos != null) {
-                ghostPreview.transform.position = (Vector3)snapPos;
-                (int, int) coords = shipGrid.UnityPositionToGridCoordinates((Vector3)snapPos);
-                GameObject part = partData.part;
-                bool valid = shipGrid.CanPlacePart(part, coords);
-                ghostSprite.color = valid ? colorValid : colorInvalid;
-                highlight.transform.position = ghostPreview.transform.position;
-                highlightSprite.color = colorblindMode ? Color.white : ShipBuildingGrid.colorHighlightInvisible;
-                if (colorblindMode) highlightSprite.sprite = valid ? colorblindValid : colorblindInvalid;
-            } else {
-                ghostPreview.transform.position = worldPos;
-                highlight.transform.position = worldPos;
-                highlightSprite.color = ShipBuildingGrid.colorHighlightInvisible;
-                ghostSprite.color = new Color(baseColor.r, baseColor.g, baseColor.b, 0.5f);
-            }
+            ghostPreview.transform.position = (Vector3)snapPos;
+            (int, int) coords = shipGrid.UnityPositionToGridCoordinates((Vector3)snapPos);
+            GameObject part = partData.part;
+            bool valid = shipGrid.CanPlacePart(part, coords);
+            ghostSprite.color = valid ? colorValid : colorInvalid;
+            highlight.transform.position = ghostPreview.transform.position;
+            highlightSprite.color = colorblindMode ? Color.white : ShipBuildingGrid.colorHighlightInvisible;
+            if (colorblindMode) highlightSprite.sprite = valid ? colorblindValid : colorblindInvalid;
+        } else {
+            ghostPreview.transform.position = worldPos;
+            highlight.transform.position = worldPos;
+            highlightSprite.color = ShipBuildingGrid.colorHighlightInvisible;
+            ghostSprite.color = new Color(baseColor.r, baseColor.g, baseColor.b, 0.5f);
+        }
     }
 
     private Vector3 ScreenToWorld(Vector2 screenPos) {
