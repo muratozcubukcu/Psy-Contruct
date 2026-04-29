@@ -1,62 +1,41 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>Plans and draws a slingshot path around Mars to Psyche.</summary>
+/// <summary>Snapshot-on-entry slingshot planner: captures a Keplerian conic when ship enters Mars's range and holds it until exit.</summary>
 public class MarsSlingshotPlanner : MonoBehaviour {
 
-    [Tooltip("Optional override. Falls back to Mars.Instance.transform if null.")]
     [SerializeField] private Transform marsOverride;
-
-    [Tooltip("Optional override. Falls back to PsycheAsteroid.Instance.transform if null.")]
     [SerializeField] private Transform psycheOverride;
-
-    [Tooltip("Optional override. Falls back to Spacecraft.GetInstance().transform if null.")]
     [SerializeField] private Transform spacecraftOverride;
 
-    [Tooltip("Closest distance to Mars during the slingshot (periapsis). Used as a fallback if useMarsColliderRadius is off OR Mars has no CircleCollider2D.")]
     [SerializeField] private float periapsisRadius = 5f;
-
-    [Tooltip("If true, the slingshot radius is automatically set to Mars's CircleCollider2D radius + radiusMargin so the arc always passes around Mars on the outside.")]
     [SerializeField] private bool useMarsColliderRadius = true;
+    [SerializeField] private float radiusMargin = 10f;
 
-    [Tooltip("Extra clearance added on top of Mars's collider radius when useMarsColliderRadius is true.")]
-    [SerializeField] private float radiusMargin = 2f;
+    [Header("Snapshot Trigger")]
+    [SerializeField] private float entryRangeOverride = 0f;
+    [Range(1f, 3f)]
+    [SerializeField] private float exitRangeMultiplier = 1.25f;
 
-    [Tooltip("True = clockwise pass around Mars. False = counterclockwise. Pick whichever requires less course correction for the current approach.")]
-    [SerializeField] private bool clockwisePass = true;
-
-    [Tooltip("Auto-pick rotation direction based on which side of the Mars→Psyche line the ship is on.")]
-    [SerializeField] private bool autoPickRotation = true;
+    [Header("Sampling")]
+    [SerializeField] private int conicSegments = 96;
 
     [Header("Visualization")]
-    [Tooltip("Draw the planned path as a LineRenderer at runtime.")]
     [SerializeField] private bool drawRuntimePath = true;
-
-    [Tooltip("Draw the editor gizmos (Mars circle + path) when this object is selected in the scene view.")]
     [SerializeField] private bool drawEditorGizmos = true;
-
-    [Tooltip("Number of points sampled along the slingshot arc.")]
-    [SerializeField] private int arcSegments = 32;
-
-    [Tooltip("Color for the ship → Mars approach segment.")]
     [SerializeField] private Color approachColor = new Color(1f, 0.4f, 0.4f, 1f);
-
-    [Tooltip("Color for the slingshot arc around Mars.")]
     [SerializeField] private Color arcColor = new Color(1f, 0.85f, 0.2f, 1f);
-
-    [Tooltip("Color for the exit segment heading to Psyche.")]
     [SerializeField] private Color exitColor = new Color(0.4f, 1f, 0.5f, 1f);
-
-    [Tooltip("Width of the runtime path line.")]
     [SerializeField] private float lineWidth = 0.4f;
+
+    [Header("Gravity Sources (optional)")]
+    [SerializeField] private PlanetGravitySource marsGravity;
 
     private LineRenderer pathLine;
 
     public Transform MarsTransform => MarsTf;
     public Transform PsycheTransform => PsycheTf;
     public Transform ShipTransform => ShipTf;
-    public float SlingshotRadius => isFrozen ? frozenRadius : EffectiveRadius;
-    public float RotationSign => isFrozen ? frozenSign : ResolveRotationSign();
-    public bool IsFrozen => isFrozen;
 
     public bool DrawRuntimePath {
         get => drawRuntimePath;
@@ -68,31 +47,25 @@ public class MarsSlingshotPlanner : MonoBehaviour {
         set => drawEditorGizmos = value;
     }
 
-    // Snapshot fields used while frozen.
-    private bool isFrozen;
-    private Vector3[] frozenPath;
-    private Vector2 frozenEntry, frozenExit, frozenExitDir;
-    private float frozenRadius, frozenSign;
-    private bool frozenSolutionValid;
+    private Vector3[] snapshotPath;
+    private bool inMarsRange;
 
-    /// <summary>Snapshot the current path so subsequent queries return stable values.</summary>
+    private bool externallyFrozen;
+    private Vector3[] externallyFrozenPath;
+
+    public bool IsFrozen => externallyFrozen;
+
     public void FreezePath() {
-        frozenSolutionValid = IsSolutionValid;
-        if (frozenSolutionValid) {
-            frozenEntry = SlingshotEntryPoint;
-            frozenExit = SlingshotExitPoint;
-            frozenExitDir = SlingshotExitDirection;
-            frozenRadius = EffectiveRadius;
-            frozenSign = ResolveRotationSign();
-            frozenPath = GetPathPoints();
-        }
-        isFrozen = true;
+        externallyFrozenPath = GetPathPoints();
+        externallyFrozen = true;
     }
 
     public void UnfreezePath() {
-        isFrozen = false;
-        frozenPath = null;
+        externallyFrozen = false;
+        externallyFrozenPath = null;
     }
+
+    public bool IsSolutionValid => snapshotPath != null && snapshotPath.Length >= 2;
 
     private Transform MarsTf => marsOverride != null ? marsOverride
         : (Mars.Instance != null ? Mars.Instance.transform : null);
@@ -103,165 +76,227 @@ public class MarsSlingshotPlanner : MonoBehaviour {
     private Transform ShipTf => spacecraftOverride != null ? spacecraftOverride
         : (Spacecraft.GetInstance() != null ? Spacecraft.GetInstance().transform : null);
 
-    /// <summary>Slingshot radius: Mars collider + margin, or the manual periapsis fallback.</summary>
     private float EffectiveRadius {
         get {
             if (!useMarsColliderRadius || MarsTf == null) return periapsisRadius;
-
             CircleCollider2D col = MarsTf.GetComponentInChildren<CircleCollider2D>();
             if (col == null) return periapsisRadius;
-
-            float worldScale = Mathf.Max(MarsTf.lossyScale.x, MarsTf.lossyScale.y);
-            return col.radius * worldScale + radiusMargin;
+            float scale = Mathf.Max(MarsTf.lossyScale.x, MarsTf.lossyScale.y);
+            return col.radius * scale + radiusMargin;
         }
     }
 
-    /// <summary>Unit vector from the ship toward Mars.</summary>
-    public Vector2 DirectionFromShipToMars {
+    private Vector2 ShipPos {
         get {
-            if (ShipTf == null || MarsTf == null) return Vector2.zero;
-            Vector2 delta = (Vector2)MarsTf.position - (Vector2)ShipTf.position;
-            return delta.sqrMagnitude > 0f ? delta.normalized : Vector2.zero;
+            Transform t = ShipTf;
+            if (t == null) return Vector2.zero;
+            Rigidbody2D rb = t.GetComponent<Rigidbody2D>();
+            return rb != null ? rb.position : (Vector2)t.position;
         }
     }
 
-    /// <summary>Unit vector from Mars toward Psyche.</summary>
-    public Vector2 DirectionFromMarsToPsyche {
+    private Vector2 PsychePos {
         get {
-            if (MarsTf == null || PsycheTf == null) return Vector2.zero;
-            Vector2 delta = (Vector2)PsycheTf.position - (Vector2)MarsTf.position;
-            return delta.sqrMagnitude > 0f ? delta.normalized : Vector2.zero;
+            Transform t = PsycheTf;
+            if (t == null) return Vector2.zero;
+            Rigidbody2D rb = t.GetComponent<Rigidbody2D>();
+            return rb != null ? rb.position : (Vector2)t.position;
         }
     }
 
-    /// <summary>Tangent point on the Mars circle from which the ship can fly straight to Psyche.</summary>
-    public Vector2 SlingshotExitPoint {
+    private float EntryRange {
         get {
-            if (isFrozen) return frozenExit;
-            if (MarsTf == null || PsycheTf == null) return Vector2.zero;
-            Vector2 marsPos = MarsTf.position;
-            Vector2 toPsyche = DirectionFromMarsToPsyche;
-
-            // Two tangent lines exist from any external point P to a circle (center M, radius r).
-            // We pick the one matching our rotation direction by flipping the perpendicular sign.
-            // perp is toPsyche rotated 90° in the chosen direction.
-            float sign = ResolveRotationSign();
-            Vector2 perp = new Vector2(toPsyche.y * sign, -toPsyche.x * sign);
-
-            // Geometry: triangle Mars-Tangent-Psyche has a right angle at the tangent point
-            // (radius is perpendicular to the tangent line). Hypotenuse |MP| = d, opposite-side
-            // leg |MT| = r, so cos(theta) = r / d where theta is the angle at M between
-            // (Mars→Psyche) and (Mars→Tangent). sin(theta) follows from the Pythagorean identity.
-            float r = EffectiveRadius;
-            float d = ((Vector2)PsycheTf.position - marsPos).magnitude;
-            if (d <= r) return marsPos; // Psyche inside the circle: no tangent exists.
-
-            float cosTheta = r / d;
-            float sinTheta = Mathf.Sqrt(Mathf.Max(0f, 1f - cosTheta * cosTheta));
-
-            // Place the tangent point at angle ±theta around M, measured from (Mars→Psyche).
-            // Decompose into "along toPsyche" (cos component) and "perpendicular" (sin component).
-            return marsPos + r * (toPsyche * cosTheta + perp * sinTheta);
+            if (entryRangeOverride > 0f) return entryRangeOverride;
+            if (marsGravity != null) return marsGravity.GetGravityRadius();
+            return 60f;
         }
     }
 
-    /// <summary>Unit vector from the exit point toward Psyche.</summary>
-    public Vector2 SlingshotExitDirection {
-        get {
-            if (isFrozen) return frozenExitDir;
-            if (PsycheTf == null) return Vector2.zero;
-            Vector2 exit = SlingshotExitPoint;
-            Vector2 toPsyche = (Vector2)PsycheTf.position - exit;
-            return toPsyche.sqrMagnitude > 0f ? toPsyche.normalized : Vector2.zero;
-        }
-    }
-
-    /// <summary>Exit direction as an angle in degrees, CCW from +X.</summary>
-    public float SlingshotExitAngleDegrees {
-        get {
-            Vector2 dir = SlingshotExitDirection;
-            return Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        }
-    }
-
-    /// <summary>True when Psyche sits outside the slingshot circle and a path can be drawn.</summary>
-    public bool IsSolutionValid {
-        get {
-            if (isFrozen) return frozenSolutionValid;
-            if (MarsTf == null || PsycheTf == null || ShipTf == null) return false;
-            float d = ((Vector2)PsycheTf.position - (Vector2)MarsTf.position).magnitude;
-            return d > EffectiveRadius;
-        }
-    }
-
-    /// <summary>Tangent point on the Mars circle where the ship's approach line touches.</summary>
-    public Vector2 SlingshotEntryPoint {
-        get {
-            if (isFrozen) return frozenEntry;
-            if (MarsTf == null || ShipTf == null) return Vector2.zero;
-            Vector2 marsPos = MarsTf.position;
-            Vector2 toShip = (Vector2)ShipTf.position - marsPos;
-            float d = toShip.magnitude;
-            float r = EffectiveRadius;
-            if (d <= r) return marsPos; // Ship inside the circle: no valid tangent.
-
-            // Same tangent-from-external-point formula as the exit, but with the ship as the
-            // external point. The perpendicular sign flips relative to the exit so that the
-            // entry tangent and the exit tangent end up on the same rotation side of Mars
-            // (so the arc between them goes the chosen way around).
-            Vector2 toShipDir = toShip / d;
-            float sign = ResolveRotationSign();
-            Vector2 perp = new Vector2(-toShipDir.y * sign, toShipDir.x * sign);
-
-            // cos(theta) = r/d (right triangle Mars-Tangent-Ship), sin(theta) by identity.
-            float cosTheta = r / d;
-            float sinTheta = Mathf.Sqrt(Mathf.Max(0f, 1f - cosTheta * cosTheta));
-
-            return marsPos + r * (toShipDir * cosTheta + perp * sinTheta);
-        }
-    }
-
-    /// <summary>Path polyline: ship -> entry -> arc -> exit -> Psyche.</summary>
     public Vector3[] GetPathPoints() {
-        if (isFrozen) return frozenPath ?? System.Array.Empty<Vector3>();
-        if (!IsSolutionValid) return System.Array.Empty<Vector3>();
+        if (externallyFrozen) return externallyFrozenPath ?? System.Array.Empty<Vector3>();
+        if (MarsTf == null || ShipTf == null || PsycheTf == null) return System.Array.Empty<Vector3>();
 
-        Vector2 entry = SlingshotEntryPoint;
-        Vector2 exit = SlingshotExitPoint;
-        Vector2 marsPos = MarsTf.position;
+        Vector2 ship = ShipPos;
+        Vector2 psy = PsychePos;
+        Vector2 mars = MarsTf.position;
+
+        float dShip = (ship - mars).magnitude;
+        float entryR = EntryRange;
+        float exitR = entryR * exitRangeMultiplier;
+
+        if (!inMarsRange && dShip <= entryR) {
+            snapshotPath = BuildSlingshotPlan(ship, mars, psy);
+            inMarsRange = true;
+        } else if (inMarsRange && dShip >= exitR) {
+            snapshotPath = null;
+            inMarsRange = false;
+        }
+
+        if (snapshotPath == null || snapshotPath.Length < 2) return System.Array.Empty<Vector3>();
+        return snapshotPath;
+    }
+
+    private Vector3[] BuildSlingshotPlan(Vector2 ship, Vector2 mars, Vector2 psy) {
+        if (TrySolveConic(ship, mars, psy, out Conic c)) {
+            return SampleConic(c, ship, mars, psy);
+        }
+        return BuildGeometricArc(ship, mars, psy);
+    }
+
+    private struct Conic {
+        public float p, e, omega;
+    }
+
+    private static float PickRotationSign(Vector2 ship, Vector2 mars, Vector2 psy) {
+        Vector2 marsToShip = ship - mars;
+        Vector2 marsToPsy = psy - mars;
+        float cross = marsToPsy.x * marsToShip.y - marsToPsy.y * marsToShip.x;
+        return cross >= 0f ? +1f : -1f;
+    }
+
+    private bool TrySolveConic(Vector2 ship, Vector2 mars, Vector2 psy, out Conic conic) {
+        conic = default;
+        Vector2 toShip = ship - mars;
+        Vector2 toPsy = psy - mars;
+        float r_s = toShip.magnitude;
+        float r_psy = toPsy.magnitude;
+        float r_peri = EffectiveRadius;
+        if (r_s <= r_peri || r_psy <= r_peri) return false;
+
+        float A_s = r_peri / r_s;
+        float A_p = r_peri / r_psy;
+        float theta_s = Mathf.Atan2(toShip.y, toShip.x);
+        float theta_p = Mathf.Atan2(toPsy.y, toPsy.x);
+
+        float B = (A_s - 1f) * Mathf.Cos(theta_p) - (A_p - 1f) * Mathf.Cos(theta_s);
+        float C = (A_s - 1f) * Mathf.Sin(theta_p) - (A_p - 1f) * Mathf.Sin(theta_s);
+        float R = Mathf.Sqrt(B * B + C * C);
+        if (R < 1e-6f) return false;
+
+        float ratio = (A_s - A_p) / R;
+        if (Mathf.Abs(ratio) > 1f + 1e-4f) return false;
+        ratio = Mathf.Clamp(ratio, -1f, 1f);
+
+        float phi = Mathf.Atan2(C, B);
+        float ac = Mathf.Acos(ratio);
+
+        Conic candA = BuildConicFromOmega(phi + ac, theta_s, A_s, r_peri);
+        Conic candB = BuildConicFromOmega(phi - ac, theta_s, A_s, r_peri);
+
+        bool aValid = candA.e > 0f && PeriapsisBetween(candA.omega, theta_s, theta_p);
+        bool bValid = candB.e > 0f && PeriapsisBetween(candB.omega, theta_s, theta_p);
+
+        if (!aValid && !bValid) return false;
+        if (aValid && !bValid) { conic = candA; return true; }
+        if (bValid && !aValid) { conic = candB; return true; }
+
+        float rotSign = PickRotationSign(ship, mars, psy);
+        float sideA = SignOfPeriSide(candA.omega, theta_p);
+        float sideB = SignOfPeriSide(candB.omega, theta_p);
+        if (Mathf.Sign(sideA) == Mathf.Sign(rotSign)) { conic = candA; return true; }
+        if (Mathf.Sign(sideB) == Mathf.Sign(rotSign)) { conic = candB; return true; }
+        conic = candA;
+        return true;
+    }
+
+    private static Conic BuildConicFromOmega(float omega, float theta_s, float A_s, float r_peri) {
+        float nu_s = theta_s - omega;
+        float denom = Mathf.Cos(nu_s) - A_s;
+        if (Mathf.Abs(denom) < 1e-6f) return new Conic { e = -1f };
+        float e = (A_s - 1f) / denom;
+        return new Conic { p = r_peri * (1f + e), e = e, omega = omega };
+    }
+
+    private static bool PeriapsisBetween(float omega, float theta_s, float theta_p) {
+        float nu_s = WrapPi(theta_s - omega);
+        float nu_p = WrapPi(theta_p - omega);
+        return nu_s * nu_p < 0f;
+    }
+
+    private static float SignOfPeriSide(float omega, float theta_psyche) {
+        Vector2 periDir = new Vector2(Mathf.Cos(omega), Mathf.Sin(omega));
+        Vector2 psyDir = new Vector2(Mathf.Cos(theta_psyche), Mathf.Sin(theta_psyche));
+        return psyDir.x * periDir.y - psyDir.y * periDir.x;
+    }
+
+    private static float WrapPi(float a) {
+        while (a > Mathf.PI) a -= 2f * Mathf.PI;
+        while (a < -Mathf.PI) a += 2f * Mathf.PI;
+        return a;
+    }
+
+    private Vector3[] SampleConic(Conic c, Vector2 ship, Vector2 mars, Vector2 psy) {
+        Vector2 toShip = ship - mars;
+        Vector2 toPsy = psy - mars;
+        float theta_s = Mathf.Atan2(toShip.y, toShip.x);
+        float theta_p = Mathf.Atan2(toPsy.y, toPsy.x);
+        float nu_s = WrapPi(theta_s - c.omega);
+        float nu_p = WrapPi(theta_p - c.omega);
+
+        int segs = Mathf.Max(8, conicSegments);
+        var pts = new Vector3[segs + 1];
+        pts[0] = ship;
+        int filled = 1;
+        for (int i = 1; i <= segs; i++) {
+            float t = i / (float)segs;
+            float nu = Mathf.Lerp(nu_s, nu_p, t);
+            float r = c.p / (1f + c.e * Mathf.Cos(nu));
+            if (r <= 0f || r > 1e6f) {
+                System.Array.Resize(ref pts, filled);
+                return pts;
+            }
+            float theta = c.omega + nu;
+            pts[i] = mars + new Vector2(Mathf.Cos(theta), Mathf.Sin(theta)) * r;
+            filled = i + 1;
+        }
+        pts[pts.Length - 1] = psy;
+        return pts;
+    }
+
+    private Vector3[] BuildGeometricArc(Vector2 ship, Vector2 mars, Vector2 psy) {
         float r = EffectiveRadius;
+        float dShip = (ship - mars).magnitude;
+        float dPsy = (psy - mars).magnitude;
+        if (dShip <= r || dPsy <= r) return new Vector3[] { ship, psy };
 
-        // Convert the two tangent points to angles measured from Mars's center.
-        // atan2(dy, dx) returns the polar angle in [-pi, pi].
-        float entryAngle = Mathf.Atan2(entry.y - marsPos.y, entry.x - marsPos.x);
-        float exitAngle = Mathf.Atan2(exit.y - marsPos.y, exit.x - marsPos.x);
+        float sign = PickRotationSign(ship, mars, psy);
+        Vector2 toShipDir = (ship - mars) / dShip;
+        Vector2 toPsyDir = (psy - mars) / dPsy;
+        Vector2 perpShip = new Vector2(-toShipDir.y * sign, toShipDir.x * sign);
+        Vector2 perpPsy = new Vector2(toPsyDir.y * sign, -toPsyDir.x * sign);
+        float cosTs = r / dShip, sinTs = Mathf.Sqrt(Mathf.Max(0f, 1f - cosTs * cosTs));
+        float cosTp = r / dPsy, sinTp = Mathf.Sqrt(Mathf.Max(0f, 1f - cosTp * cosTp));
+        Vector2 entry = mars + r * (toShipDir * cosTs + perpShip * sinTs);
+        Vector2 exit = mars + r * (toPsyDir * cosTp + perpPsy * sinTp);
 
-        // Sweep is the signed angular distance entry → exit. Naive subtraction can give
-        // a negative result for CCW (sign>0) or positive for CW (sign<0), which would draw
-        // the arc the wrong way. Wrap by ±2π so the sweep direction matches our rotation sign.
-        float sign = ResolveRotationSign();
+        float entryAngle = Mathf.Atan2(entry.y - mars.y, entry.x - mars.x);
+        float exitAngle = Mathf.Atan2(exit.y - mars.y, exit.x - mars.x);
         float sweep = exitAngle - entryAngle;
         if (sign > 0f && sweep < 0f) sweep += 2f * Mathf.PI;
         if (sign < 0f && sweep > 0f) sweep -= 2f * Mathf.PI;
 
-        int segs = Mathf.Max(2, arcSegments);
-        Vector3[] points = new Vector3[segs + 3];
-        points[0] = ShipTf != null ? ShipTf.position : (Vector3)entry;
-
-        // Parametric circle: P(a) = M + r * (cos(a), sin(a)). Step the angle linearly from
-        // entryAngle to entryAngle+sweep over segs+1 samples to get the polyline arc.
-        for (int i = 0; i <= segs; i++) {
+        int segs = Mathf.Max(16, conicSegments);
+        var pts = new List<Vector3>(segs + 4);
+        pts.Add(ship);
+        pts.Add(entry);
+        for (int i = 1; i <= segs; i++) {
             float t = i / (float)segs;
             float a = entryAngle + sweep * t;
-            points[1 + i] = marsPos + new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * r;
+            pts.Add(mars + new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * r);
         }
-
-        points[segs + 2] = PsycheTf != null ? PsycheTf.position : (Vector3)exit;
-        return points;
+        pts.Add(psy);
+        return pts.ToArray();
     }
 
     private void Awake() {
         if (drawRuntimePath) EnsureLineRenderer();
+    }
+
+    private void Start() {
+        if (marsGravity == null && MarsTf != null) {
+            marsGravity = MarsTf.GetComponent<PlanetGravitySource>()
+                       ?? MarsTf.GetComponentInChildren<PlanetGravitySource>();
+        }
     }
 
     private void LateUpdate() {
@@ -272,29 +307,26 @@ public class MarsSlingshotPlanner : MonoBehaviour {
 
         EnsureLineRenderer();
 
-        if (!IsSolutionValid) {
+        Vector3[] pts = GetPathPoints();
+        if (pts.Length < 2) {
             pathLine.enabled = false;
             return;
         }
 
-        Vector3[] pts = GetPathPoints();
         pathLine.enabled = true;
         pathLine.positionCount = pts.Length;
         pathLine.SetPositions(pts);
 
-        // Approach -> arc -> exit gradient.
         var gradient = new Gradient();
         gradient.SetKeys(
             new[] {
                 new GradientColorKey(approachColor, 0f),
-                new GradientColorKey(arcColor, 1f / Mathf.Max(1, pts.Length - 1)),
-                new GradientColorKey(arcColor, (pts.Length - 2f) / Mathf.Max(1, pts.Length - 1)),
+                new GradientColorKey(arcColor, 0.5f),
                 new GradientColorKey(exitColor, 1f),
             },
             new[] {
                 new GradientAlphaKey(approachColor.a, 0f),
-                new GradientAlphaKey(arcColor.a, 1f / Mathf.Max(1, pts.Length - 1)),
-                new GradientAlphaKey(arcColor.a, (pts.Length - 2f) / Mathf.Max(1, pts.Length - 1)),
+                new GradientAlphaKey(arcColor.a, 0.5f),
                 new GradientAlphaKey(exitColor.a, 1f),
             }
         );
@@ -315,36 +347,28 @@ public class MarsSlingshotPlanner : MonoBehaviour {
         pathLine.endWidth = lineWidth;
     }
 
-    private float ResolveRotationSign() {
-        if (!autoPickRotation) return clockwisePass ? -1f : 1f;
-        if (ShipTf == null) return -1f;
-
-        // 2D cross product (z-component of the 3D cross): a × b = a.x*b.y - a.y*b.x.
-        // Sign tells us which side of (Mars→Psyche) the ship is on:
-        //   positive = ship is counterclockwise of the line → swing CCW around Mars,
-        //   negative = ship is clockwise of the line → swing CW.
-        // Picking the side the ship is already on minimizes the sweep angle.
-        Vector2 toShip = (Vector2)ShipTf.position - (Vector2)MarsTf.position;
-        Vector2 toPsyche = DirectionFromMarsToPsyche;
-        float cross = toPsyche.x * toShip.y - toPsyche.y * toShip.x;
-        return cross >= 0f ? 1f : -1f;
-    }
-
     private void OnDrawGizmosSelected() {
         if (!drawEditorGizmos) return;
-        if (MarsTf == null || PsycheTf == null) return;
+        if (MarsTf == null) return;
 
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(MarsTf.position, EffectiveRadius);
 
-        if (!IsSolutionValid) return;
+        if (Application.isPlaying) {
+            float entryR = EntryRange;
+            Gizmos.color = new Color(0.4f, 1f, 0.5f, 0.4f);
+            Gizmos.DrawWireSphere(MarsTf.position, entryR);
+            Gizmos.color = new Color(1f, 0.6f, 0.4f, 0.4f);
+            Gizmos.DrawWireSphere(MarsTf.position, entryR * exitRangeMultiplier);
 
-        Vector3[] pts = GetPathPoints();
-        for (int i = 0; i < pts.Length - 1; i++) {
-            Gizmos.color = i == 0 ? approachColor
-                         : i >= pts.Length - 2 ? exitColor
-                         : arcColor;
-            Gizmos.DrawLine(pts[i], pts[i + 1]);
+            Vector3[] pts = GetPathPoints();
+            for (int i = 0; i < pts.Length - 1; i++) {
+                float t = i / (float)Mathf.Max(1, pts.Length - 1);
+                Gizmos.color = t < 0.5f
+                    ? Color.Lerp(approachColor, arcColor, t * 2f)
+                    : Color.Lerp(arcColor, exitColor, (t - 0.5f) * 2f);
+                Gizmos.DrawLine(pts[i], pts[i + 1]);
+            }
         }
     }
 }
