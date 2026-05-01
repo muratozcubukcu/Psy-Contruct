@@ -20,13 +20,13 @@ public class Engine : MonoBehaviour {
     [Tooltip("EngineFire flame prefab (Animator-driven) spawned as a child and toggled when firing.")]
     [SerializeField] private Animator engineFirePrefab;
     [Tooltip("Local-space offset from the engine root where the flame is anchored (top-pivot of the flame sprite).")]
-    [SerializeField] private Vector2 engineFireOffset = new Vector2(0f, -0.5f);
+    [SerializeField] private Vector2 engineFireOffset;
 
     [Header("Fuel Settings")]
-    [SerializeField] float fuelCostPerSecond = 1f;
+    [SerializeField] float fuelCostPerSecond;
 
     [Header("Energy Settings")]
-    [SerializeField] private float energyCostPerSecond = 1f;
+    [SerializeField] private float energyCostPerSecond;
 
     [SerializeField] private int _engineID;
     public int engineID {
@@ -61,7 +61,6 @@ public class Engine : MonoBehaviour {
         if (engineFirePrefab != null) {
             engineFireAnimator = Instantiate(engineFirePrefab, transform);
             engineFireAnimator.transform.localPosition = engineFireOffset;
-            engineFireAnimator.transform.localRotation = Quaternion.identity;
             engineFireAnimator.gameObject.SetActive(false);
         }
 
@@ -141,12 +140,10 @@ public class Engine : MonoBehaviour {
     private void ApplyVisualState(bool firing) {
         if (engineVisual != null) {
             Sprite target = firing ? engineOnSprite : engineOffSprite;
-            if (target != null) {
-                engineVisual.sprite = target;
-                engineVisual.color = Color.white;
-            } else {
-                engineVisual.color = firing ? Color.red : Color.yellow;
-            }
+            if (target == null) return;
+            
+            engineVisual.sprite = target;
+            engineVisual.color = Color.white;
         }
         if (engineFireAnimator != null) engineFireAnimator.gameObject.SetActive(firing);
     }
