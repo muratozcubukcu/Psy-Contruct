@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 1067822573587299252}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.21, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -76,8 +76,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
-  m_Color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  m_Sprite: {fileID: 7482667652216324306, guid: b2e8d3c4a5f60708091a2b3c4d5e6f7a, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -214,7 +214,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5902528252476061695}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.009459772, y: 0.009459772, z: 0.009459772}
   m_ConstrainProportionsScale: 1
@@ -223,7 +223,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: -0.11999512}
+  m_AnchoredPosition: {x: -0, y: 0.12200928}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6289198085043161166
@@ -256,15 +256,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: -1
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: fd262a43ea1f56b47b567dea707bc414, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: fd262a43ea1f56b47b567dea707bc414, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4280624421
-  m_fontColor: {r: 0.14509805, g: 0.14509805, b: 0.14509805, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -338,9 +338,8 @@ GameObject:
   - component: {fileID: 7275421256755735125}
   - component: {fileID: 8090201097484984832}
   - component: {fileID: -866892011188099394}
-  - component: {fileID: -1113505157807649598}
   m_Layer: 6
-  m_Name: EnginePart
+  m_Name: BottomEnginePart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -354,7 +353,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6762445239661676325}
   serializedVersion: 2
-  m_LocalRotation: {x: 1, y: 0, z: 0, w: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1, y: -0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -362,7 +361,7 @@ Transform:
   - {fileID: 6633535540196308366}
   - {fileID: 1371797969086084352}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 180, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!60 &3010979542224283937
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -442,13 +441,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 850c3c51dbcba4bec9934c8a05b0f594, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 50
+  speed: 80
   initialSpeedRampUpLength: 3
   softSpeedLimit: 10
   thrustFalloffStrength: 8
   stabilizationStrength: 0
   engineVisual: {fileID: 383230240694097690}
   idUI: {fileID: 1516800545626777781}
+  engineOffSprite: {fileID: 7482667652216324306, guid: b2e8d3c4a5f60708091a2b3c4d5e6f7a, type: 3}
+  engineOnSprite: {fileID: 7482667652216324306, guid: c3d9e4f50a1b2c3d4e5f6a7b8c9d0e1f, type: 3}
+  engineFirePrefab: {fileID: 7991122334455667792, guid: e3f4a5b6c7d8e9f01a2b3c4d5e6f7081, type: 3}
+  engineFireOffset: {x: 0, y: -0.5}
   fuelCostPerSecond: 1
   energyCostPerSecond: 2
   _engineID: 0
@@ -479,16 +482,3 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &-1113505157807649598
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6762445239661676325}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b500ccc2dbe54e80985fb3430752d53, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  connectingDirection: 0

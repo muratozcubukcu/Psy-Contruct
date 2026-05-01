@@ -1,7 +1,19 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using System;
 using UnityEditor;
 using UnityEngine.SceneManagement;
+
+// =============================================================================
+// GameInput
+// -----------------------------------------------------------------------------
+// What it does:
+//   Central input handler. Reads keyboard/mouse input and fires events that
+//   other scripts (engines, repair, scene buttons) listen to.
+//   Engines are controlled with the digit keys 1-9: each key fires the engine
+//   with the matching ID. Keys 1-4 are bound through the InputSystem action
+//   asset; keys 5-9 are polled directly here.
+// =============================================================================
 
 //Class that handles input and triggers events based on it.
 
@@ -69,6 +81,51 @@ public class GameInput : MonoBehaviour {
         inputActions.General.ReturnToMenu.performed += ReturnToMenu_performed;
     }
     
+    // Numeric keys 5-9 polled directly; 1-4 wired via InputSystem_Actions asset.
+    // We track each key's previous pressed-state so we only fire events on edges
+    // (key down / key up), not every frame the key is held.
+    private readonly bool[] extraNumericKeyState = new bool[5];
+    private static readonly Key[] ExtraNumericKeys = {
+        Key.Digit5, Key.Digit6, Key.Digit7, Key.Digit8, Key.Digit9
+    };
+
+    private void Update() {
+        // gameActive = the game is unpaused AND we're in flight (not the build scene).
+        bool gameActive = Time.timeScale != 0f && Spacecraft.IsFlightMode;
+
+        // Need a real keyboard to read keys. Returns null in headless/automation.
+        Keyboard kb = Keyboard.current;
+        if (kb == null) return;
+
+        if (gameActive) {
+            // ----- Numeric path (keys 5-9) -----
+            // Keys 1-4 come through the InputSystem callbacks; 5-9 we poll
+            // manually here because they aren't bound in the action asset.
+            for (int i = 0; i < ExtraNumericKeys.Length; i++) {
+                int engineNum = i + 5;
+                bool isPressed = kb[ExtraNumericKeys[i]].isPressed;
+                // Skip if no change since last frame - we only care about edges.
+                if (isPressed == extraNumericKeyState[i]) continue;
+                extraNumericKeyState[i] = isPressed;
+                if (isPressed) OnEnginePerformedAction?.Invoke(this, new EngineEventArgs(true, engineNum));
+                else OnEngineCanceledAction?.Invoke(this, new EngineEventArgs(false, engineNum));
+            }
+        } else {
+            // Game paused or not in flight - make sure nothing stays "stuck on".
+            ReleaseExtraNumericKeys();
+        }
+    }
+
+    // Forces every numeric-key tracked state to "released" and fires the
+    // canceled events. Used when pausing so engines don't stay firing forever.
+    private void ReleaseExtraNumericKeys() {
+        for (int i = 0; i < extraNumericKeyState.Length; i++) {
+            if (!extraNumericKeyState[i]) continue;
+            extraNumericKeyState[i] = false;
+            OnEngineCanceledAction?.Invoke(this, new EngineEventArgs(false, i + 5));
+        }
+    }
+
     private void EngineOne_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
         if (Time.timeScale == 0f) return;
         OnEnginePerformedAction?.Invoke(this, new EngineEventArgs(true, 1)); //"?.Invoke" basically checks if theres any listeners (methods). If there are listeners, calls all of 'em.
@@ -82,11 +139,11 @@ public class GameInput : MonoBehaviour {
         if (Time.timeScale == 0f) return;
         OnEnginePerformedAction?.Invoke(this, new EngineEventArgs(true, 2));
     }
-     
+
     private void EngineTwo_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
-        OnEngineCanceledAction?.Invoke(this, new EngineEventArgs(false, 2)); 
+        OnEngineCanceledAction?.Invoke(this, new EngineEventArgs(false, 2));
     }
-     
+
     private void EngineThree_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
         if (Time.timeScale == 0f) return;
         OnEnginePerformedAction?.Invoke(this, new EngineEventArgs(true, 3));
