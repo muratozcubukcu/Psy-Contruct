@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -68,7 +69,7 @@ public class MarsSlingshotPlanner : MonoBehaviour {
     [SerializeField] private Color exitColor = new Color(0.4f, 1f, 0.5f, 1f);
 
     [Tooltip("How many degrees off the ideal orbit direction the ship can be and still count as viable.")]
-    [SerializeField] private float headingToleranceDegrees = 35f;
+    [SerializeField] private float headingToleranceDegrees;
 
     [Header("Gravity Sources (optional)")]
     // Reference to Mars's PlanetGravitySource. We use it to know how big
@@ -278,7 +279,8 @@ public class MarsSlingshotPlanner : MonoBehaviour {
         Vector2 heading = vel.normalized;
 
         float angle = Mathf.Acos(Mathf.Clamp(Vector2.Dot(orbitDir, heading), -1f, 1f)) * Mathf.Rad2Deg;
-        return angle <= headingToleranceDegrees;
+        float trueAngle = Math.Abs(angle - 180);
+        return trueAngle <= headingToleranceDegrees;
     }
 
     // A "conic section" - the family of curves that includes ellipses,
