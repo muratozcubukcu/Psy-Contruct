@@ -76,6 +76,9 @@ public class MarsSlingshotPlanner : MonoBehaviour {
     // Thickness of the line in world units.
     [SerializeField] private float lineWidth = 0.4f;
 
+    [Tooltip("How many degrees off the ideal orbit direction the ship can be and still count as viable.")]
+    [SerializeField] private float headingToleranceDegrees = 35f;
+
     [Header("Gravity Sources (optional)")]
     // Reference to Mars's PlanetGravitySource. We use it to know how big
     // Mars's gravity well is (where the snapshot should trigger).
@@ -112,6 +115,10 @@ public class MarsSlingshotPlanner : MonoBehaviour {
     private bool externallyFrozen;
     private Vector3[] externallyFrozenPath;
 
+    private bool lastPathWasConic = false;
+
+    private Conic? snapshotConic = null;
+
     /// <summary>True while FreezePath() has locked the path in place.</summary>
     public bool IsFrozen => externallyFrozen;
 
@@ -130,6 +137,28 @@ public class MarsSlingshotPlanner : MonoBehaviour {
 
     /// <summary>True if we currently have a usable path (at least 2 points).</summary>
     public bool IsSolutionValid => snapshotPath != null && snapshotPath.Length >= 2;
+
+    public bool IsSlingshotViable {
+        get {
+            if (MarsTf == null || ShipTf == null || PsycheTf == null) return false;
+
+            Vector2 ship = ShipPos;
+            Vector2 mars = MarsTf.position;
+            Vector2 psy = PsychePos;
+
+            Conic conic;
+            if (inMarsRange && lastPathWasConic && snapshotConic != null) {
+                conic = snapshotConic.Value;
+            } else if (TrySolveConic(ship, mars, psy, out conic)) {
+                // Outside the range still predict if the player is going the right direction
+                // so it isnt a supreise for them when they enter the range.
+            } else {
+                return false;
+            }
+
+            return IsHeadingAligned(conic, ship, mars);
+        }
+    }
 
     // Resolves the Mars transform - prefer the manual override, fall back to
     // the singleton instance.
@@ -216,9 +245,10 @@ public class MarsSlingshotPlanner : MonoBehaviour {
             snapshotPath = BuildSlingshotPlan(ship, mars, psy);
             inMarsRange = true;
         } else if (inMarsRange && dShip >= exitR) {
-            // Just left Mars's range - drop the curve so nothing is drawn.
             snapshotPath = null;
             inMarsRange = false;
+            lastPathWasConic = false;
+            snapshotConic = null;    // ← ADD THIS
         }
         // While inside the range we keep returning the same cached path.
 
@@ -230,9 +260,45 @@ public class MarsSlingshotPlanner : MonoBehaviour {
     // arc if the math fails (degenerate case, ship inside Mars, etc.).
     private Vector3[] BuildSlingshotPlan(Vector2 ship, Vector2 mars, Vector2 psy) {
         if (TrySolveConic(ship, mars, psy, out Conic c)) {
+            lastPathWasConic = true;
+            snapshotConic = c;
             return SampleConic(c, ship, mars, psy);
         }
+        lastPathWasConic = false;
+        snapshotConic = null;
         return BuildGeometricArc(ship, mars, psy);
+    }
+
+    private bool IsHeadingAligned(Conic c, Vector2 ship, Vector2 mars) {
+        Vector2 toShip = ship - mars;
+        float theta_s = Mathf.Atan2(toShip.y, toShip.x);
+        float nu_s = WrapPi(theta_s - c.omega);
+
+        // Radial and tangential unit vectors at the ship's position on the orbit.
+        Vector2 radial = new Vector2(Mathf.Cos(theta_s), Mathf.Sin(theta_s));
+        Vector2 tangential = new Vector2(-Mathf.Sin(theta_s), Mathf.Cos(theta_s));
+
+        // Velocity direction on the conic at this point (no speed needed, just direction).
+        float vr = c.e * Mathf.Sin(nu_s);
+        float vt = 1f + c.e * Mathf.Cos(nu_s);
+
+        // Geometric rotation pick avoids the feedback loop where heading is compared against
+        // an orbit whose direction was itself picked from heading.
+        float rotSign = PickRotationSign(ship, mars, PsychePos);
+        if (rotSign < 0f) tangential = -tangential;
+
+        Vector2 orbitDir = (radial * vr + tangential * vt).normalized;
+        if (orbitDir.sqrMagnitude < 1e-6f) return false;
+
+        // Compare against actual movement, not facing. The trajectory line is
+        // drawn from linearVelocity, so the green path must agree with the
+        // visible path, rotating the ship in place must not flip the color.
+        Vector2 vel = ShipVelocity;
+        if (vel.sqrMagnitude < 1e-4f) return false;
+        Vector2 heading = vel.normalized;
+
+        float angle = Mathf.Acos(Mathf.Clamp(Vector2.Dot(orbitDir, heading), -1f, 1f)) * Mathf.Rad2Deg;
+        return angle <= headingToleranceDegrees;
     }
 
     // A "conic section" - the family of curves that includes ellipses,
