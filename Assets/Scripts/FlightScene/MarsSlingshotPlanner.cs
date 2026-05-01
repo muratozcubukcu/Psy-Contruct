@@ -159,7 +159,7 @@ public class MarsSlingshotPlanner : MonoBehaviour {
     private Transform PsycheTf => PsycheAsteroid.Instance.transform;
 
     // Same lookup pattern for the spacecraft.
-    private Transform ShipTf => Spacecraft.GetInstance().transform;
+    private Transform ShipTf => Spacecraft.GetInstance() ? Spacecraft.GetInstance().transform : null;
 
     // Picks the actual closest-approach radius the math will use.
     // If allowed, reads it from Mars's collider so it scales with the planet sprite.
@@ -596,6 +596,8 @@ public class MarsSlingshotPlanner : MonoBehaviour {
 
         // Make sure the line renderer exists and is configured.
         EnsureLineRenderer();
+
+        if (ShipTf == null) return;
 
         // Pull the current path from our own public method.
         Vector3[] pts = GetPathPoints();
