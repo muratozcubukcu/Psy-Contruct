@@ -214,13 +214,16 @@ public class GameInput : MonoBehaviour {
 
     private IEnumerator LoadSceneWithLoadingScreen(string targetScene)
     {
+        Debug.Log("start of function");
         LoadingScreen ls = LoadingScreen.Instance;
         ls.Enable();
+        Debug.Log("loading started");
         
         AsyncOperation loadOperation = SceneManager.LoadSceneAsync(targetScene);
 
         while (!loadOperation.isDone)
         {
+            Debug.Log("updating loading text");
             ls.text.text = "Loading.";
             yield return new WaitForSeconds(0.2f);
             ls.text.text = "Loading..";

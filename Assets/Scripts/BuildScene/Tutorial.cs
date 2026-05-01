@@ -12,7 +12,6 @@ public class Tutorial : MonoBehaviour
     private Image image;
 
     private bool ShipAdded = false;
-    private bool PartDeleted = false;
     private bool EngineAdded = false;
     private bool GammaRayAdded = false;
     private bool MagnetometerAdded = false;
@@ -40,27 +39,14 @@ public class Tutorial : MonoBehaviour
         updateState();
     }
 
-    //functional parts are only marked as added if the user is on that step of the tutorial
     public void partAdded(string addedPart)
     {
         switch(addedPart) {
             case "ShipPart":
                 ShipAdded = true;
                 break;
-            case "Deleted":
-                PartDeleted = ShipAdded;
-                break;
             case "BottomEnginePart": case "LeftEnginePart": case "RightEnginePart": case "TopEnginePart":
-                EngineAdded = PartDeleted;
-                break;
-            case "FuelTankPart":
-                FuelTankAdded = EngineAdded;
-                break;
-            case "SolarPanelPart":
-                SolarPanelAdded = FuelTankAdded;
-                break;
-            case "SatelliteDishPart":
-                SatelliteDishAdded = SolarPanelAdded;
+                EngineAdded = true;
                 break;
             case "GammaRayPart":
                 GammaRayAdded = true;
@@ -74,6 +60,15 @@ public class Tutorial : MonoBehaviour
             case "NeutronSpectrometerPart":
                 NeutronSpectrometerAdded = true;
                 break;
+            case "SatelliteDishPart":
+                SatelliteDishAdded = true;
+                break;
+            case "SolarPanelPart":
+                SolarPanelAdded = true;
+                break;
+            case "FuelTankPart":
+                FuelTankAdded = true;
+                break;
         }
         updateState();
     }
@@ -83,10 +78,6 @@ public class Tutorial : MonoBehaviour
         if (!ShipAdded)
         {
             text.text = "Try adding a Ship part!\nThese are the basic building blocks of your spacecraft!";
-        }
-        else if (!PartDeleted)
-        {
-            text.text = "Select a part and press backspace to delete it! Try doing so now!";
         }
         else if (!EngineAdded)
         {
@@ -111,7 +102,6 @@ public class Tutorial : MonoBehaviour
         else
         {
             text.text = "When your ship is ready, press the button in the lower right to begin the mission!";
-            Settings.Instance.toggleTutorial();
         }
     }
 }

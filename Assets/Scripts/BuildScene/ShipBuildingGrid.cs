@@ -197,8 +197,6 @@ public class ShipBuildingGrid : MonoBehaviour {
         
         if(selectedPart == partToDelete) DeselectPart();
 
-        Tutorial.instance.partAdded("Deleted");
-
         Destroy(partToDelete);
         
         placedParts.Remove(partCoords);
