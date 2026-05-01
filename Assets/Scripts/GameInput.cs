@@ -16,6 +16,8 @@ public class GameInput : MonoBehaviour {
     public event EventHandler OnLeftMouseClickPerformedAction;
 
     public event EventHandler OnDeletePartPerformedAction;
+    
+    public event EventHandler OnRotatePartPerformedAction;
 
     public event EventHandler OnSetFlightScenePerformedAction;
     
@@ -62,6 +64,7 @@ public class GameInput : MonoBehaviour {
 
         inputActions.SpacecraftBuilding.DeletePart.performed += DeletePart_performed;
         inputActions.SpacecraftBuilding.LeftMouseClick.performed += LeftMouseClick_performed;
+        inputActions.SpacecraftBuilding.RotatePart.performed += RotatePart_performed;
         
         inputActions.General.ReturnToMenu.performed += ReturnToMenu_performed;
     }
@@ -118,6 +121,11 @@ public class GameInput : MonoBehaviour {
     private void LeftMouseClick_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
         OnLeftMouseClickPerformedAction?.Invoke(this, EventArgs.Empty); 
     }
+    
+    private void RotatePart_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+        OnRotatePartPerformedAction?.Invoke(this, EventArgs.Empty); 
+    }
+    
 
     private void ReturnToMenu_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
         if (SceneManager.GetActiveScene().name == "FlightScene") {

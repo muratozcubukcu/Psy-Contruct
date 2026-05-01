@@ -15,8 +15,5 @@ MonoBehaviour:
   part: {fileID: 7421062647158426556, guid: a85a9a55d1062c34f93303ab8574a411, type: 3}
   partID: 3
   mass: 1
-  connectingDirections:
-  - above
-  - below
-  - left
-  - right
+  isStackable: 0
+  isRotatable: 1

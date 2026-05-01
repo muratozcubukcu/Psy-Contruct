@@ -20,6 +20,7 @@ public class MinimapManager : MonoBehaviour {
     }
     
     private void Mars_OnEnterMinimapRange(object sender, MinimapTrigger.MinimapEventArgs e) {
+        if (minimap == null) return;
         if(e.entering) minimap.SetActive(true);
         else minimap.SetActive(false);
     }

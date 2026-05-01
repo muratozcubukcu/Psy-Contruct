@@ -101,6 +101,7 @@ GameObject:
   - component: {fileID: 4862306525171706928}
   - component: {fileID: 8273626326462585906}
   - component: {fileID: 4589301526464850131}
+  - component: {fileID: -5803092068227785345}
   m_Layer: 6
   m_Name: SolarPanelPart
   m_TagString: Untagged
@@ -246,3 +247,16 @@ PolygonCollider2D:
       - {x: 0.000004708767, y: 0.36849332}
       - {x: -0.49998957, y: -0.4986591}
   m_UseDelaunayMesh: 0
+--- !u!114 &-5803092068227785345
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7421062647158426556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b500ccc2dbe54e80985fb3430752d53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  connectingDirection: 2

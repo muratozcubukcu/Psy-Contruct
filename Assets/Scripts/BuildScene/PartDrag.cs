@@ -28,7 +28,6 @@ public class PartDrag : MonoBehaviour {
     private Vector3 offset;
     private Vector3 originalPosition;
     private Collider2D partCollider;
-    private Quaternion lockedRotation;
     private ShipBuildingGrid shipGrid;
     private SpacecraftPartDatabase partDB;
     private SpriteRenderer objectSprite;
@@ -43,8 +42,6 @@ public class PartDrag : MonoBehaviour {
     private void Awake() {
         partCollider = GetComponent<Collider2D>();
         objectSprite = objectVisual.GetComponent<SpriteRenderer>();
-        
-        lockedRotation = transform.rotation;
         
         shipGrid = ShipBuildingGrid.Instance;
         highlight = GameObject.Find("Highlight");
@@ -118,7 +115,6 @@ public class PartDrag : MonoBehaviour {
         
         Vector3 curScreenPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z);
         Vector3 curPosition = Camera.main.ScreenToWorldPoint(curScreenPoint) + offset;
-        transform.rotation = lockedRotation;
 
         // Snap to grid and show valid/invalid placement color feedback
         if (shipGrid == null) shipGrid = ShipBuildingGrid.Instance;
@@ -155,8 +151,7 @@ public class PartDrag : MonoBehaviour {
         
         objectSprite.color = baseColor;
 
-        transform.rotation = lockedRotation;
-        
+        GameObject part = gameObject;
 
         Vector3? nullableGridSnapPosition = shipGrid.PostionToGridPosition(transform.position);
         if (nullableGridSnapPosition == null) {
@@ -305,10 +300,6 @@ public class PartDrag : MonoBehaviour {
     private void SetLayer(string layer, GameObject obj = null) {
         if (obj == null) obj = gameObject;
         obj.layer = LayerMask.NameToLayer(layer);
-    }
-    
-    private void Update() {
-        if (transform.rotation != lockedRotation) transform.rotation = lockedRotation;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {

@@ -10,6 +10,8 @@ public class PartScriptableObject : ScriptableObject {
 
     public bool isStackable;
     
+    public bool isRotatable;
+
     //"This parts should only be connectable to the rest of the spacecraft from..."
-    public string[] connectingDirections;
+    //public string[] connectingDirections;
 }

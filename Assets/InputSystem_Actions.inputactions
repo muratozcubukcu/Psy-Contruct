@@ -950,6 +950,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "RotatePart",
+                    "type": "Button",
+                    "id": "4b3c2b75-a1eb-4ead-8f4b-750ee497bbb9",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1043,17 +1052,6 @@
                 },
                 {
                     "name": "",
-                    "id": "cc7e1855-face-4e08-a8bc-de14f90f2738",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "LeftMouseClick",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "13a92b44-11d6-4f9a-862e-b31c36d5e2b0",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
@@ -1065,23 +1063,23 @@
                 },
                 {
                     "name": "",
-                    "id": "ef2c34fa-81a2-45aa-aaa0-d0028f7f2845",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "DeletePart",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "f2141de3-bf50-48b1-a39e-3a8017d72cdc",
                     "path": "<Keyboard>/backspace",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "DeletePart",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "adcc35dd-12d6-4437-b025-68fb38933c9d",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "RotatePart",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

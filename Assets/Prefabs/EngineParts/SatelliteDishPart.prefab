@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6773643651935359739}
   - component: {fileID: 3457778687372409180}
   - component: {fileID: 7406025023475719466}
+  - component: {fileID: 3041203463563649278}
   m_Layer: 6
   m_Name: SatelliteDishPart
   m_TagString: Untagged
@@ -157,6 +158,19 @@ PolygonCollider2D:
       - {x: 0.000003319641, y: 0.35799366}
       - {x: -0.49999303, y: -0.49866125}
   m_UseDelaunayMesh: 0
+--- !u!114 &3041203463563649278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2624134581080421435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b500ccc2dbe54e80985fb3430752d53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  connectingDirection: 2
 --- !u!1 &8605709923386684600
 GameObject:
   m_ObjectHideFlags: 0

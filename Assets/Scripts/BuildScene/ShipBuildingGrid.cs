@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -15,6 +16,8 @@ public class ShipBuildingGrid : MonoBehaviour {
     [SerializeField] private GridVisualizer gridVisualizer;
     [SerializeField] private GameObject highlight;
 
+    public enum direction { above, left, below, right, none }
+    
     private bool colorblindMode = false;
 
     private GameObject spacecraft;
@@ -60,6 +63,7 @@ public class ShipBuildingGrid : MonoBehaviour {
 
         gameInput.OnDeletePartPerformedAction += GameInput_OnDeletePartPerformedAction;
         gameInput.OnLeftMouseClickPerformedAction += GameInput_OnLeftMouseClickAction;
+        gameInput.OnRotatePartPerformedAction += GameInput_OnRotatePartPerformedAction;
         
         gridVisualizer.VisualizeGrid(grid, gridWidth, gridHeight, cellSize, gridOriginPosition);
         
@@ -189,9 +193,7 @@ public class ShipBuildingGrid : MonoBehaviour {
     }
 
     private void GameInput_OnDeletePartPerformedAction(object sender, System.EventArgs e) {
-        if (!someTileSelected) return;
-
-        DeletePart(selectedTileCoords);
+        if (someTileSelected) DeletePart(selectedTileCoords);
     }
 
     public void DeletePart((int, int) partCoords) {
@@ -217,6 +219,12 @@ public class ShipBuildingGrid : MonoBehaviour {
 
     private void GameInput_OnLeftMouseClickAction(object sender, System.EventArgs e) {
         HandleLeftClick();
+    }
+
+    private void GameInput_OnRotatePartPerformedAction(object sender, System.EventArgs e) {
+        if (!someTileSelected) return;
+
+        if (selectedPart.TryGetComponent(out RotatablePart rotatable)) rotatable.RotatePart();
     }
     
     public void HandleLeftClick() {
@@ -264,38 +272,25 @@ public class ShipBuildingGrid : MonoBehaviour {
 
     public bool CanPlacePart(GameObject partToBePlaced, (int, int) coords) {
         if (partDB.PartIsStackable(partToBePlaced)) return CanPlaceStackablePart(partToBePlaced, coords);
-        
-        List<string> possibleConnectionsOfPartToBePlaced = partDB.GetSnapableDirections(partToBePlaced);
-        int x = coords.Item1;
-        int y = coords.Item2;
-        
-        if (grid.GetValue(coords) != -1) return false; 
-
-        foreach (string snapableDirection in possibleConnectionsOfPartToBePlaced) {
-            switch (snapableDirection) {
-                case "above":
-                    if (PartCanConnect(grid.GetValue((x, y + 1)), "below")) return true;
-                    break;
-                case "below":
-                    if (PartCanConnect(grid.GetValue((x, y - 1)), "above")) return true;
-                    break;
-                case "left":
-                    if (PartCanConnect(grid.GetValue((x - 1, y)), "right")) return true;
-                    break;
-                case "right":
-                    if (PartCanConnect(grid.GetValue((x + 1, y)), "left"))  return true;
-                    break;
-                default:
-                    continue;
+        if (partDB.PartIsRotatable(partToBePlaced)) {
+            if (TryFindRotatableConnectingDirection(partToBePlaced, coords, out direction dir)) {
+                partToBePlaced.GetComponent<RotatablePart>().SetRotation(dir);
+                return true;
             }
+            return false;
         }
-        
+
+        for (int i = 0; i < 4; i++) {
+            if (PartConnectsInDirection(coords, (direction)i)) return true;
+        }
         return false;
     }
 
     private bool CanPlaceStackablePart(GameObject partToBePlaced, (int, int) coords) {
         if (grid.GetValue(coords) == 1) return true;
 
+        //Checks if the stackable part is being dragged with another part by seeing if any other part has a dynamic rb
+        //(Parts only ever have dynamic rb's if they are being dragged)
         foreach (Transform p in spacecraft.transform) {
             GameObject part = p.gameObject;
             if (part.GetComponent<Rigidbody2D>().bodyType == RigidbodyType2D.Dynamic && part != partToBePlaced) {
@@ -305,14 +300,53 @@ public class ShipBuildingGrid : MonoBehaviour {
         
         return false;
     }
+    
 
-    //Ex: If part is bottomEngine, and the connectingDirection is "above" it can connect
-    private bool PartCanConnect(int partID, string connectingDirection) {
-        if (partID < 0) return false;
+    public bool TryFindRotatableConnectingDirection(GameObject partToBePlaced, (int, int) partCoords, out direction dir) {
+        direction currDir = partToBePlaced.GetComponent<RotatablePart>().connectingDirection;
+        for (int i = 0; i < 4; i++) {
+            if (PartConnectsInDirection(partCoords, currDir)) {
+                dir = currDir;
+                return true;
+            }
+            
+            currDir = (currDir == direction.right) ? direction.above : currDir + 1;
+        }
+
+        dir = direction.none;
+        return false;
+    }
+
+    private bool PartConnectsInDirection((int, int) partCoords, direction dir) {
+        int x = partCoords.Item1;
+        int y = partCoords.Item2;
+        GameObject connectingPart;
+        (int, int) shipStartCoords = (gridWidth / 2, gridHeight / 2);
         
-        List<string> snapableDirections = partDB.GetSnapableDirections(partID);
-
-        return snapableDirections.Contains(connectingDirection);
+        switch (dir) {
+            case direction.above:
+                if (shipStartCoords == (x, y + 1)) return true;
+                if (!placedParts.TryGetValue((x, y + 1), out connectingPart)) break;
+                if (PartCanConnect(connectingPart, direction.below)) return true;
+                break;
+            case direction.below:
+                if (shipStartCoords == (x, y - 1)) return true;
+                if (!placedParts.TryGetValue((x, y - 1), out connectingPart)) break;
+                if (PartCanConnect(connectingPart, direction.above)) return true;
+                break;
+            case direction.left:
+                if (shipStartCoords == (x - 1, y)) return true;
+                if (!placedParts.TryGetValue((x - 1, y), out connectingPart)) break;
+                if (PartCanConnect(connectingPart, direction.right)) return true;
+                break;
+            case direction.right:
+                if (shipStartCoords == (x + 1, y)) return true;
+                if (!placedParts.TryGetValue((x + 1, y), out connectingPart)) break;
+                if (PartCanConnect(connectingPart, direction.left)) return true;
+                break;
+        }
+        
+        return false;
     }
     
     public Vector3? PostionToGridPosition(Vector3 originalPosition) {
@@ -326,7 +360,7 @@ public class ShipBuildingGrid : MonoBehaviour {
 
     public void SetSelectedPart(GameObject part) => selectedPart = part;
 
-    public void PlacePartAtCoordinates(GameObject part, (int, int) coordinates) {
+    public void PlacePartAtCoordinates(GameObject part, (int, int) coordinates, direction dir = direction.none) {
         if (!partDB.PartIsStackable(part) && 
             placedParts.TryGetValue(coordinates, out GameObject existing) && existing != null) {
             
@@ -343,8 +377,10 @@ public class ShipBuildingGrid : MonoBehaviour {
         // Spawn part
         GameObject spacecraftPart = Instantiate(part, spacecraft.transform);
         spacecraftPart.SetActive(true);
+        spacecraftPart.GetComponent<Rigidbody2D>().freezeRotation = true;
         spacecraftPart.transform.position = GridCoordinatesToUnityPosition(coordinates);
         CacheOriginalSpriteColors(spacecraftPart);
+        if(partDB.PartIsRotatable(spacecraftPart)) spacecraftPart.GetComponent<RotatablePart>().SetRotation(dir);
 
         // Track in dictionary
         if (partDB.PartIsStackable(part)) partStackedOn[spacecraftPart] = placedParts[coordinates];
@@ -407,45 +443,48 @@ public class ShipBuildingGrid : MonoBehaviour {
         if (!placedParts.ContainsKey(coordinates)) return false;
         
         visitedCells.Add(coordinates);
-        
-        int partID = GetGridCellValue(coordinates);
+
+        GameObject part = placedParts[coordinates];
         int x = coordinates.Item1;
         int y = coordinates.Item2;
+        (int, int) shipStartCoords = (gridWidth / 2, gridHeight / 2);
         
-        List<string> snapableDirections = partDB.GetSnapableDirections(partID);
+        direction[] snapableDirections = partDB.PartIsRotatable(part) ? 
+            new [] { part.GetComponent<RotatablePart>().connectingDirection } : 
+            new [] { direction.above, direction.left, direction.below, direction.right };
 
-        foreach (string dir in snapableDirections) {
-            int otherPart;
+        foreach (direction dir in snapableDirections) {
+            GameObject otherPart;
             switch (dir) {
-                case "above":
-                    otherPart = GetGridCellValue((x, y + 1));
-                    if (otherPart == 0) return true;
-                    if (otherPart > 0 && !visitedCells.Contains((x, y + 1))) {
-                        if (!PartCanConnect(otherPart, "below")) continue;
+                case direction.above:
+                    if (shipStartCoords == (x, y + 1)) return true;
+                    if (!placedParts.TryGetValue((x, y + 1), out otherPart)) continue;
+                    if (!visitedCells.Contains((x, y + 1))) {
+                        if (!PartCanConnect(otherPart, direction.below)) continue;
                         if (PartIsConnectedHelper((x, y + 1), visitedCells)) return true;
                     }
                     break;
-                case "below":
-                    otherPart = GetGridCellValue((x, y - 1));
-                    if (otherPart == 0) return true;
-                    if (otherPart > 0 && !visitedCells.Contains((x, y - 1))) {
-                        if (!PartCanConnect(otherPart, "above")) continue;
+                case direction.below:
+                    if (shipStartCoords == (x, y - 1)) return true;
+                    if (!placedParts.TryGetValue((x, y - 1), out otherPart)) continue;
+                    if (!visitedCells.Contains((x, y - 1))) {
+                        if (!PartCanConnect(otherPart, direction.above)) continue;
                         if (PartIsConnectedHelper((x, y - 1), visitedCells)) return true;
                     }
                     break;
-                case "left":
-                    otherPart = GetGridCellValue((x - 1, y));
-                    if (otherPart == 0) return true;
-                    if (otherPart > 0 && !visitedCells.Contains((x - 1, y))) {
-                        if (!PartCanConnect(otherPart, "right")) continue;
+                case direction.left:
+                    if (shipStartCoords == (x - 1, y)) return true;
+                    if (!placedParts.TryGetValue((x - 1, y), out otherPart)) continue;
+                    if (!visitedCells.Contains((x - 1, y))) {
+                        if (!PartCanConnect(otherPart, direction.right)) continue;
                         if (PartIsConnectedHelper((x - 1, y), visitedCells)) return true;
                     }
                     break;
-                case "right":
-                    otherPart = GetGridCellValue((x + 1, y));
-                    if (otherPart == 0) return true;
-                    if (otherPart > 0 && !visitedCells.Contains((x + 1, y))) {
-                        if (!PartCanConnect(otherPart, "left")) continue;
+                case direction.right:
+                    if (shipStartCoords == (x + 1, y)) return true;
+                    if (!placedParts.TryGetValue((x + 1, y), out otherPart)) continue;
+                    if (!visitedCells.Contains((x + 1, y))) {
+                        if (!PartCanConnect(otherPart, direction.left)) continue;
                         if (PartIsConnectedHelper((x + 1, y), visitedCells)) return true;
                     }
                     break;
@@ -454,6 +493,13 @@ public class ShipBuildingGrid : MonoBehaviour {
             }
         }
         return false;
+    }
+    
+    private bool PartCanConnect(GameObject part, direction connectingDirection) {
+        if (partDB.GetPartID(part) < 0) return false;
+        if (partDB.GetPartID(part) <= 1 || partDB.PartIsStackable(part)) return true;
+
+        return connectingDirection == part.GetComponent<RotatablePart>().connectingDirection;
     }
 
     // Checks every placed part to see if it is connected to the spacecraft core.

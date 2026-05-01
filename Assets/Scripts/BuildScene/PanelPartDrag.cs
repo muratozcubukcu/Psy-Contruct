@@ -8,6 +8,7 @@ using UnityEngine.EventSystems;
 public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
 
     [SerializeField] private PartScriptableObject partData;
+    private SpacecraftPartDatabase partDB;
     private BuildFactsPopup buildFactsPopup;
     private GameObject ghostPreview;
     private SpriteRenderer ghostSprite;
@@ -41,7 +42,8 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         buildFactsPopup = GameObject.Find("BuildFactsPopup").GetComponent<BuildFactsPopup>();
         highlight = GameObject.Find("Highlight");
         highlightSprite = highlight.GetComponent<SpriteRenderer>();
-
+        
+        partDB = SpacecraftPartDatabase.Instance;
         colorblindMode = Settings.Instance.colorblindMode;
     }
     public void OnBeginDrag(PointerEventData eventData) {
@@ -50,7 +52,6 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         if (hint != null) hint.StopHint();
 
         ghostPreview = Instantiate(partData.part);
-        ghostPreview.name = "GhostPreview";
         ghostSprite = ghostPreview.GetComponentInChildren<SpriteRenderer>();
         ghostSprite.color = new Color(baseColor.r, baseColor.g, baseColor.b, 0.5f);
         ghostSprite.sortingLayerName = "MidDrag";
@@ -73,8 +74,12 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
             if (snapPos != null) {
                 (int, int) coords = grid.UnityPositionToGridCoordinates((Vector3)snapPos);
-                if (grid.CanPlacePart(partData.part, coords)) {
-                    grid.PlacePartAtCoordinates(partData.part, coords);
+                GameObject part = partData.part;
+                if (grid.CanPlacePart(ghostPreview, coords)) {
+                    if(partDB.PartIsRotatable(part)) {
+                        grid.PlacePartAtCoordinates(part, coords, ghostPreview.GetComponent<RotatablePart>().connectingDirection);
+                    }
+                    else grid.PlacePartAtCoordinates(part, coords);
                     buildFactsPopup.Popup(partData.name);
                 }
             }
@@ -98,10 +103,11 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         if (snapPos != null) {
             ghostPreview.transform.position = (Vector3)snapPos;
             (int, int) coords = shipGrid.UnityPositionToGridCoordinates((Vector3)snapPos);
-            GameObject part = partData.part;
-            bool valid = shipGrid.CanPlacePart(part, coords);
+            bool valid = shipGrid.CanPlacePart(ghostPreview, coords);
+            
             ghostSprite.color = valid ? colorValid : colorInvalid;
             highlight.transform.position = ghostPreview.transform.position;
+            
             highlightSprite.color = colorblindMode ? Color.white : ShipBuildingGrid.colorHighlightInvisible;
             if (colorblindMode) highlightSprite.sprite = valid ? colorblindValid : colorblindInvalid;
         } else {

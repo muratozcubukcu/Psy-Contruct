@@ -63,7 +63,7 @@ public class SpacecraftPartDatabase : MonoBehaviour {
         return null;
     }
 
-    public List<string> GetSnapableDirections(GameObject part) => GetSnapableDirections(GetPartID(part));
+    //public List<string> GetSnapableDirections(GameObject part) => GetSnapableDirections(GetPartID(part));
 
     public float GetMass(GameObject part) {
         if (part == null) return -1;
@@ -76,15 +76,15 @@ public class SpacecraftPartDatabase : MonoBehaviour {
 
     public PartScriptableObject[] GetAllParts() => allParts;
 
-    public List<string> GetSnapableDirections(int id) {
-        foreach (PartScriptableObject partSO in allParts) {
-            if (partSO.partID == id) {
-                return partSO.connectingDirections.ToList();
-            }
-        }
-
-        return null;
-    }
+    // public List<string> GetSnapableDirections(int id) {
+    //     foreach (PartScriptableObject partSO in allParts) {
+    //         if (partSO.partID == id) {
+    //             return partSO.connectingDirections.ToList();
+    //         }
+    //     }
+    //
+    //     return null;
+    // }
     
     public bool PartIsStackable(int id) {
         foreach (PartScriptableObject partSO in allParts) {
@@ -95,4 +95,24 @@ public class SpacecraftPartDatabase : MonoBehaviour {
     }
 
     public bool PartIsStackable(GameObject part) => PartIsStackable(GetPartID(part));
+    
+    public bool PartIsRotatable(int id) {
+        foreach (PartScriptableObject partSO in allParts) {
+            if (partSO.partID == id) return partSO.isRotatable;
+        }
+
+        return false;
+    }
+
+    public bool PartIsRotatable(GameObject part) => PartIsRotatable(GetPartID(part));
+
+    public PartScriptableObject GetPartSO(int id) {
+        foreach (PartScriptableObject partSO in allParts) {
+            if (partSO.partID == id) return partSO;
+        }
+        
+        return null;
+    }
+    
+    public PartScriptableObject GetPartSO(GameObject part) => GetPartSO(GetPartID(part));
 }

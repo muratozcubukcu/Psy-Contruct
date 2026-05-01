@@ -57,7 +57,7 @@ public class Engine : MonoBehaviour {
     }
 
     private void ActivateEngine() {
-        Vector2 initialThrust = speed * InitialSpeedRampUp() * transform.up;
+        Vector2 initialThrust = speed * InitialSpeedRampUp() * -transform.up;
         Vector2 finalThrust = SoftSpeedLimitMultiplier(initialThrust);
         
         spacecraftRB.AddForceAtPosition(finalThrust, transform.position);

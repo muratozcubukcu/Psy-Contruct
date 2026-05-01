@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fecb330e8931746bf99d864951b78e1c, type: 3}
-  m_Name: RightEnginePart
+  m_Name: EnginePart
   m_EditorClassIdentifier: 
-  part: {fileID: 6762445239661676325, guid: 0d7a91cd415c74e8f80d72c867e7c22c, type: 3}
-  partID: 11
+  part: {fileID: 6762445239661676325, guid: 74a88790636774073b1ba566f11faf4a, type: 3}
+  partID: 2
   mass: 1
-  connectingDirections:
-  - left
+  isStackable: 0
+  isRotatable: 1

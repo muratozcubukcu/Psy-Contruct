@@ -1036,6 +1036,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RotatePart"",
+                    ""type"": ""Button"",
+                    ""id"": ""4b3c2b75-a1eb-4ead-8f4b-750ee497bbb9"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1129,17 +1138,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""cc7e1855-face-4e08-a8bc-de14f90f2738"",
-                    ""path"": """",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""LeftMouseClick"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""13a92b44-11d6-4f9a-862e-b31c36d5e2b0"",
                     ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
@@ -1151,23 +1149,23 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""ef2c34fa-81a2-45aa-aaa0-d0028f7f2845"",
-                    ""path"": """",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""DeletePart"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""f2141de3-bf50-48b1-a39e-3a8017d72cdc"",
                     ""path"": ""<Keyboard>/backspace"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""DeletePart"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""adcc35dd-12d6-4437-b025-68fb38933c9d"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""RotatePart"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1274,6 +1272,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_SpacecraftBuilding_KeyEight = m_SpacecraftBuilding.FindAction("KeyEight", throwIfNotFound: true);
         m_SpacecraftBuilding_LeftMouseClick = m_SpacecraftBuilding.FindAction("LeftMouseClick", throwIfNotFound: true);
         m_SpacecraftBuilding_DeletePart = m_SpacecraftBuilding.FindAction("DeletePart", throwIfNotFound: true);
+        m_SpacecraftBuilding_RotatePart = m_SpacecraftBuilding.FindAction("RotatePart", throwIfNotFound: true);
     }
 
     ~@InputSystem_Actions()
@@ -1831,6 +1830,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_SpacecraftBuilding_KeyEight;
     private readonly InputAction m_SpacecraftBuilding_LeftMouseClick;
     private readonly InputAction m_SpacecraftBuilding_DeletePart;
+    private readonly InputAction m_SpacecraftBuilding_RotatePart;
     /// <summary>
     /// Provides access to input actions defined in input action map "SpacecraftBuilding".
     /// </summary>
@@ -1882,6 +1882,10 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "SpacecraftBuilding/DeletePart".
         /// </summary>
         public InputAction @DeletePart => m_Wrapper.m_SpacecraftBuilding_DeletePart;
+        /// <summary>
+        /// Provides access to the underlying input action "SpacecraftBuilding/RotatePart".
+        /// </summary>
+        public InputAction @RotatePart => m_Wrapper.m_SpacecraftBuilding_RotatePart;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1938,6 +1942,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @DeletePart.started += instance.OnDeletePart;
             @DeletePart.performed += instance.OnDeletePart;
             @DeletePart.canceled += instance.OnDeletePart;
+            @RotatePart.started += instance.OnRotatePart;
+            @RotatePart.performed += instance.OnRotatePart;
+            @RotatePart.canceled += instance.OnRotatePart;
         }
 
         /// <summary>
@@ -1979,6 +1986,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @DeletePart.started -= instance.OnDeletePart;
             @DeletePart.performed -= instance.OnDeletePart;
             @DeletePart.canceled -= instance.OnDeletePart;
+            @RotatePart.started -= instance.OnRotatePart;
+            @RotatePart.performed -= instance.OnRotatePart;
+            @RotatePart.canceled -= instance.OnRotatePart;
         }
 
         /// <summary>
@@ -2311,5 +2321,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnDeletePart(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "RotatePart" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRotatePart(InputAction.CallbackContext context);
     }
 }
