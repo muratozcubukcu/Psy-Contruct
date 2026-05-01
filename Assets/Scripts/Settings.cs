@@ -5,6 +5,7 @@ public class Settings : MonoBehaviour
     public static Settings Instance;
 
     public bool colorblindMode {get; private set;} = false;
+    public bool tutorialEnabled {get; private set;} = true;
     public bool hintsEnabled { get; private set; } = true;
     public bool timerEnabled { get; private set; } = true;
     public float brightness { get; private set; } = 1f;
@@ -61,5 +62,17 @@ public class Settings : MonoBehaviour
         difficulty = (difficulty + 1) % 3;
         // TODO: Apply difficulty modifiers to game systems
         return difficulty;
+    }
+
+    public bool toggleTutorial()
+    {
+        tutorialEnabled = !tutorialEnabled;
+        return tutorialEnabled;
+    }
+
+    public bool toggleTutorial(bool newSetting)
+    {
+        tutorialEnabled = newSetting;
+        return tutorialEnabled;
     }
 }

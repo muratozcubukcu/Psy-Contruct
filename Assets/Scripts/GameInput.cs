@@ -224,6 +224,7 @@ public class GameInput : MonoBehaviour {
         // Passed requirements -> go to FlightFactsScene
         SceneManager.LoadScene("FlightFactsScene");
         
+        Settings.Instance.toggleTutorial(false);
         inputActions.Spacecraft.Disable();
         inputActions.SpacecraftBuilding.Disable();
     }

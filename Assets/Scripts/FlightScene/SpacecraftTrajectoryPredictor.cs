@@ -51,6 +51,10 @@ public class SpacecraftTrajectoryPredictor : MonoBehaviour {
     [SerializeField] private bool drawTrajectory = true;
     // Color at the start of the line (closest to the ship).
     [SerializeField] private Color startColor = new Color(0.4f, 0.9f, 1f, 1f);
+
+    [SerializeField] private Color slingshotStartColor = new Color(0.2f, 1f, 0.3f, 1f);  
+    [SerializeField] private Color slingshotEndColor = new Color(0.2f, 1f, 0.3f, 0.1f);
+
     // Color at the far end of the line (fades out).
     [SerializeField] private Color endColor   = new Color(0.4f, 0.9f, 1f, 0.1f);
 
@@ -67,6 +71,8 @@ public class SpacecraftTrajectoryPredictor : MonoBehaviour {
     [Tooltip("If empty, the predictor finds all PlanetGravitySource objects in the scene at Start.")]
     // List of gravity sources used in the prediction. Leave empty to auto-fill.
     [SerializeField] private List<PlanetGravitySource> gravitySources = new();
+
+    [SerializeField] private MarsSlingshotPlanner slingshotPlanner;
 
     /// <summary>Public on/off switch. Other scripts (UI, settings) can flip this to show/hide the line.</summary>
     public bool DrawTrajectory {
@@ -104,6 +110,8 @@ public class SpacecraftTrajectoryPredictor : MonoBehaviour {
         if (gravitySources == null || gravitySources.Count == 0) {
             gravitySources = new List<PlanetGravitySource>(FindObjectsByType<PlanetGravitySource>(FindObjectsSortMode.None));
         }
+        if (slingshotPlanner == null)
+            slingshotPlanner = FindFirstObjectByType<MarsSlingshotPlanner>();
     }
 
     private void Update() {
@@ -171,8 +179,9 @@ public class SpacecraftTrajectoryPredictor : MonoBehaviour {
 
         // Push the predicted points into the LineRenderer for drawing.
         line.enabled = true;
-        line.startColor = startColor;
-        line.endColor = endColor;
+        bool viable = slingshotPlanner != null && slingshotPlanner.IsSlingshotViable;
+        line.startColor = viable ? slingshotStartColor : startColor;
+        line.endColor = viable ? slingshotEndColor : endColor;
         line.positionCount = actualCount;
         for (int i = 0; i < actualCount; i++) line.SetPosition(i, points[i]);
     }

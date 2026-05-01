@@ -196,6 +196,7 @@ public class PartDrag : MonoBehaviour {
         
         if(partDB.PartIsStackable(part)) {
             SetSortingLayer(stackablePartLayer, part);
+            part.transform.position += new Vector3(0,0,-1);
             shipGrid.partStackedOn[part] = shipGrid.GetPlacedPartByWorldPosition(worldPosition);
         }
         else SetSortingLayer(defaultLayer, part);
