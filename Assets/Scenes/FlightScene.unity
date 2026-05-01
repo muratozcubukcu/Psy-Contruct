@@ -332,7 +332,7 @@ MonoBehaviour:
   toggleKey: 34
   hotkeyEnabled: 1
   gravitySources: []
-  slingshotPlanner: {fileID: 0}
+  slingshotPlanner: {fileID: 1257377409}
 --- !u!120 &40961371
 LineRenderer:
   serializedVersion: 2
