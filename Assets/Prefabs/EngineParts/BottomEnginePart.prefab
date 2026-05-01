@@ -256,15 +256,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: -1
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: fd262a43ea1f56b47b567dea707bc414, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: fd262a43ea1f56b47b567dea707bc414, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4280624421
-  m_fontColor: {r: 0.14509805, g: 0.14509805, b: 0.14509805, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -452,8 +452,6 @@ MonoBehaviour:
   engineOnSprite: {fileID: 7482667652216324306, guid: c3d9e4f50a1b2c3d4e5f6a7b8c9d0e1f, type: 3}
   engineFirePrefab: {fileID: 7991122334455667792, guid: e3f4a5b6c7d8e9f01a2b3c4d5e6f7081, type: 3}
   engineFireOffset: {x: 0, y: -0.5}
-  respondsTo: 1
-  turnTorqueThreshold: 0.1
   fuelCostPerSecond: 1
   energyCostPerSecond: 2
   _engineID: 0
