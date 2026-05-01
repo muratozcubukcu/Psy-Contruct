@@ -51,28 +51,20 @@ public class Spacecraft : MonoBehaviour {
     public Vector3 centerOfMass;
     
     private void Awake() {
-        // Singleton pattern to prevent duplicate spacecrafts
         if (Instance != null && Instance != this) {
             Destroy(gameObject);
             return;
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        
-        // Get Rigidbody2D from self or children (SpacecraftStart)
         rb = GetComponentInChildren<Rigidbody2D>();
 
-        // Initialize health and energy
         currentHealth = maxHealth;
         currentEnergy = maxEnergy;
-    }
-    
-    private void Start() {
-        // Listen for scene changes to update physics mode
         SceneManager.sceneLoaded += OnSceneLoaded;
         SceneManager.sceneUnloaded += OnSceneUnloaded;
-
-        // Initialize physics mode based on current scene
+    }
+    private void Start() {
         UpdatePhysicsMode();
     }
 
@@ -144,22 +136,29 @@ public class Spacecraft : MonoBehaviour {
     private void SetFlightMode() {
         IsBuildMode = false;
         IsFlightMode = true;
-        
+
         Engine[] engineScripts = GetComponentsInChildren<Engine>();
-        
+
         // DISABLE PartDrag components in flight mode so parts can't be dragged
         PartDrag[] partDrags = GetComponentsInChildren<PartDrag>();
         foreach (PartDrag partDrag in partDrags) {
             partDrag.enabled = false;
         }
-        
-        // Enable main spacecraft physics
+
+        rb.position = Vector2.zero;
+        rb.rotation = 0f;
+        transform.position = Vector3.zero;
+        transform.rotation = Quaternion.identity;
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+
         rb.simulated = true;
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.gravityScale = 0f;
         rb.excludeLayers = 0;
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
-        
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+
         rb.WakeUp();
 
         // Enable engines
@@ -292,8 +291,30 @@ public class Spacecraft : MonoBehaviour {
                 childRb.linearVelocity = linearVelocity;
             }
         } else {
-            foreach (Transform child in transform) {
-                Destroy(child.gameObject.GetComponent<Rigidbody2D>());
+            System.Collections.Generic.List<Transform> children = new();
+            foreach (Transform child in transform) children.Add(child);
+
+            foreach (Transform child in children) {
+                Rigidbody2D childRb = child.gameObject.GetComponent<Rigidbody2D>();
+
+                Vector3 worldPos = child.position;
+                Quaternion worldRot = child.rotation;
+
+                child.SetParent(null, true);
+                if (childRb != null) DestroyImmediate(childRb);
+                child.SetParent(transform, true);
+
+                child.position = worldPos;
+                child.rotation = worldRot;
+            }
+
+            Physics2D.SyncTransforms();
+
+            int total = 0;
+            int bound = 0;
+            foreach (Collider2D col in GetComponentsInChildren<Collider2D>()) {
+                total++;
+                if (col.attachedRigidbody == rb) bound++;
             }
         }
     }
@@ -307,9 +328,9 @@ public class Spacecraft : MonoBehaviour {
     }
 
     private void OnDestroy() {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-        
         if (Instance == this) {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            SceneManager.sceneUnloaded -= OnSceneUnloaded;
             Instance = null;
             Engine.totalEngineCount = 0;
         }
