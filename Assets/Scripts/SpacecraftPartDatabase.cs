@@ -12,6 +12,7 @@ public class SpacecraftPartDatabase : MonoBehaviour {
     public bool hasSavedGridState = false;
     public int[,] savedGridState;
     public Dictionary<(int, int), GameObject> savedPlacedParts;
+    public Dictionary<GameObject, GameObject> savedPartStackedOn;
 
     public void Awake() {
         if (Instance != null && Instance != this) {
@@ -84,4 +85,14 @@ public class SpacecraftPartDatabase : MonoBehaviour {
 
         return null;
     }
+    
+    public bool PartIsStackable(int id) {
+        foreach (PartScriptableObject partSO in allParts) {
+            if (partSO.partID == id) return partSO.isStackable;
+        }
+
+        return false;
+    }
+
+    public bool PartIsStackable(GameObject part) => PartIsStackable(GetPartID(part));
 }
