@@ -140,8 +140,23 @@ public class MarsSlingshotPlanner : MonoBehaviour {
 
     public bool IsSlingshotViable {
         get {
-            if (!inMarsRange || !lastPathWasConic || snapshotConic == null || MarsTf == null) return false;
-            return IsHeadingAligned(snapshotConic.Value, ShipPos, MarsTf.position);
+            if (MarsTf == null || ShipTf == null || PsycheTf == null) return false;
+
+            Vector2 ship = ShipPos;
+            Vector2 mars = MarsTf.position;
+            Vector2 psy = PsychePos;
+
+            Conic conic;
+            if (inMarsRange && lastPathWasConic && snapshotConic != null) {
+                conic = snapshotConic.Value;
+            } else if (TrySolveConic(ship, mars, psy, out conic)) {
+                // Outside the range still predict if the player is going the right direction
+                // so it isnt a supreise for them when they enter the range.
+            } else {
+                return false;
+            }
+
+            return IsHeadingAligned(conic, ship, mars);
         }
     }
 
@@ -267,15 +282,20 @@ public class MarsSlingshotPlanner : MonoBehaviour {
         float vr = c.e * Mathf.Sin(nu_s);
         float vt = 1f + c.e * Mathf.Cos(nu_s);
 
-        // Flip tangential if the orbit goes clockwise.
-        float rotSign = PickRotationSignFromMotion(ship, mars, PsychePos);
+        // Geometric rotation pick avoids the feedback loop where heading is compared against
+        // an orbit whose direction was itself picked from heading.
+        float rotSign = PickRotationSign(ship, mars, PsychePos);
         if (rotSign < 0f) tangential = -tangential;
 
         Vector2 orbitDir = (radial * vr + tangential * vt).normalized;
-        if (orbitDir.sqrMagnitude < 1e-6f) return true;
+        if (orbitDir.sqrMagnitude < 1e-6f) return false;
 
-        Vector2 heading = EffectiveHeading.normalized;
-        if (heading.sqrMagnitude < 1e-6f) return true;
+        // Compare against actual movement, not facing. The trajectory line is
+        // drawn from linearVelocity, so the green path must agree with the
+        // visible path, rotating the ship in place must not flip the color.
+        Vector2 vel = ShipVelocity;
+        if (vel.sqrMagnitude < 1e-4f) return false;
+        Vector2 heading = vel.normalized;
 
         float angle = Mathf.Acos(Mathf.Clamp(Vector2.Dot(orbitDir, heading), -1f, 1f)) * Mathf.Rad2Deg;
         return angle <= headingToleranceDegrees;
