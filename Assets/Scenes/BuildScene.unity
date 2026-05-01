@@ -2051,6 +2051,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7068144653252683184, guid: b5838c8dd365c41938fdeb829c872418, type: 3}
+      propertyPath: m_text
+      value: Engine
+      objectReference: {fileID: 0}
+    - target: {fileID: 7093587995926586007, guid: b5838c8dd365c41938fdeb829c872418, type: 3}
+      propertyPath: m_Name
+      value: EnginePart_Item
+      objectReference: {fileID: 0}
     - target: {fileID: 7093587995926586007, guid: b5838c8dd365c41938fdeb829c872418, type: 3}
       propertyPath: m_Layer
       value: 5
@@ -2244,7 +2252,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 1854176237107617873, guid: b5838c8dd365c41938fdeb829c872418, type: 3}
+    - {fileID: 5409729045143248607, guid: b5838c8dd365c41938fdeb829c872418, type: 3}
+    - {fileID: 3056472568351257505, guid: b5838c8dd365c41938fdeb829c872418, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 7883405808629940061, guid: b5838c8dd365c41938fdeb829c872418, type: 3}
       insertIndex: -1
@@ -3325,9 +3336,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c63005a3c3b694453aa1f6b4bd705350, type: 2}
   - {fileID: 11400000, guid: 9537f0a38e17942ba82ec48edf64e9db, type: 2}
   - {fileID: 11400000, guid: 36e1748bf7b7e4da2b517896c9ddd56a, type: 2}
-  - {fileID: 11400000, guid: f80fe65e1dd304ef3bc67a9c13bf02d0, type: 2}
-  - {fileID: 11400000, guid: 1a651338457cd46cbb9735a47bf18629, type: 2}
-  - {fileID: 11400000, guid: 7beccdbedef2846fbb900718d5e709dd, type: 2}
   - {fileID: 11400000, guid: 066207d92bcac634d857cc8447cc872d, type: 2}
   hasSavedGridState: 0
 --- !u!4 &2065645525
