@@ -2443,7 +2443,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 0000000077ad6bf9234713a6
+  m_ApplyToSortingLayers: 00000000234713a695eb9a9b
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -3658,7 +3658,6 @@ MonoBehaviour:
   approachColor: {r: 1, g: 0.4, b: 0.4, a: 1}
   arcColor: {r: 1, g: 0.85, b: 0.2, a: 1}
   exitColor: {r: 0.4, g: 1, b: 0.5, a: 1}
-  lineWidth: 0.08
   headingToleranceDegrees: 35
   marsGravity: {fileID: 0}
   headingSource: 2

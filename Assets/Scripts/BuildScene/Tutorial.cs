@@ -45,7 +45,7 @@ public class Tutorial : MonoBehaviour
             case "ShipPart":
                 ShipAdded = true;
                 break;
-            case "BottomEnginePart": case "LeftEnginePart": case "RightEnginePart": case "TopEnginePart":
+            case "EnginePart":
                 EngineAdded = true;
                 break;
             case "GammaRayPart":
