@@ -280,7 +280,14 @@ public class MarsSlingshotPlanner : MonoBehaviour {
 
         float angle = Mathf.Acos(Mathf.Clamp(Vector2.Dot(orbitDir, heading), -1f, 1f)) * Mathf.Rad2Deg;
         float trueAngle = Math.Abs(angle - 180);
-        return trueAngle <= headingToleranceDegrees;
+
+        if (trueAngle <= headingToleranceDegrees) {
+            MinimapManager.Instance.highlightBorder = true;
+            return true;
+        }
+        
+        MinimapManager.Instance.highlightBorder = false;
+        return false;
     }
 
     // A "conic section" - the family of curves that includes ellipses,

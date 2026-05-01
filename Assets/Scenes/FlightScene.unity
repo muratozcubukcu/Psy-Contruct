@@ -5729,6 +5729,7 @@ MonoBehaviour:
   spacecraftIcon: {fileID: 1097992116}
   marsIcon: {fileID: 35641240}
   psycheIcon: {fileID: 1067695874}
+  highlightBorder: 0
 --- !u!4 &2061095433
 Transform:
   m_ObjectHideFlags: 0
