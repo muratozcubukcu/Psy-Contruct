@@ -6,8 +6,7 @@ using UnityEngine;
 // -----------------------------------------------------------------------------
 // What it does:
 //   Plans and draws a slingshot path that swings the ship around Mars and
-//   ends pointed at Psyche. The path appears as a colored line in the game
-//   world.
+//   ends pointed at Psyche. The path appears as a colored line on the minimap.
 //
 // How it works:
 //   When the ship gets close enough to Mars (enters the gravity range), we
@@ -31,13 +30,6 @@ using UnityEngine;
 
 /// <summary>Snapshot-on-entry slingshot planner: captures a Keplerian conic when ship enters Mars's range and holds it until exit.</summary>
 public class MarsSlingshotPlanner : MonoBehaviour {
-
-    // Manual transform hookups. If left empty, we fall back to the singleton
-    // instances of Mars, Psyche, and Spacecraft.
-    [SerializeField] private Transform marsOverride;
-    [SerializeField] private Transform psycheOverride;
-    [SerializeField] private Transform spacecraftOverride;
-
     // Closest distance the curve is allowed to come to Mars. Used as a fallback
     // when 'useMarsColliderRadius' is off or no collider is found.
     [SerializeField] private float periapsisRadius = 5f;
@@ -51,7 +43,8 @@ public class MarsSlingshotPlanner : MonoBehaviour {
     [Header("Snapshot Trigger")]
     // If > 0, this overrides the automatic entry distance. Useful for tuning
     // without touching the gravity source.
-    [SerializeField] private float entryRangeOverride = 0f;
+    [SerializeField] private CircleCollider2D entryCollider;
+    
     // The exit distance is the entry distance times this number. Having
     // exit > entry creates "hysteresis" so the path doesn't flicker on/off
     // when the ship hovers right at the boundary.
@@ -73,8 +66,6 @@ public class MarsSlingshotPlanner : MonoBehaviour {
     [SerializeField] private Color arcColor = new Color(1f, 0.85f, 0.2f, 1f);
     // Color of the last part of the line (heading toward Psyche).
     [SerializeField] private Color exitColor = new Color(0.4f, 1f, 0.5f, 1f);
-    // Thickness of the line in world units.
-    [SerializeField] private float lineWidth = 0.4f;
 
     [Header("Gravity Sources (optional)")]
     // Reference to Mars's PlanetGravitySource. We use it to know how big
@@ -133,16 +124,13 @@ public class MarsSlingshotPlanner : MonoBehaviour {
 
     // Resolves the Mars transform - prefer the manual override, fall back to
     // the singleton instance.
-    private Transform MarsTf => marsOverride != null ? marsOverride
-        : (Mars.Instance != null ? Mars.Instance.transform : null);
+    private Transform MarsTf => Mars.Instance.transform;
 
     // Same lookup pattern for Psyche.
-    private Transform PsycheTf => psycheOverride != null ? psycheOverride
-        : (PsycheAsteroid.Instance != null ? PsycheAsteroid.Instance.transform : null);
+    private Transform PsycheTf => PsycheAsteroid.Instance.transform;
 
     // Same lookup pattern for the spacecraft.
-    private Transform ShipTf => spacecraftOverride != null ? spacecraftOverride
-        : (Spacecraft.GetInstance() != null ? Spacecraft.GetInstance().transform : null);
+    private Transform ShipTf => Spacecraft.GetInstance().transform;
 
     // Picks the actual closest-approach radius the math will use.
     // If allowed, reads it from Mars's collider so it scales with the planet sprite.
@@ -177,15 +165,7 @@ public class MarsSlingshotPlanner : MonoBehaviour {
         }
     }
 
-    // Picks the trigger distance (when the snapshot fires).
-    // Order: manual override -> Mars's gravity radius -> hardcoded 60.
-    private float EntryRange {
-        get {
-            if (entryRangeOverride > 0f) return entryRangeOverride;
-            if (marsGravity != null) return marsGravity.GetGravityRadius();
-            return 60f;
-        }
-    }
+    private float entryRange;
 
     /// <summary>
     /// Main public method. Returns the current slingshot path as world-space points.
@@ -207,7 +187,7 @@ public class MarsSlingshotPlanner : MonoBehaviour {
         // Distance from ship to Mars right now.
         float dShip = (ship - mars).magnitude;
         // Distance at which we should compute a new path (entering range).
-        float entryR = EntryRange;
+        float entryR = entryRange;
         // Distance at which we should clear the path (leaving range).
         float exitR = entryR * exitRangeMultiplier;
 
@@ -402,6 +382,7 @@ public class MarsSlingshotPlanner : MonoBehaviour {
         if (Mathf.Sign(dirB) == Mathf.Sign(rotSign)) { conic = candB; return true; }
         // Last resort.
         conic = candA;
+        Debug.Log("good orbit path");
         return true;
     }
 
@@ -532,6 +513,7 @@ public class MarsSlingshotPlanner : MonoBehaviour {
     }
 
     private void Start() {
+        entryRange = entryCollider.radius + 5; // +5 ensures that the arc is set before the minimap shows up
         // If we weren't given a Mars gravity reference, try to find one on Mars.
         if (marsGravity == null && MarsTf != null) {
             marsGravity = MarsTf.GetComponent<PlanetGravitySource>()
@@ -594,8 +576,6 @@ public class MarsSlingshotPlanner : MonoBehaviour {
             // High sortingOrder so the line draws over planets, not under them.
             pathLine.sortingOrder = 100;
         }
-        pathLine.startWidth = lineWidth;
-        pathLine.endWidth = lineWidth;
     }
 
     // Editor-only preview. Shows the closest-approach circle, the entry and
@@ -610,7 +590,7 @@ public class MarsSlingshotPlanner : MonoBehaviour {
 
         // Range gizmos only make sense at runtime (positions are static otherwise).
         if (Application.isPlaying) {
-            float entryR = EntryRange;
+            float entryR = entryRange;
             // Green = where the snapshot fires.
             Gizmos.color = new Color(0.4f, 1f, 0.5f, 0.4f);
             Gizmos.DrawWireSphere(MarsTf.position, entryR);

@@ -49,8 +49,6 @@ public class SpacecraftTrajectoryPredictor : MonoBehaviour {
     [Header("Display")]
     // Master on/off switch. Set false to hide the line entirely.
     [SerializeField] private bool drawTrajectory = true;
-    // Thickness of the line in world units.
-    [SerializeField] private float lineWidth = 0.15f;
     // Color at the start of the line (closest to the ship).
     [SerializeField] private Color startColor = new Color(0.4f, 0.9f, 1f, 1f);
     // Color at the far end of the line (fades out).
@@ -173,8 +171,6 @@ public class SpacecraftTrajectoryPredictor : MonoBehaviour {
 
         // Push the predicted points into the LineRenderer for drawing.
         line.enabled = true;
-        line.startWidth = lineWidth;
-        line.endWidth = lineWidth;
         line.startColor = startColor;
         line.endColor = endColor;
         line.positionCount = actualCount;

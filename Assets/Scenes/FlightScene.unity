@@ -286,7 +286,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -5.71, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_LocalScale: {x: 15, y: 15, z: 15}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2061095433}
@@ -302,7 +302,7 @@ GameObject:
   - component: {fileID: 40961372}
   - component: {fileID: 40961371}
   - component: {fileID: 40961370}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: SpacecraftTrajectory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -325,7 +325,6 @@ MonoBehaviour:
   stepSeconds: 0.05
   crashCutoffDistance: 1.5
   drawTrajectory: 1
-  lineWidth: 0.15
   startColor: {r: 0.4, g: 0.9, b: 1, a: 1}
   endColor: {r: 0.4, g: 0.9, b: 1, a: 0.1}
   toggleKey: 34
@@ -381,7 +380,7 @@ LineRenderer:
   - {x: 0, y: 0, z: 1}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 1
+    widthMultiplier: 2
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -1409,8 +1408,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundImage: {fileID: 1819003843}
-  tickWidth: 2
-  tickColor: {r: 0, g: 0, b: 0, a: 0.7}
+  tickWidth: 5
+  tickColor: {r: 0.14901961, g: 0.14901961, b: 0.14901961, a: 1}
 --- !u!1 &291862267
 GameObject:
   m_ObjectHideFlags: 0
@@ -1720,7 +1719,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 50
+  orthographic size: 100
   m_Depth: 1
   m_CullingMask:
     serializedVersion: 2
@@ -3262,7 +3261,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 4.44, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_LocalScale: {x: 15, y: 15, z: 15}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2061095433}
@@ -3520,7 +3519,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 4.81, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_LocalScale: {x: 15, y: 15, z: 15}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2061095433}
@@ -3625,7 +3624,7 @@ GameObject:
   - component: {fileID: 1257377409}
   - component: {fileID: 1257377411}
   - component: {fileID: 1257377412}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: MarsSlingshot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3644,13 +3643,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cbbb333eb324c8409858a4116f4d316, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  marsOverride: {fileID: 0}
-  psycheOverride: {fileID: 0}
-  spacecraftOverride: {fileID: 0}
   periapsisRadius: 5
   useMarsColliderRadius: 1
   radiusMargin: 10
-  entryRangeOverride: 0
+  entryCollider: {fileID: 1467373182}
   exitRangeMultiplier: 1.25
   conicSegments: 96
   drawRuntimePath: 1
@@ -3658,8 +3654,7 @@ MonoBehaviour:
   approachColor: {r: 1, g: 0.4, b: 0.4, a: 1}
   arcColor: {r: 1, g: 0.85, b: 0.2, a: 1}
   exitColor: {r: 0.4, g: 1, b: 0.5, a: 1}
-  lineWidth: 0.08
-  marsGravity: {fileID: 0}
+  marsGravity: {fileID: 2084250062}
   headingSource: 2
   velocityHeadingThresholdSqr: 4
   invertSlingshotSide: 0
@@ -3728,7 +3723,7 @@ LineRenderer:
   - {x: 0, y: 0, z: 1}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 1
+    widthMultiplier: 2
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -4629,7 +4624,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 50
+  m_Radius: 140
 --- !u!1 &1468864647
 GameObject:
   m_ObjectHideFlags: 0
