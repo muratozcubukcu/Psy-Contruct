@@ -238,10 +238,13 @@ MonoBehaviour:
   drawTrajectory: 1
   lineWidth: 0.15
   startColor: {r: 0.4, g: 0.9, b: 1, a: 1}
+  slingshotStartColor: {r: 0.2, g: 1, b: 0.3, a: 1}
+  slingshotEndColor: {r: 0.2, g: 1, b: 0.3, a: 0.1}
   endColor: {r: 0.4, g: 0.9, b: 1, a: 0.1}
   toggleKey: 34
   hotkeyEnabled: 1
   gravitySources: []
+  slingshotPlanner: {fileID: 0}
 --- !u!120 &40961371
 LineRenderer:
   serializedVersion: 2
@@ -4030,9 +4033,6 @@ MonoBehaviour:
   smallAsteroid: {fileID: 1273717868519207366, guid: 3a456e6ef62194cb6a06b67797cd728e, type: 3}
   camera: {fileID: 519420031}
   damageCooldown: 1
-  predictionLeadSeconds: 1
-  aimSpreadDegrees: 20
-  approachSpeed: 6
 --- !u!4 &1414360248
 Transform:
   m_ObjectHideFlags: 0

@@ -112,6 +112,8 @@ public class MarsSlingshotPlanner : MonoBehaviour {
     private bool externallyFrozen;
     private Vector3[] externallyFrozenPath;
 
+    private bool lastPathWasConic = false;
+
     /// <summary>True while FreezePath() has locked the path in place.</summary>
     public bool IsFrozen => externallyFrozen;
 
@@ -130,6 +132,8 @@ public class MarsSlingshotPlanner : MonoBehaviour {
 
     /// <summary>True if we currently have a usable path (at least 2 points).</summary>
     public bool IsSolutionValid => snapshotPath != null && snapshotPath.Length >= 2;
+
+    public bool IsSlingshotViable => inMarsRange && lastPathWasConic;
 
     // Resolves the Mars transform - prefer the manual override, fall back to
     // the singleton instance.
@@ -230,8 +234,10 @@ public class MarsSlingshotPlanner : MonoBehaviour {
     // arc if the math fails (degenerate case, ship inside Mars, etc.).
     private Vector3[] BuildSlingshotPlan(Vector2 ship, Vector2 mars, Vector2 psy) {
         if (TrySolveConic(ship, mars, psy, out Conic c)) {
+            lastPathWasConic = true;
             return SampleConic(c, ship, mars, psy);
         }
+        lastPathWasConic = false;
         return BuildGeometricArc(ship, mars, psy);
     }
 
