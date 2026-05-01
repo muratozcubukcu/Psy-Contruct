@@ -1,9 +1,7 @@
 using UnityEngine;
 using System;
-using System.Collections;
 using UnityEditor;
 using UnityEngine.SceneManagement;
-using TMPro;
 
 //Class that handles input and triggers events based on it.
 
@@ -129,14 +127,14 @@ public class GameInput : MonoBehaviour {
     }
 
     public void SetBuildScene() {
-        StartCoroutine(LoadSceneWithLoadingScreen("BuildScene"));
+        SceneManager.LoadScene("BuildScene");
 
         inputActions.Spacecraft.Disable();
         inputActions.SpacecraftBuilding.Enable();
     }
 
     public void SetFlightScene() {
-        StartCoroutine(LoadSceneWithLoadingScreen("FlightScene"));
+        SceneManager.LoadScene("FlightScene");
         
         inputActions.SpacecraftBuilding.Disable();
         inputActions.Spacecraft.Enable();
@@ -159,7 +157,7 @@ public class GameInput : MonoBehaviour {
         }
         
         // Passed requirements -> go to FlightFactsScene
-        StartCoroutine(LoadSceneWithLoadingScreen("FlightFactsScene"));
+        SceneManager.LoadScene("FlightFactsScene");
         
         Settings.Instance.toggleTutorial(false);
         inputActions.Spacecraft.Disable();
@@ -167,35 +165,35 @@ public class GameInput : MonoBehaviour {
     }
 
     public void SetCreditsScene() {
-        StartCoroutine(LoadSceneWithLoadingScreen("CreditsScene"));
+        SceneManager.LoadScene("CreditsScene");
 
         inputActions.Spacecraft.Disable();
         inputActions.SpacecraftBuilding.Disable();
     }
 
     public void SetMissionDetailsScene() {
-        StartCoroutine(LoadSceneWithLoadingScreen("MissionDetailsScene"));
+        SceneManager.LoadScene("MissionDetailsScene");
 
         inputActions.Spacecraft.Disable();
         inputActions.SpacecraftBuilding.Disable();
     }
 
     public void SetSettingsScene() {
-        StartCoroutine(LoadSceneWithLoadingScreen("SettingsScene"));
+        SceneManager.LoadScene("SettingsScene");
 
         inputActions.Spacecraft.Disable();
         inputActions.SpacecraftBuilding.Disable();
     }
 
     public void SetMissionFactsScene() {
-        StartCoroutine(LoadSceneWithLoadingScreen("MissionFactsScene"));
+        SceneManager.LoadScene("MissionFactsScene");
 
         inputActions.Spacecraft.Disable();
         inputActions.SpacecraftBuilding.Disable();
     }
 
     public void SetMainMenuScene() {
-        StartCoroutine(LoadSceneWithLoadingScreen("MainMenuScene"));
+        SceneManager.LoadScene("MainMenuScene");
         
         Spacecraft spacecraft = Spacecraft.GetInstance();
         if (spacecraft != null) Destroy(spacecraft.gameObject);
@@ -206,32 +204,10 @@ public class GameInput : MonoBehaviour {
 
     public void SetGameOverScene(bool victory) {
         GameOverUI.isVictory = victory;
-        StartCoroutine(LoadSceneWithLoadingScreen("GameOverScene"));
+        SceneManager.LoadScene("GameOverScene");
 
         inputActions.Spacecraft.Disable();
         inputActions.SpacecraftBuilding.Disable();
-    }
-
-    private IEnumerator LoadSceneWithLoadingScreen(string targetScene)
-    {
-        Debug.Log("start of function");
-        LoadingScreen ls = LoadingScreen.Instance;
-        ls.Enable();
-        Debug.Log("loading started");
-        
-        AsyncOperation loadOperation = SceneManager.LoadSceneAsync(targetScene);
-
-        while (!loadOperation.isDone)
-        {
-            Debug.Log("updating loading text");
-            ls.text.text = "Loading.";
-            yield return new WaitForSeconds(0.2f);
-            ls.text.text = "Loading..";
-            yield return new WaitForSeconds(0.2f);
-            ls.text.text = "Loading...";
-            yield return new WaitForSeconds(0.2f);
-
-        }
     }
 
     private void OnDisable() {
