@@ -251,11 +251,10 @@ public class Spacecraft : MonoBehaviour {
         
         //To find center of mass, use equation (summation of mp) / totalMass.
         //Where m is individual part mass and p is the individual part local position relative to the other parts. 
-        float partMass;
         float totalMass = 0f;
         Vector2 numerator = new Vector2(0, 0);
         foreach (Transform part in transform) {
-            partMass = partDb.GetMass(partDb.GetPartGameObject(part.name));
+            float partMass = partDb.GetMass(partDb.GetPartGameObject(part.name));
             totalMass += partMass;
 
             numerator += partMass * (Vector2)part.position;
