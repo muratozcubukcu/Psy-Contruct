@@ -601,6 +601,10 @@ PrefabInstance:
       propertyPath: partData
       value: 
       objectReference: {fileID: 11400000, guid: 9389f319bd62f4933a429d043327b12f, type: 2}
+    - target: {fileID: 6735537568830996876, guid: 653970da2f13544aba4153761e8edd95, type: 3}
+      propertyPath: m_text
+      value: Spacecraft Body
+      objectReference: {fileID: 0}
     - target: {fileID: 6960247753074525129, guid: 653970da2f13544aba4153761e8edd95, type: 3}
       propertyPath: m_Name
       value: ShipPart_Item
