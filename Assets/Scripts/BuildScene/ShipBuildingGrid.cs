@@ -364,12 +364,8 @@ public class ShipBuildingGrid : MonoBehaviour {
         if (!partDB.PartIsStackable(part) && 
             placedParts.TryGetValue(coordinates, out GameObject existing) && existing != null) {
             
-            // Don't allow swapping the base/root part (optional safety)
-            if (existing == spacecraft) return;
-
-            Destroy(existing);
-            placedParts.Remove(coordinates);
-            SetGridCellValue(coordinates, -1);
+            DeletePart(coordinates);
+            if(placedParts.ContainsKey(coordinates)) DeletePart(coordinates); //In case we just deleted a stackable part
         }
         
         SetGridCellValue(coordinates, partDB.GetPartID(part));
