@@ -151,8 +151,6 @@ public class PartDrag : MonoBehaviour {
         
         objectSprite.color = baseColor;
 
-        GameObject part = gameObject;
-
         Vector3? nullableGridSnapPosition = shipGrid.PostionToGridPosition(transform.position);
         if (nullableGridSnapPosition == null) {
             PlacePart(gameObject, originalPosition); //Place part bc the part needs to be placed to be deleted

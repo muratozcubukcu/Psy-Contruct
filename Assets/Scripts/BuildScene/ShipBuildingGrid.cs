@@ -388,6 +388,8 @@ public class ShipBuildingGrid : MonoBehaviour {
             selectedPart = spacecraftPart;
         }
         ClearDisconnectedHighlights();
+        
+        part.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
     }
 
     private bool CoordinatesAreOutsideGrid((int, int) coordinates) {
