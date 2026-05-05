@@ -122,7 +122,19 @@ public class OrbitAssist : MonoBehaviour {
     }
     
     private void PlanetGravitySource_OnGravityCrossBorder(object sender, PlanetGravitySource.GravityEventArgs e) {
-        if (e.entering) transitioningToOrbit = true;
+        if (e.entering && EnteringOrbitSmoothly()) transitioningToOrbit = true;
+    }
+
+    private bool EnteringOrbitSmoothly() {
+        if (GetApproachingAngle() < 15f) return false;
+        return true;
+    }
+
+    private float GetApproachingAngle() {
+        Vector3 spacecraftToPsyche = (psycheAsteroid.position - transform.position).normalized;
+        Vector3 movementDir = rb.linearVelocity.normalized;
+
+        return Vector3.Angle(spacecraftToPsyche, movementDir);
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
