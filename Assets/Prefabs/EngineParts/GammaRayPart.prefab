@@ -141,7 +141,6 @@ MonoBehaviour:
   highlight: {fileID: 0}
   colorblindValid: {fileID: 21300000, guid: ae673aca304d84144b31cd1cc0bdb981, type: 3}
   colorblindInvalid: {fileID: 21300000, guid: 27410deb8893e984e880da0c4fe8c771, type: 3}
-  draggingStackablePart: 0
 --- !u!114 &-6175374231323118284
 MonoBehaviour:
   m_ObjectHideFlags: 0
