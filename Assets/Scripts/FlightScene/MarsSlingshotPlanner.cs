@@ -31,6 +31,10 @@ using UnityEngine;
 
 /// <summary>Snapshot-on-entry slingshot planner: captures a Keplerian conic when ship enters Mars's range and holds it until exit.</summary>
 public class MarsSlingshotPlanner : MonoBehaviour {
+
+    public static event System.Action OnSlingshotEntered;
+    public static event System.Action OnSlingshotExited;
+
     // Closest distance the curve is allowed to come to Mars. Used as a fallback
     // when 'useMarsColliderRadius' is off or no collider is found.
     [SerializeField] private float periapsisRadius = 5f;
@@ -130,6 +134,30 @@ public class MarsSlingshotPlanner : MonoBehaviour {
     /// <summary>True if we currently have a usable path (at least 2 points).</summary>
     public bool IsSolutionValid => snapshotPath != null && snapshotPath.Length >= 2;
 
+    public bool InSlingshotRange => inMarsRange;
+
+    public float DistanceFromPath(Vector2 worldPos) {
+        if (snapshotPath == null || snapshotPath.Length < 2) return -1f;
+
+        float bestSqr = float.MaxValue;
+        for (int i = 0; i < snapshotPath.Length - 1; i++) {
+            Vector2 a = snapshotPath[i];
+            Vector2 b = snapshotPath[i + 1];
+            float dSqr = NearestPointDistanceSqr(worldPos, a, b);
+            if (dSqr < bestSqr) bestSqr = dSqr;
+        }
+        return Mathf.Sqrt(bestSqr);
+    }
+
+    private static float NearestPointDistanceSqr(Vector2 p, Vector2 a, Vector2 b) {
+        Vector2 ab = b - a;
+        float lenSqr = ab.sqrMagnitude;
+        if (lenSqr < 1e-6f) return (p - a).sqrMagnitude;
+        float t = Mathf.Clamp01(Vector2.Dot(p - a, ab) / lenSqr);
+        Vector2 proj = a + ab * t;
+        return (p - proj).sqrMagnitude;
+    }
+
     public bool IsSlingshotViable {
         get {
             if (MarsTf == null || ShipTf == null || PsycheTf == null) return false;
@@ -225,11 +253,13 @@ public class MarsSlingshotPlanner : MonoBehaviour {
             // Just entered Mars's range - build the curve and remember it.
             snapshotPath = BuildSlingshotPlan(ship, mars, psy);
             inMarsRange = true;
+            OnSlingshotEntered?.Invoke();
         } else if (inMarsRange && dShip >= exitR) {
             snapshotPath = null;
             inMarsRange = false;
             lastPathWasConic = false;
             snapshotConic = null;    // ← ADD THIS
+            OnSlingshotExited?.Invoke();
         }
         // While inside the range we keep returning the same cached path.
 

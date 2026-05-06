@@ -40,6 +40,12 @@ public class ScoreManager : MonoBehaviour {
     private bool subscribedToEngine;
     private bool subscribedToSpacecraft;
 
+    private MarsSlingshotPlanner slingshotPlanner;
+    private bool slingshotInProgress;
+    private bool slingshotCompleted;
+    private float slingshotDeviationAccum;
+    private int slingshotDeviationSamples;
+
     public float ElapsedTime => isTracking ? Time.time - startTime : elapsedTimeAtStop;
     public float FuelUsedPercent => fuelUsedPercent;
     public float DamageTakenPercent => damageTakenPercent;
@@ -60,6 +66,31 @@ public class ScoreManager : MonoBehaviour {
         StartCoroutine(HookUpReferences());
         if (autoStart) BeginRun();
         OrbitAssist.OnEnteredOrbit += OrbitAssist_OnEnteredOrbit;
+
+        slingshotPlanner = FindFirstObjectByType<MarsSlingshotPlanner>();
+        MarsSlingshotPlanner.OnSlingshotEntered += SlingshotPlanner_OnEntered;
+        MarsSlingshotPlanner.OnSlingshotExited += SlingshotPlanner_OnExited;
+    }
+
+    private void Update() {
+        if (!slingshotInProgress || !isTracking) return;
+        if (slingshotPlanner == null || spacecraft == null) return;
+        float d = slingshotPlanner.DistanceFromPath(spacecraft.transform.position);
+        if (d >= 0f) {
+            slingshotDeviationAccum += d;
+            slingshotDeviationSamples++;
+        }
+    }
+
+    private void SlingshotPlanner_OnEntered() {
+        slingshotInProgress = true;
+        slingshotDeviationAccum = 0f;
+        slingshotDeviationSamples = 0;
+    }
+
+    private void SlingshotPlanner_OnExited() {
+        slingshotInProgress = false;
+        if (slingshotDeviationSamples > 0) slingshotCompleted = true;
     }
 
     private void OrbitAssist_OnEnteredOrbit(object sender, System.EventArgs e) {
@@ -90,6 +121,10 @@ public class ScoreManager : MonoBehaviour {
         elapsedTimeAtStop = 0f;
         fuelUsedPercent = 0f;
         damageTakenPercent = 0f;
+        slingshotInProgress = false;
+        slingshotCompleted = false;
+        slingshotDeviationAccum = 0f;
+        slingshotDeviationSamples = 0;
         isTracking = true;
     }
 
@@ -126,13 +161,17 @@ public class ScoreManager : MonoBehaviour {
     public ScoreBreakdown FinalizeRun(bool completed, bool died) {
         StopRun();
 
-        float timeBonus     = ComputeTimeBonus(elapsedTimeAtStop);
-        float fuelBonus     = ComputeFuelBonus(fuelUsedPercent);
-        float healthBonus   = ComputeHealthBonus(damageTakenPercent);
-        float completion    = completed && config != null ? config.completionBonus : 0f;
-        float minScore      = config != null ? config.minScore : 0f;
+        float timeBonus       = ComputeTimeBonus(elapsedTimeAtStop);
+        float fuelBonus       = ComputeFuelBonus(fuelUsedPercent);
+        float healthBonus     = ComputeHealthBonus(damageTakenPercent);
+        float slingshotBonus  = ComputeSlingshotBonus(died);
+        float slingshotPrec   = ComputeSlingshotPrecisionBonus(died);
+        float avgDev          = slingshotDeviationSamples > 0
+                                    ? slingshotDeviationAccum / slingshotDeviationSamples
+                                    : 0f;
+        float minScore        = config != null ? config.minScore : 0f;
 
-        float total = timeBonus + fuelBonus + healthBonus + completion;
+        float total = timeBonus + fuelBonus + healthBonus + slingshotBonus + slingshotPrec;
 
         if (died && config != null && config.zeroScoreOnDeath) total = minScore;
 
@@ -142,7 +181,11 @@ public class ScoreManager : MonoBehaviour {
             timeBonus = timeBonus,
             fuelBonus = fuelBonus,
             healthBonus = healthBonus,
-            completionBonus = completion,
+            slingshotBonus = slingshotBonus,
+            slingshotPrecisionBonus = slingshotPrec,
+            slingshotPrecisionBonusMax = config != null ? config.slingshotPrecisionBonusMax : 0f,
+            slingshotCompleted = slingshotCompleted,
+            averageSlingshotDeviation = avgDev,
             finalScore = total,
             elapsedSeconds = elapsedTimeAtStop,
             fuelUsedPercent = fuelUsedPercent,
@@ -158,7 +201,8 @@ public class ScoreManager : MonoBehaviour {
         float total = ComputeTimeBonus(seconds)
                       + ComputeFuelBonus(fuelPct)
                       + ComputeHealthBonus(dmgPct)
-                      + (completed ? config.completionBonus : 0f);
+                      + ComputeSlingshotBonus(died)
+                      + ComputeSlingshotPrecisionBonus(died);
         if (died && config.zeroScoreOnDeath) total = config.minScore;
         return Mathf.Max(config.minScore, total);
     }
@@ -181,8 +225,27 @@ public class ScoreManager : MonoBehaviour {
         return config.healthBonusMax * remainingFraction;
     }
 
+    private float ComputeSlingshotBonus(bool died) {
+        if (!slingshotCompleted || config == null) return 0f;
+        if (died && config.zeroScoreOnDeath) return 0f;
+        return config.slingshotBonusMax;
+    }
+
+    private float ComputeSlingshotPrecisionBonus(bool died) {
+        if (!slingshotCompleted || config == null) return 0f;
+        if (died && config.zeroScoreOnDeath) return 0f;
+        if (slingshotDeviationSamples == 0) return 0f;
+        if (config.slingshotPathTolerance <= 0f) return 0f;
+
+        float avgDev = slingshotDeviationAccum / slingshotDeviationSamples;
+        float quality = Mathf.Clamp01(1f - (avgDev / config.slingshotPathTolerance));
+        return config.slingshotPrecisionBonusMax * quality;
+    }
+
     private void OnDestroy() {
         OrbitAssist.OnEnteredOrbit -= OrbitAssist_OnEnteredOrbit;
+        MarsSlingshotPlanner.OnSlingshotEntered -= SlingshotPlanner_OnEntered;
+        MarsSlingshotPlanner.OnSlingshotExited -= SlingshotPlanner_OnExited;
         if (subscribedToEngine && engine != null) engine.OnFuelChanged -= Spacecraft_OnFuelChanged;
         if (subscribedToSpacecraft && spacecraft != null) spacecraft.OnHealthChanged -= Spacecraft_OnHealthChanged;
         if (Instance == this) Instance = null;
@@ -192,7 +255,11 @@ public class ScoreManager : MonoBehaviour {
         public float timeBonus;
         public float fuelBonus;
         public float healthBonus;
-        public float completionBonus;
+        public float slingshotBonus;
+        public float slingshotPrecisionBonus;
+        public float slingshotPrecisionBonusMax;
+        public bool slingshotCompleted;
+        public float averageSlingshotDeviation;
         public float finalScore;
         public float elapsedSeconds;
         public float fuelUsedPercent;
