@@ -123,7 +123,7 @@ public class OrbitAssist : MonoBehaviour {
         // > 90 check ensures that spacecraft is not passing orbit path from inside the radius
         if (GetApproachingAngle() < 15f || GetApproachingAngle() >= 90f) return false;
         
-        return rb.linearVelocity.magnitude < 12f && rb.linearVelocity.magnitude > 5f;
+        return rb.linearVelocity.magnitude < 15f && rb.linearVelocity.magnitude > 5f;
     }
 
     private float GetApproachingAngle() {
