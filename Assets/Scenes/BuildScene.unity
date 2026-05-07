@@ -3217,8 +3217,6 @@ MonoBehaviour:
   orbitRadius: 11
   transitionSpeed: 2
   orbitSpeed: 1
-  clockwiseOrbit: 0
-  transitioningToOrbit: 0
   faceMovementDirectionWhileInOrbit: 1
 --- !u!114 &1905560441 stripped
 MonoBehaviour:
@@ -3542,10 +3540,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Try adding a Ship part!
+  m_text: 'Try adding a spacecraft body part!
 
-    These are the basic building blocks of your
-    spacecraft!'
+    These are the basic building blocks
+    of your spacecraft!'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

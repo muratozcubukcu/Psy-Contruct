@@ -36,7 +36,7 @@ public class Tutorial : MonoBehaviour
             text.enabled = false;
             enabled = false;
         }
-        updateState();
+        UpdateState();
     }
 
     public void partAdded(string addedPart)
@@ -70,14 +70,14 @@ public class Tutorial : MonoBehaviour
                 FuelTankAdded = true;
                 break;
         }
-        updateState();
+        UpdateState();
     }
 
-    private void updateState()
+    private void UpdateState()
     {
         if (!ShipAdded)
         {
-            text.text = "Try adding a Ship part!\nThese are the basic building blocks of your spacecraft!";
+            text.text = "Try adding a spacecraft body part!\nThese are the basic building blocks of your spacecraft!";
         }
         else if (!EngineAdded)
         {
