@@ -10,13 +10,14 @@ public class OrbitAssist : MonoBehaviour {
     [SerializeField] private float orbitRadius;
     [SerializeField] private float transitionSpeed;
     [SerializeField] private float orbitSpeed;
-    [SerializeField] private bool clockwiseOrbit;
-    [SerializeField] private bool transitioningToOrbit;
     [SerializeField] private bool faceMovementDirectionWhileInOrbit;
     
     private Transform psycheAsteroid;
     private float angle = 0f;
     private bool inOrbit = false;
+    private bool inFlightScene = false;
+    private bool movingIntoOrbit = false;
+    private bool clockwiseOrbit;
     private Quaternion targetRotation;
     private int rotationOffset;
     private int nonOrbitAssistVelocityDamper = 10;
@@ -28,13 +29,14 @@ public class OrbitAssist : MonoBehaviour {
     }
     
     void Update() {
-        //if (transitioningToOrbit && !inOrbit) TransitionToOrbit();
+        if (!inFlightScene) return;
+        
         if (inOrbit) {
             Orbit();
             return;
         }
         
-        if (transitioningToOrbit && (psycheAsteroid.position - transform.position).magnitude <= orbitRadius) {
+        if (OverOrbitPath() && EnteringOrbitSmoothly()) {
             clockwiseOrbit = ClockwiseOrbit();
             psycheAsteroid.GetComponentInChildren<PlanetGravitySource>().enabled = false;
             Vector2 toShip = transform.position - psycheAsteroid.position;
@@ -109,25 +111,19 @@ public class OrbitAssist : MonoBehaviour {
         return movementDir.x < spacecraftToPsyche.x;
     }
 
-    public void GetPsycheAsteroid() {
-        psycheAsteroid = PsycheAsteroid.Instance.transform;
-        
-        PlanetGravitySource psycheGravity = psycheAsteroid.GetComponentInChildren<PlanetGravitySource>();
-        psycheGravity.OnEnterGravityRange += PlanetGravitySource_OnGravityCrossBorder;
-    }
+    public void GetPsycheAsteroid() => psycheAsteroid = PsycheAsteroid.Instance.transform;
+    
     private void GameInput_OnEngineAction(object sender, GameInput.EngineEventArgs e) {
         if (!inOrbit) return;
 
         rb.linearDamping = e.activated ? 0 : nonOrbitAssistVelocityDamper;
     }
-    
-    private void PlanetGravitySource_OnGravityCrossBorder(object sender, PlanetGravitySource.GravityEventArgs e) {
-        if (e.entering && EnteringOrbitSmoothly()) transitioningToOrbit = true;
-    }
 
     private bool EnteringOrbitSmoothly() {
-        if (GetApproachingAngle() < 15f) return false;
-        return true;
+        // > 90 check ensures that spacecraft is not passing orbit path from inside the radius
+        if (GetApproachingAngle() < 15f || GetApproachingAngle() >= 90f) return false;
+        
+        return rb.linearVelocity.magnitude < 12f && rb.linearVelocity.magnitude > 5f;
     }
 
     private float GetApproachingAngle() {
@@ -136,11 +132,19 @@ public class OrbitAssist : MonoBehaviour {
 
         return Vector3.Angle(spacecraftToPsyche, movementDir);
     }
-
+ 
+    private bool OverOrbitPath() {
+        movingIntoOrbit = !movingIntoOrbit;
+        return Math.Abs((psycheAsteroid.position - transform.position).magnitude - orbitRadius) < 1f;
+    }
+    
     void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
-        if (scene.name != "FlightScene") {
-            transitioningToOrbit = false;
-            inOrbit = false;
+        if (scene.name == "FlightScene") {
+            inFlightScene = true;
+            return;
         }
+
+        inFlightScene = false;
+        inOrbit = false;
     }
 }
