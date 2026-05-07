@@ -3650,7 +3650,7 @@ MonoBehaviour:
   useMarsColliderRadius: 1
   radiusMargin: 10
   entryCollider: {fileID: 1467373182}
-  exitRangeMultiplier: 1.25
+  exitRangeMultiplier: 1
   conicSegments: 96
   drawRuntimePath: 1
   drawEditorGizmos: 1

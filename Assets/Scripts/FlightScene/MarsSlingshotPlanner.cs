@@ -54,7 +54,7 @@ public class MarsSlingshotPlanner : MonoBehaviour {
     // exit > entry creates "hysteresis" so the path doesn't flicker on/off
     // when the ship hovers right at the boundary.
     [Range(1f, 3f)]
-    [SerializeField] private float exitRangeMultiplier = 1.25f;
+    [SerializeField] private float exitRangeMultiplier = 1f;
 
     [Header("Sampling")]
     // How many segments make up the curve. More = smoother, but more work.
@@ -618,7 +618,7 @@ public class MarsSlingshotPlanner : MonoBehaviour {
     }
 
     private void Start() {
-        entryRange = entryCollider.radius + 5; // +5 ensures that the arc is set before the minimap shows up
+        entryRange = entryCollider.radius;
         // If we weren't given a Mars gravity reference, try to find one on Mars.
         if (marsGravity == null && MarsTf != null) {
             marsGravity = MarsTf.GetComponent<PlanetGravitySource>()
