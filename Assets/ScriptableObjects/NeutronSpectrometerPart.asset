@@ -16,8 +16,6 @@ MonoBehaviour:
   partID: 6
   mass: 1
   isStackable: 1
-  connectingDirections:
-  - above
-  - below
-  - left
-  - right
+  isRotatable: 0
+  description: Detects neutron emissions to analyze surface composition.
+  connectsTo: Spacecraft Body

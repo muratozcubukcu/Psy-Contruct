@@ -5,8 +5,7 @@ using UnityEngine.EventSystems;
 /// Handles dragging a part from the side panel onto the build grid.
 /// Creates a ghost preview that snaps to grid cells and shows placement validity.
 /// </summary>
-public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
-
+public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler {
     [SerializeField] private PartScriptableObject partData;
     private SpacecraftPartDatabase partDB;
     private BuildFactsPopup buildFactsPopup;
@@ -24,6 +23,16 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private static readonly Color colorInvalid = new Color(1f, 0.3f, 0.3f, 0.6f);
 
     private bool colorblindMode;
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        PartTooltipUI.Instance?.ShowDelayed(partData);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        PartTooltipUI.Instance?.Hide();
+    }
 
     public void Initialize(PartScriptableObject part) {
         partData = part;
@@ -48,6 +57,7 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     }
     
     public void OnBeginDrag(PointerEventData eventData) {
+        PartTooltipUI.Instance?.Hide();
         // Notify the drag hint to stop
         DragHintAnimator hint = FindAnyObjectByType<DragHintAnimator>();
         if (hint != null) hint.StopHint();
