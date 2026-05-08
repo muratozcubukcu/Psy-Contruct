@@ -67,7 +67,7 @@ public class ShipBuildingGrid : MonoBehaviour {
         gameInput.OnLeftMouseClickPerformedAction += GameInput_OnLeftMouseClickAction;
         gameInput.OnRotatePartPerformedAction += GameInput_OnRotatePartPerformedAction;
         
-        gridVisualizer.VisualizeGrid(grid, gridWidth, gridHeight, cellSize, gridOriginPosition);
+        gridVisualizer.VisualizeGrid(gridWidth, gridHeight, cellSize, gridOriginPosition);
         
         spacecraft = Spacecraft.GetInstance().gameObject;
         partDB = SpacecraftPartDatabase.Instance;
@@ -97,6 +97,8 @@ public class ShipBuildingGrid : MonoBehaviour {
         Transform shipTransform = spacecraft.transform;
         shipTransform.rotation = Quaternion.Euler(0, 0, 0);
         shipTransform.position = GridCoordinatesToUnityPosition(shipStartPos);
+        
+        FindAnyObjectByType<DragHintAnimator>().StopHint();
 
         if (SavedPlacedPartsValid()) {
             placedParts = partDB.savedPlacedParts;

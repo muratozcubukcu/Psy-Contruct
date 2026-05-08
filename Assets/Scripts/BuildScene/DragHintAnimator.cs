@@ -12,10 +12,10 @@ public class DragHintAnimator : MonoBehaviour {
     private RectTransform ghostRect;
     private Image ghostImage;
     private Transform anchorTransform;
+    private Camera mainCam;
     private bool animating;
     private float elapsed;
     private bool isDragging = true;
-    private bool stopped;
 
     private const float dragDuration = 1.5f;
     private const float pauseDuration = 0.5f;
@@ -23,9 +23,11 @@ public class DragHintAnimator : MonoBehaviour {
     private const float searchDelay = 1f;
     private float searchTimer;
 
-    private void Update() {
-        if (stopped) return;
+    private void Awake() {
+        mainCam = Camera.main;
+    }
 
+    private void Update() {
         // If not yet set up, wait then search for the panel
         if (!animating) {
             searchTimer += Time.deltaTime;
@@ -33,20 +35,14 @@ public class DragHintAnimator : MonoBehaviour {
             TrySetup();
             return;
         }
-
-        // Animate
+        
         Vector3 anchorPos = anchorTransform.position;
-
-        // Target above center of grid in screen space
-        Camera cam = Camera.main;
         Vector3 endPos;
-        if (cam != null) {
-            // Grid center is (0, -0.5), one row above = (0, 0.5)
-            Vector3 gridTarget = new Vector3(0f, 0.5f, 0f);
-            endPos = cam.WorldToScreenPoint(gridTarget);
-        } else {
-            endPos = anchorPos + new Vector3(400f, 0f, 0f);
-        }
+        Color c = ghostImage.color;
+
+        // Grid center is (0, -0.5), one row above = (0, 0.5)
+        Vector3 gridTarget = new Vector3(0f, 0.5f, 0f);
+        endPos = mainCam.WorldToScreenPoint(gridTarget);
 
         elapsed += Time.deltaTime;
 
@@ -54,22 +50,20 @@ public class DragHintAnimator : MonoBehaviour {
             float t = Mathf.Clamp01(elapsed / dragDuration);
             float eased = 1f - (1f - t) * (1f - t);
             ghostRect.position = Vector3.Lerp(anchorPos, endPos, eased);
-            Color c = ghostImage.color;
             ghostImage.color = new Color(c.r, c.g, c.b, Mathf.Lerp(startAlpha, 0f, t));
 
-            if (t >= 1f) {
-                isDragging = false;
-                elapsed = 0f;
-            }
-        } else {
-            if (elapsed >= pauseDuration) {
-                ghostRect.position = anchorPos;
-                Color c = ghostImage.color;
-                ghostImage.color = new Color(c.r, c.g, c.b, startAlpha);
-                isDragging = true;
-                elapsed = 0f;
-            }
+            if (t < 1f) return;
+            
+            isDragging = false;
+            elapsed = 0f;
         }
+
+        if (elapsed < pauseDuration) return;
+        
+        ghostRect.position = anchorPos;
+        ghostImage.color = new Color(c.r, c.g, c.b, startAlpha);
+        isDragging = true;
+        elapsed = 0f;
     }
 
     private void TrySetup() {
@@ -100,12 +94,11 @@ public class DragHintAnimator : MonoBehaviour {
         }
 
         // Calculate the size of 1 grid cell in canvas units to match real part size
-        Camera cam = Camera.main;
         float canvasScale = canvas.scaleFactor;
         float ghostSize = 50f; // fallback
-        if (cam != null && canvasScale > 0f) {
-            Vector3 cellBottom = cam.WorldToScreenPoint(new Vector3(0f, 0f, 0f));
-            Vector3 cellTop = cam.WorldToScreenPoint(new Vector3(0f, 1f, 0f));
+        if (canvasScale > 0f) {
+            Vector3 cellBottom = mainCam.WorldToScreenPoint(new Vector3(0f, 0f, 0f));
+            Vector3 cellTop = mainCam.WorldToScreenPoint(new Vector3(0f, 1f, 0f));
             ghostSize = Mathf.Abs(cellTop.y - cellBottom.y) / canvasScale;
         }
 
@@ -134,7 +127,6 @@ public class DragHintAnimator : MonoBehaviour {
     }
 
     public void StopHint() {
-        stopped = true;
         if (ghostRect != null) {
             Destroy(ghostRect.gameObject);
         }
