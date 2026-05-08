@@ -272,42 +272,37 @@ public class Spacecraft : MonoBehaviour {
                 Rigidbody2D childRb;
                 if(!child.gameObject.TryGetComponent<Rigidbody2D>(out childRb)) {
                     childRb = child.gameObject.AddComponent<Rigidbody2D>();
+                    childRb.freezeRotation = true;
                 }
                 
                 childRb.bodyType = type;
                 if (noisyVelocity) {
-                    linearVelocity += new Vector2(UnityEngine.Random.Range(-5f, 5f),
-                        UnityEngine.Random.Range(-5f, 5f));
+                    linearVelocity += new Vector2(UnityEngine.Random.Range(-5f, 5f), UnityEngine.Random.Range(-5f, 5f));
                 }
                 childRb.linearVelocity = linearVelocity;
             }
-        } else {
-            System.Collections.Generic.List<Transform> children = new();
-            foreach (Transform child in transform) children.Add(child);
 
-            foreach (Transform child in children) {
-                Rigidbody2D childRb = child.gameObject.GetComponent<Rigidbody2D>();
-
-                Vector3 worldPos = child.position;
-                Quaternion worldRot = child.rotation;
-
-                child.SetParent(null, true);
-                if (childRb != null) DestroyImmediate(childRb);
-                child.SetParent(transform, true);
-
-                child.position = worldPos;
-                child.rotation = worldRot;
-            }
-
-            Physics2D.SyncTransforms();
-
-            int total = 0;
-            int bound = 0;
-            foreach (Collider2D col in GetComponentsInChildren<Collider2D>()) {
-                total++;
-                if (col.attachedRigidbody == rb) bound++;
-            }
+            return;
         }
+        
+        List<Transform> children = new();
+        foreach (Transform child in transform) children.Add(child);
+
+        foreach (Transform child in children) {
+            Rigidbody2D childRb = child.gameObject.GetComponent<Rigidbody2D>();
+
+            Vector3 worldPos = child.position;
+            Quaternion worldRot = child.rotation;
+
+            child.SetParent(null, true);
+            if (childRb != null) DestroyImmediate(childRb);
+            child.SetParent(transform, true);
+
+            child.position = worldPos;
+            child.rotation = worldRot;
+        }
+
+        Physics2D.SyncTransforms();
     }
 
     private IEnumerator HandleDeath() {
