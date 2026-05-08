@@ -50,11 +50,10 @@ public class ScoreBreakdownPopup : MonoBehaviour {
     private string BuildBreakdown(ScoreManager.ScoreBreakdown b) {
         var sb = new System.Text.StringBuilder(512);
 
-        AppendRow(sb, "Time Bonus",        b.timeBonus,              $"({b.elapsedSeconds:F1}s)");
-        AppendRow(sb, "Fuel Bonus",        b.fuelBonus,              $"({100f - b.fuelUsedPercent:F0}%)");
-        AppendRow(sb, "Health Bonus",      b.healthBonus,            $"({100f - b.damageTakenPercent:F0}%)");
-        AppendRow(sb, "Slingshot Bonus",   b.slingshotBonus,         "");
-        AppendRow(sb, "Precision Bonus",   b.slingshotPrecisionBonus, "");
+        AppendRow(sb, "Time Bonus",        b.timeBonus,               $"({b.elapsedSeconds:F1}s)");
+        AppendRow(sb, "Fuel Bonus",        b.fuelBonus,               $"({100f - b.fuelUsedPercent:F0}%)");
+        AppendRow(sb, "Health Bonus",      b.healthBonus,             $"({100f - b.damageTakenPercent:F0}%)");
+        AppendRow(sb, "Slingshot Bonus",   b.slingshotPrecisionBonus, "");
 
         sb.Append('\n');
         sb.Append($"FINAL SCORE: {Mathf.RoundToInt(b.finalScore)}");

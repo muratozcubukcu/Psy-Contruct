@@ -21,10 +21,7 @@ public class ScoreConfig : ScriptableObject {
     public float healthBonusMax = 5000f;
 
     [Header("Slingshot Bonus")]
-    [Tooltip("Flat bonus awarded for completing a Mars slingshot (ship entered the Mars gravity range and exited it without dying).")]
-    public float slingshotBonusMax = 1500f;
-
-    [Tooltip("Extra bonus for staying close to the predicted slingshot path. Scales linearly from full at 0 average deviation to 0 when average deviation reaches slingshotPathTolerance.")]
+    [Tooltip("Bonus for staying close to the predicted slingshot path. Scales linearly from full at 0 average deviation to 0 when average deviation reaches slingshotPathTolerance.")]
     public float slingshotPrecisionBonusMax = 2000f;
 
     [Tooltip("Average deviation in world units at which the precision bonus reaches 0. Smaller = stricter / harder to earn full precision.")]

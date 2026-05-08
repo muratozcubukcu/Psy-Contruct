@@ -84,8 +84,6 @@ public class ScoreManager : MonoBehaviour {
 
     private void SlingshotPlanner_OnEntered() {
         slingshotInProgress = true;
-        slingshotDeviationAccum = 0f;
-        slingshotDeviationSamples = 0;
     }
 
     private void SlingshotPlanner_OnExited() {
@@ -164,14 +162,13 @@ public class ScoreManager : MonoBehaviour {
         float timeBonus       = ComputeTimeBonus(elapsedTimeAtStop);
         float fuelBonus       = ComputeFuelBonus(fuelUsedPercent);
         float healthBonus     = ComputeHealthBonus(damageTakenPercent);
-        float slingshotBonus  = ComputeSlingshotBonus(died);
         float slingshotPrec   = ComputeSlingshotPrecisionBonus(died);
         float avgDev          = slingshotDeviationSamples > 0
                                     ? slingshotDeviationAccum / slingshotDeviationSamples
                                     : 0f;
         float minScore        = config != null ? config.minScore : 0f;
 
-        float total = timeBonus + fuelBonus + healthBonus + slingshotBonus + slingshotPrec;
+        float total = timeBonus + fuelBonus + healthBonus + slingshotPrec;
 
         if (died && config != null && config.zeroScoreOnDeath) total = minScore;
 
@@ -181,10 +178,9 @@ public class ScoreManager : MonoBehaviour {
             timeBonus = timeBonus,
             fuelBonus = fuelBonus,
             healthBonus = healthBonus,
-            slingshotBonus = slingshotBonus,
             slingshotPrecisionBonus = slingshotPrec,
             slingshotPrecisionBonusMax = config != null ? config.slingshotPrecisionBonusMax : 0f,
-            slingshotCompleted = slingshotCompleted,
+            slingshotCompleted = slingshotDeviationSamples > 0,
             averageSlingshotDeviation = avgDev,
             finalScore = total,
             elapsedSeconds = elapsedTimeAtStop,
@@ -201,7 +197,6 @@ public class ScoreManager : MonoBehaviour {
         float total = ComputeTimeBonus(seconds)
                       + ComputeFuelBonus(fuelPct)
                       + ComputeHealthBonus(dmgPct)
-                      + ComputeSlingshotBonus(died)
                       + ComputeSlingshotPrecisionBonus(died);
         if (died && config.zeroScoreOnDeath) total = config.minScore;
         return Mathf.Max(config.minScore, total);
@@ -225,20 +220,20 @@ public class ScoreManager : MonoBehaviour {
         return config.healthBonusMax * remainingFraction;
     }
 
-    private float ComputeSlingshotBonus(bool died) {
-        if (!slingshotCompleted || config == null) return 0f;
-        if (died && config.zeroScoreOnDeath) return 0f;
-        return config.slingshotBonusMax;
-    }
-
     private float ComputeSlingshotPrecisionBonus(bool died) {
-        if (!slingshotCompleted || config == null) return 0f;
+        if (config == null) return 0f;
         if (died && config.zeroScoreOnDeath) return 0f;
         if (slingshotDeviationSamples == 0) return 0f;
         if (config.slingshotPathTolerance <= 0f) return 0f;
 
+        // Bonus is awarded if any deviation was sampled (i.e. ship was inside
+        // Mars range at any point during the run). Don't gate on the
+        // slingshotCompleted flag, because OnSlingshotExited can fire AFTER
+        // FinalizeRun on the same frame -- the planner detects exit in
+        // LateUpdate, but OrbitAssist's OnEnteredOrbit fires in Update and
+        // immediately drives the breakdown popup.
         float avgDev = slingshotDeviationAccum / slingshotDeviationSamples;
-        float quality = Mathf.Clamp01(1f - (avgDev / config.slingshotPathTolerance));
+        float quality = config.slingshotPathTolerance / (config.slingshotPathTolerance + avgDev);
         return config.slingshotPrecisionBonusMax * quality;
     }
 
@@ -255,7 +250,6 @@ public class ScoreManager : MonoBehaviour {
         public float timeBonus;
         public float fuelBonus;
         public float healthBonus;
-        public float slingshotBonus;
         public float slingshotPrecisionBonus;
         public float slingshotPrecisionBonusMax;
         public bool slingshotCompleted;

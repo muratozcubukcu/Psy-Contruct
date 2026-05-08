@@ -54,7 +54,7 @@ public class MarsSlingshotPlanner : MonoBehaviour {
     // exit > entry creates "hysteresis" so the path doesn't flicker on/off
     // when the ship hovers right at the boundary.
     [Range(1f, 3f)]
-    [SerializeField] private float exitRangeMultiplier = 1f;
+    [SerializeField] private float exitRangeMultiplier = 1.05f;
 
     [Header("Sampling")]
     // How many segments make up the curve. More = smoother, but more work.
@@ -258,7 +258,7 @@ public class MarsSlingshotPlanner : MonoBehaviour {
             snapshotPath = null;
             inMarsRange = false;
             lastPathWasConic = false;
-            snapshotConic = null;    // ← ADD THIS
+            snapshotConic = null;
             OnSlingshotExited?.Invoke();
         }
         // While inside the range we keep returning the same cached path.
