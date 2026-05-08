@@ -46,6 +46,7 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         partDB = SpacecraftPartDatabase.Instance;
         colorblindMode = Settings.Instance.colorblindMode;
     }
+    
     public void OnBeginDrag(PointerEventData eventData) {
         // Notify the drag hint to stop
         DragHintAnimator hint = FindAnyObjectByType<DragHintAnimator>();

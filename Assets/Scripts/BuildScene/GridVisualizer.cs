@@ -6,7 +6,6 @@ using System.Collections.Generic;
 /// </summary>
 public class GridVisualizer : MonoBehaviour {
     
-    [SerializeField] private Grid grid;
     [SerializeField] private Color gridColor = Color.white;
     [SerializeField] private float lineWidth = 0.05f;
     
@@ -36,8 +35,7 @@ public class GridVisualizer : MonoBehaviour {
     /// <param name="height">the height of the grid in tiles</param>
     /// <param name="cellSize">the width and height of the tiles in game units</param>
     /// <param name="originPosition">the lower left corner of the grid</param>
-    public void VisualizeGrid(Grid grid, int width, int height, float cellSize, Vector3 originPosition) {
-        this.grid = grid;
+    public void VisualizeGrid(int width, int height, float cellSize, Vector3 originPosition) {
         
         //erase previous drawings of the grid
         foreach (var line in gridLines) {
