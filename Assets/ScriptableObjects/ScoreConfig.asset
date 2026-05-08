@@ -11,11 +11,13 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f04b09da45944847b675485f3c43f02, type: 3}
   m_Name: ScoreConfig
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   timeBonusMax: 2000
   timeBonusDurationSeconds: 200
   fuelBonusMax: 3000
   healthBonusMax: 5000
-  completionBonus: 0
+  slingshotBonusMax: 1500
+  slingshotPrecisionBonusMax: 2000
+  slingshotPathTolerance: 20
   minScore: 0
   zeroScoreOnDeath: 0

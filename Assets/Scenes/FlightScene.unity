@@ -2617,8 +2617,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -250, y: 0}
-  m_SizeDelta: {x: 400, y: 500}
+  m_AnchoredPosition: {x: -348, y: -6.8293}
+  m_SizeDelta: {x: 541.8455, y: 383.0737}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &715678007
 MonoBehaviour:
@@ -3650,7 +3650,7 @@ MonoBehaviour:
   useMarsColliderRadius: 1
   radiusMargin: 10
   entryCollider: {fileID: 1467373182}
-  exitRangeMultiplier: 1.25
+  exitRangeMultiplier: 1
   conicSegments: 96
   drawRuntimePath: 1
   drawEditorGizmos: 1
@@ -5011,8 +5011,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.00046921, y: 220.99995}
-  m_SizeDelta: {x: 400, y: 58}
+  m_AnchoredPosition: {x: 0.000052333, y: 145.0417}
+  m_SizeDelta: {x: 531.2043, y: 71.7414}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1657332617
 MonoBehaviour:
@@ -5099,7 +5099,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 7.6849823, w: 0}
+  m_margin: {x: 0, y: 0, z: -0.15693666, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -5147,8 +5147,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -35.725}
-  m_SizeDelta: {x: 400, y: 428.5509}
+  m_AnchoredPosition: {x: -1.2989, y: 0.000015258789}
+  m_SizeDelta: {x: 481.4489, y: 218.3458}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1709196041
 MonoBehaviour:
