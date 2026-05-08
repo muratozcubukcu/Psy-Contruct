@@ -31,7 +31,7 @@ public class ShipBuildingGrid : MonoBehaviour {
     [SerializeField] private Sprite colorblindHighlight;
     public static readonly Color colorHighlightInvisible   = new Color(1f, 1f, 0.3f, 0f);
     private static Color colorDisconnected = new Color(1f, 0.4f, 0.4f, 1f);
-    private readonly Dictionary<SpriteRenderer, Color> originalSpriteColors = new();
+    private Dictionary<SpriteRenderer, Color> originalSpriteColors = new();
 
     private GameObject selectedPart;
     private (int, int) selectedTileCoords;
@@ -101,6 +101,7 @@ public class ShipBuildingGrid : MonoBehaviour {
         if (SavedPlacedPartsValid()) {
             placedParts = partDB.savedPlacedParts;
             partStackedOn = partDB.savedPartStackedOn;
+            originalSpriteColors = partDB.savedOriginalSpriteColors;
             foreach (Transform part in shipTransform) {
                 part.position += spacecraft.GetComponent<Spacecraft>().centerOfMass;
             }
@@ -599,23 +600,10 @@ public class ShipBuildingGrid : MonoBehaviour {
     }
 
     private void CacheOriginalSpriteColors(GameObject partObject) {
-        // If the part object does not exist, exit early
         if (partObject == null) return;
 
-        // Get all sprite renderers on the part and any of its children
-        // Some parts may have multiple sprites or nested objects
-        SpriteRenderer[] spriteRenderers = partObject.GetComponentsInChildren<SpriteRenderer>();
-
-        // Loop through each sprite renderer found
-        foreach (SpriteRenderer sr in spriteRenderers) {
-            // Only cache the color if:
-            // 1. The sprite renderer exists
-            // 2. We haven't already stored its original color
-            if (sr != null && !originalSpriteColors.ContainsKey(sr)) {
-                // Store the sprite renderer and its original color
-                // so we can restore it later after removing highlights
-                originalSpriteColors[sr] = sr.color;
-            }
+        foreach (SpriteRenderer sr in partObject.GetComponentsInChildren<SpriteRenderer>()) {
+            originalSpriteColors[sr] = sr.color;
         }
     }
     
@@ -623,6 +611,7 @@ public class ShipBuildingGrid : MonoBehaviour {
         grid.SaveGridState(save);
         partDB.savedPlacedParts = placedParts;
         partDB.savedPartStackedOn = partStackedOn;
+        partDB.savedOriginalSpriteColors = originalSpriteColors;
     }
     
     private void OnDisable() => SaveGridState();

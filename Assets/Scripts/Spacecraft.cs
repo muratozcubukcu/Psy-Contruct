@@ -314,11 +314,11 @@ public class Spacecraft : MonoBehaviour {
     }
 
     private void OnDestroy() {
-        if (Instance == this) {
-            SceneManager.sceneLoaded -= OnSceneLoaded;
-            SceneManager.sceneUnloaded -= OnSceneUnloaded;
-            Instance = null;
-            Engine.totalEngineCount = 0;
-        }
+        if (Instance != this) return;
+        
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        SceneManager.sceneUnloaded -= OnSceneUnloaded;
+        Instance = null;
+        Engine.totalEngineCount = 0;
     }
 }

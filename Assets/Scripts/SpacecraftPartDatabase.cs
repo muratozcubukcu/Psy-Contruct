@@ -13,6 +13,7 @@ public class SpacecraftPartDatabase : MonoBehaviour {
     public int[,] savedGridState;
     public Dictionary<(int, int), GameObject> savedPlacedParts;
     public Dictionary<GameObject, GameObject> savedPartStackedOn;
+    public Dictionary<SpriteRenderer, Color> savedOriginalSpriteColors;
 
     public void Awake() {
         if (Instance != null && Instance != this) {
