@@ -26,11 +26,7 @@ public class Spacecraft : MonoBehaviour {
 
     // Events for health changes
     public event EventHandler<float> OnHealthChanged; // Passes current health percentage (0-1)
-    public event EventHandler OnHealthDepleted;
-
-    // Public properties to access health values
-    public float MaxHealth => maxHealth;
-    public float CurrentHealth => currentHealth;
+    
     public float HealthPercentage => maxHealth > 0 ? currentHealth / maxHealth : 0f;
 
     // Energy system
@@ -190,11 +186,7 @@ public class Spacecraft : MonoBehaviour {
         // Notify listeners of health change
         OnHealthChanged?.Invoke(this, HealthPercentage);
         
-        // Check if health is depleted
-        if (currentHealth <= 0) {
-            OnHealthDepleted?.Invoke(this, EventArgs.Empty);
-            StartCoroutine(HandleDeath());
-        }
+        if (currentHealth <= 0) StartCoroutine(HandleDeath());
     }
     
     public void Heal(float healAmount) {

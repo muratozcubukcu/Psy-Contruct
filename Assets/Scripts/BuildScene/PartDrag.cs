@@ -27,6 +27,7 @@ public class PartDrag : MonoBehaviour {
     private Vector3 screenPoint;
     private Vector3 offset;
     private Vector3 originalPosition;
+    private Vector3 correctPosition; //Used to fix some uncommon bugs
     private Collider2D partCollider;
     private ShipBuildingGrid shipGrid;
     private SpacecraftPartDatabase partDB;
@@ -86,13 +87,11 @@ public class PartDrag : MonoBehaviour {
 
         originalPosition = transform.position;
         baseColor = objectSprite.color;
-        screenPoint = Camera.main.WorldToScreenPoint(gameObject.transform.position);
+        screenPoint = Camera.main.WorldToScreenPoint(transform.position);
 
-        offset = gameObject.transform.position - Camera.main.ScreenToWorldPoint(
+        offset = transform.position - Camera.main.ScreenToWorldPoint(
             new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z)
         );
-
-        Debug.Log($"Part is connected: {shipGrid.PartIsConnected(currCoords)}");
 
         if(!draggingStackablePart) shipGrid.RemovePlacedPartAtWorldPosition(originalPosition);
         shipGrid.SetGridCellValueByUnityPosition(originalPosition, draggingStackablePart ? 1 : -1);
@@ -114,62 +113,57 @@ public class PartDrag : MonoBehaviour {
         if (!Spacecraft.IsBuildMode) return;
         
         Vector3 curScreenPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z);
-        Vector3 curPosition = Camera.main.ScreenToWorldPoint(curScreenPoint) + offset;
-
-        // Snap to grid and show valid/invalid placement color feedback
-        if (shipGrid == null) shipGrid = ShipBuildingGrid.Instance;
-        if (highlight == null) highlight = GameObject.Find("Highlight");
-        if (shipGrid != null) {
-            Vector3? snapPos = shipGrid.PostionToGridPosition(curPosition);
-            if (snapPos != null) {
-                transform.position = (Vector3)snapPos;
-                (int, int) coords = shipGrid.UnityPositionToGridCoordinates((Vector3)snapPos);
-                bool valid = shipGrid.CanPlacePart(gameObject, coords) || CanSwapPart(gameObject, originalPosition);
-                objectSprite.color = valid ? colorValid : colorInvalid;
-                
-                highlight.transform.position = transform.position;
-                highlightSprite.color = colorblindMode ? Color.white : ShipBuildingGrid.colorHighlightInvisible;
-                if (colorblindMode) highlightSprite.sprite = valid ? colorblindValid : colorblindInvalid;
-            } else {
-                transform.position = curPosition;
-                highlight.transform.position = curPosition;
-                highlightSprite.color = ShipBuildingGrid.colorHighlightInvisible;
-                objectSprite.color = new Color(baseColor.r, baseColor.g, baseColor.b, 0.5f);
-            }
+        Vector3 curPos = Camera.main.ScreenToWorldPoint(curScreenPoint) + offset;
+        Vector3? snapPos = shipGrid.PostionToGridPosition(curPos);
+        
+        if (snapPos != null) {
+            transform.position = (Vector3)snapPos;
+            (int, int) coords = shipGrid.UnityPositionToGridCoordinates((Vector3)snapPos);
+            bool valid = shipGrid.CanPlacePart(gameObject, coords) || CanSwapPart(gameObject, originalPosition);
+            objectSprite.color = valid ? colorValid : colorInvalid;
+            
+            highlight.transform.position = transform.position;
+            highlightSprite.color = colorblindMode ? Color.white : ShipBuildingGrid.colorHighlightInvisible;
+            if (colorblindMode) highlightSprite.sprite = valid ? colorblindValid : colorblindInvalid;
         } else {
-            transform.position = curPosition;
-            highlight.transform.position = curPosition;
+            transform.position = curPos;
+            highlight.transform.position = curPos;
             highlightSprite.color = ShipBuildingGrid.colorHighlightInvisible;
+            objectSprite.color = new Color(baseColor.r, baseColor.g, baseColor.b, 0.5f);
         }
         
         if(stackedPart != null) stackedPart.GetComponent<PartDrag>().OnMouseDrag();
+
+        correctPosition = transform.position;
     }
 
     void OnMouseUp() {
         if (!Spacecraft.IsBuildMode) return;
         if (shipGrid == null || partCollider == null) return;
         
+        transform.position = correctPosition;
+            
         objectSprite.color = baseColor;
 
-        Vector3? nullableGridSnapPosition = shipGrid.PostionToGridPosition(transform.position);
-        if (nullableGridSnapPosition == null) {
+        Vector3? nullableSnapPos = shipGrid.PostionToGridPosition(transform.position);
+        if (nullableSnapPos == null) {
             PlacePart(gameObject, originalPosition); //Place part bc the part needs to be placed to be deleted
             if(stackedPart != null) stackedPart.GetComponent<PartDrag>().OnMouseUp();
             shipGrid.DeletePart(shipGrid.UnityPositionToGridCoordinates(originalPosition));
             return;
         }
 
-        Vector3 gridSnapPosition = (Vector3)nullableGridSnapPosition;
+        Vector3 snapPos = (Vector3)nullableSnapPos;
 
-        int gridCellValue = shipGrid.GetGridCellValue(shipGrid.UnityPositionToGridCoordinates(gridSnapPosition));
+        int gridCellValue = shipGrid.GetGridCellValue(shipGrid.UnityPositionToGridCoordinates(snapPos));
         if (gridCellValue == -1 || (draggingStackablePart && gridCellValue == 1)) {
-            if (TryPlacePart(gameObject, gridSnapPosition)) {
+            if (TryPlacePart(gameObject, snapPos)) {
                 if(stackedPart != null) stackedPart.GetComponent<PartDrag>().OnMouseUp();
                 return;
             }
         } else {
-            GameObject partToBeSwapped = shipGrid.GetPlacedPartByWorldPosition(gridSnapPosition);
-            if (partToBeSwapped != null && TrySwapPart(gameObject, originalPosition, partToBeSwapped.gameObject, gridSnapPosition)) {
+            GameObject partToBeSwapped = shipGrid.GetPlacedPartByWorldPosition(snapPos);
+            if (partToBeSwapped != null && TrySwapPart(gameObject, originalPosition, partToBeSwapped.gameObject, snapPos)) {
                 if(stackedPart != null) stackedPart.GetComponent<PartDrag>().OnMouseUp();
                 return;
             }
