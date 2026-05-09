@@ -21,9 +21,13 @@ public class PartTooltipUI : MonoBehaviour
     [SerializeField] private float hoverDelay = 0.6f;
     [SerializeField] private Vector2 offset = new Vector2(15f, -15f);
 
+    [Header("Positioning")]
+    [SerializeField] private RectTransform sidebarRect;
+
     private Coroutine showCoroutine;
     private Canvas parentCanvas;
     private CanvasGroup canvasGroup;
+    private PartScriptableObject currentPart;
 
     private void Awake()
     {
@@ -43,21 +47,27 @@ public class PartTooltipUI : MonoBehaviour
     /// <summary>Call this when the pointer enters a part item.</summary>
     public void ShowDelayed(PartScriptableObject part)
     {
+        currentPart = part;
         if (showCoroutine != null) StopCoroutine(showCoroutine);
+        canvasGroup.alpha = 0;
         showCoroutine = StartCoroutine(ShowAfterDelay(part));
     }
 
     /// <summary>Call this when the pointer exits a part item.</summary>
-    public void Hide()
+    public void Hide(PartScriptableObject part)
     {
+        // Only hide if we're still showing this part, ignore if already moved to new one
+        if (currentPart != part) return;
         if (showCoroutine != null) { StopCoroutine(showCoroutine); showCoroutine = null; }
         canvasGroup.alpha = 0;
+        currentPart = null;
     }
 
     private IEnumerator ShowAfterDelay(PartScriptableObject part)
     {
         yield return new WaitForSeconds(hoverDelay);
         Populate(part);
+        UpdatePosition();
         canvasGroup.alpha = 1;
     }
 
@@ -73,36 +83,39 @@ public class PartTooltipUI : MonoBehaviour
         massText.text = $"Mass: {part.mass} kg";
     }
 
-    private void Update() {
-    if (canvasGroup.alpha == 0) return;
+    private void UpdatePosition()
+    {
+        Vector2 screenPoint = Input.mousePosition;
+        RectTransform canvasRect = parentCanvas.GetComponent<RectTransform>();
 
-    Vector2 screenPoint = Input.mousePosition;
-    Vector2 localPoint;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRect,
+            screenPoint,
+            parentCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : parentCanvas.worldCamera,
+            out Vector2 localPoint
+        );
 
-    RectTransform canvasRect = parentCanvas.GetComponent<RectTransform>();
+        // Lock X to right of sidebar, only follow mouse on Y
+        Vector2 sidebarScreenPos;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRect,
+            new Vector2(sidebarRect.position.x + sidebarRect.rect.width * parentCanvas.scaleFactor, 0),
+            parentCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : parentCanvas.worldCamera,
+            out sidebarScreenPos
+        );
+        tooltipPanel.anchoredPosition = new Vector2(sidebarScreenPos.x + 5f, localPoint.y + offset.y);
 
-    RectTransformUtility.ScreenPointToLocalPointInRectangle(
-        canvasRect,
-        screenPoint,
-        parentCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : parentCanvas.worldCamera,
-        out localPoint
-    );
+        // Clamp bottom edge
+        Vector2 pos = tooltipPanel.anchoredPosition;
+        float canvasH = canvasRect.rect.height;
+        if (pos.y - tooltipPanel.rect.height < -canvasH / 2f)
+            pos.y += tooltipPanel.rect.height;
+        tooltipPanel.anchoredPosition = pos;
+    }
 
-    tooltipPanel.anchoredPosition = localPoint + offset;
-
-    // Clamp so it never goes off the right or bottom edge
-    Vector2 pos = tooltipPanel.anchoredPosition;
-    float canvasW = canvasRect.rect.width;
-    float canvasH = canvasRect.rect.height;
-
-    // Right edge
-    if (pos.x + tooltipPanel.rect.width > canvasW / 2f)
-        pos.x -= tooltipPanel.rect.width + (offset.x * 2);
-
-    // Bottom edge
-    if (pos.y - tooltipPanel.rect.height < -canvasH / 2f)
-        pos.y += tooltipPanel.rect.height + (offset.y * 2);
-
-    tooltipPanel.anchoredPosition = pos;
-}
+    private void Update()
+    {
+        if (canvasGroup.alpha == 0) return;
+        UpdatePosition();
+    }
 }

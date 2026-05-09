@@ -2648,6 +2648,7 @@ MonoBehaviour:
   massText: {fileID: 1346067782}
   hoverDelay: 0.6
   offset: {x: 10, y: -10}
+  sidebarRect: {fileID: 1475967470}
 --- !u!114 &948184111
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3150,6 +3151,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1391144035}
   m_CullTransparentMesh: 1
+--- !u!224 &1475967470 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 636964055316608900, guid: b5838c8dd365c41938fdeb829c872418, type: 3}
+  m_PrefabInstance: {fileID: 845691893}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1490413200
 GameObject:
   m_ObjectHideFlags: 0

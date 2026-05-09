@@ -31,7 +31,7 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        PartTooltipUI.Instance?.Hide();
+        PartTooltipUI.Instance?.Hide(partData);
     }
 
     public void Initialize(PartScriptableObject part) {
@@ -57,7 +57,7 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     }
     
     public void OnBeginDrag(PointerEventData eventData) {
-        PartTooltipUI.Instance?.Hide();
+        PartTooltipUI.Instance?.Hide(partData);
         // Notify the drag hint to stop
         DragHintAnimator hint = FindAnyObjectByType<DragHintAnimator>();
         if (hint != null) hint.StopHint();
