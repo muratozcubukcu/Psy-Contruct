@@ -3,42 +3,45 @@ using UnityEngine;
 using Random = System.Random;
 
 public class AsteroidFlight : MonoBehaviour {
-    
     [SerializeField] public int asteroidSize;
     public Vector3 direction;
-    private float speed;
-    private int _spawnSide;
-    public int spawnSide {
-        private get { return _spawnSide; }
-        set {
-            _spawnSide = value;
-            
-            float rand(float min, float max) => UnityEngine.Random.Range(min, max);
-            switch (value) {
-                case 0: //Spawn above camera
-                    direction = new Vector3(rand(-1, 1), rand(-1, 0)).normalized;
-                    break;
-                case 1: //below
-                    direction = new Vector3(rand(-1, 1), rand(0, 1)).normalized;
-                    break;
-                case 2: //left
-                    direction = new Vector3(rand(0, 1), rand(-1, 1)).normalized;
-                    break;
-                default: //right
-                    direction = new Vector3(rand(-1, 0), rand(-1, 1)).normalized;
-                    break;
-            }
-        }
-    }
+    public float speed;
 
     private void Awake() {
         speed = UnityEngine.Random.Range(.5f, 8f);
+        GetDirection();
         GetComponent<Rigidbody2D>().angularVelocity = UnityEngine.Random.Range(15f, 100f);
     }
 
     private void Start() {
+        // offset to prevent asteroids from clipping into eachother during splitting
+        transform.position += direction * (AsteroidController.Instance.largestAsteroidRadius - 2f);
+        
         GetComponent<Rigidbody2D>().linearVelocity = direction * speed;
-        transform.position += direction * 2; // offset to prevent asteroids from clipping into eachother during splitting
+    }
+
+    private void GetDirection() {
+        float directionRandomness = .75f;
+        Spacecraft spacecraft = Spacecraft.GetInstance();
+        Vector2 spacecraftVel = spacecraft.GetComponent<Rigidbody2D>().linearVelocity;
+        
+        float distanceToSpacecraft = (spacecraft.transform.position - transform.position).magnitude;
+        float timeToReachSpacecraft = distanceToSpacecraft / speed;
+        
+        Vector3 predictedPos = spacecraft.transform.position + (Vector3)(spacecraftVel * timeToReachSpacecraft);
+        
+        Vector3 idealDirection = (predictedPos - transform.position).normalized;
+        float xDir = idealDirection.x + UnityEngine.Random.Range(-directionRandomness, directionRandomness);
+        float yDir = idealDirection.y + UnityEngine.Random.Range(-directionRandomness, directionRandomness);
+        direction = new Vector3(xDir, yDir).normalized;
+    }
+
+    public void ChangeMotion(Vector3 direction, float speed = -1f) {
+        if(speed == -1f) speed = UnityEngine.Random.Range(.5f, 8f);
+
+        this.speed = speed;
+        this.direction = direction;
+        GetComponent<Rigidbody2D>().linearVelocity = direction * speed;
     }
     
 }

@@ -48,5 +48,8 @@ TagManager:
   - name: MidDrag
     uniqueID: 2786281251
     locked: 0
+  - name: Effects
+    uniqueID: 2069325271
+    locked: 0
   m_RenderingLayers:
   - Default

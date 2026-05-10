@@ -2443,7 +2443,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 00000000234713a695eb9a9b
+  m_ApplyToSortingLayers: 0000000095eb9a9b234713a6d765577b
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -4437,15 +4437,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2307dd2ed846a4ccb8cfd3b9048ed94a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  explosionPrefab: {fileID: 4109330304026154757, guid: bb2e83f25f76549d49d798b5a6dc4614, type: 3}
   maxAsteroids: 10
   minAsteroidSpeed: 1
   maxAsteroidSpeed: 10
+  offCameraLifeTime: 5
   hugeAsteroid: {fileID: 8869476336097629157, guid: 4f3c185cf2aa94f9ebf3f16aa9c33ea6, type: 3}
   bigAsteroid: {fileID: 3955418798240587005, guid: aa5477d98f2ff4587a5a69ac6ea2b0a9, type: 3}
   medAsteroid: {fileID: 6747026704579016348, guid: 7b3949f4b56d34523b5c300dc9d8c7d4, type: 3}
   smallAsteroid: {fileID: 1273717868519207366, guid: 3a456e6ef62194cb6a06b67797cd728e, type: 3}
   camera: {fileID: 519420031}
   damageCooldown: 1
+  largestAsteroidRadius: 6
 --- !u!4 &1414360248
 Transform:
   m_ObjectHideFlags: 0

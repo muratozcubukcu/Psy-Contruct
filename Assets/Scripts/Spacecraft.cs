@@ -22,7 +22,7 @@ public class Spacecraft : MonoBehaviour {
     // Health system
     [Header("Health Settings")]
     [SerializeField] private float maxHealth = 100f;
-    [SerializeField] private float currentHealth;
+    [SerializeField] public float currentHealth;
 
     // Events for health changes
     public event EventHandler<float> OnHealthChanged; // Passes current health percentage (0-1)
