@@ -2646,7 +2646,7 @@ MonoBehaviour:
   descriptionText: {fileID: 1701209566}
   connectsToText: {fileID: 245285892}
   massText: {fileID: 1346067782}
-  hoverDelay: 0.6
+  hoverDelay: 0
   offset: {x: 10, y: -10}
   sidebarRect: {fileID: 1475967470}
 --- !u!114 &948184111
