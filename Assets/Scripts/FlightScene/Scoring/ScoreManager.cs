@@ -79,6 +79,10 @@ public class ScoreManager : MonoBehaviour {
         if (d >= 0f) {
             slingshotDeviationAccum += d;
             slingshotDeviationSamples++;
+
+            if (MinimapManager.Instance != null && config != null) {
+                MinimapManager.Instance.highlightBorder = d <= config.slingshotPathTolerance;
+            }
         }
     }
 
@@ -89,6 +93,7 @@ public class ScoreManager : MonoBehaviour {
     private void SlingshotPlanner_OnExited() {
         slingshotInProgress = false;
         if (slingshotDeviationSamples > 0) slingshotCompleted = true;
+        if (MinimapManager.Instance != null) MinimapManager.Instance.highlightBorder = false;
     }
 
     private void OrbitAssist_OnEnteredOrbit(object sender, System.EventArgs e) {
