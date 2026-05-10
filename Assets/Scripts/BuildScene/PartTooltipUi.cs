@@ -77,9 +77,7 @@ public class PartTooltipUI : MonoBehaviour
         descriptionText.text = string.IsNullOrEmpty(part.description)
             ? "No description available."
             : part.description;
-        connectsToText.text = string.IsNullOrEmpty(part.connectsTo)
-            ? "Connects to: —"
-            : $"Connects to: {part.connectsTo}";
+        connectsToText.text = part.isStackable ? "✓ Stackable" : "✗ Not Stackable";
         massText.text = $"Mass: {part.mass} kg";
     }
 
