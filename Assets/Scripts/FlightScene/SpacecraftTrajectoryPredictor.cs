@@ -179,7 +179,12 @@ public class SpacecraftTrajectoryPredictor : MonoBehaviour {
 
         // Push the predicted points into the LineRenderer for drawing.
         line.enabled = true;
-        bool viable = slingshotPlanner != null && slingshotPlanner.IsSlingshotViable;
+        bool viable;
+        if (slingshotPlanner != null && slingshotPlanner.InSlingshotRange) {
+            viable = MinimapManager.Instance != null && MinimapManager.Instance.highlightBorder;
+        } else {
+            viable = slingshotPlanner != null && slingshotPlanner.IsSlingshotViable;
+        }
         line.startColor = viable ? slingshotStartColor : startColor;
         line.endColor = viable ? slingshotEndColor : endColor;
         line.positionCount = actualCount;

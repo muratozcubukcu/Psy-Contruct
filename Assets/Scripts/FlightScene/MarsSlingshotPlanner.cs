@@ -46,8 +46,8 @@ public class MarsSlingshotPlanner : MonoBehaviour {
     [SerializeField] private float radiusMargin = 10f;
 
     [Header("Snapshot Trigger")]
-    // If > 0, this overrides the automatic entry distance. Useful for tuning
-    // without touching the gravity source.
+    // CircleCollider2D whose radius defines the entry distance for snapshotting.
+    // the slingshot scoring fires at the same boundary as the minimap reveal.
     [SerializeField] private CircleCollider2D entryCollider;
     
     // The exit distance is the entry distance times this number. Having
@@ -72,13 +72,9 @@ public class MarsSlingshotPlanner : MonoBehaviour {
     // Color of the last part of the line (heading toward Psyche).
     [SerializeField] private Color exitColor = new Color(0.4f, 1f, 0.5f, 1f);
 
-    [Tooltip("How many degrees off the ideal orbit direction the ship can be and still count as viable.")]
-    [SerializeField] private float headingToleranceDegrees;
-
-    [Header("Gravity Sources (optional)")]
-    // Reference to Mars's PlanetGravitySource. We use it to know how big
-    // Mars's gravity well is (where the snapshot should trigger).
-    [SerializeField] private PlanetGravitySource marsGravity;
+    // Heading tolerance is now read from ScoreConfig.slingshotHeadingTolerance
+    // so there's a single tuning location for both bonus/border and the
+    // planner's IsSlingshotViable check.
 
     // The LineRenderer that draws the curve in the game world. Created lazily.
     private LineRenderer pathLine;
@@ -136,16 +132,41 @@ public class MarsSlingshotPlanner : MonoBehaviour {
 
     public bool InSlingshotRange => inMarsRange;
 
+    // Single source of truth for heading tolerance: ScoreConfig.
+    // Fallback to 15° if the score system isn't wired up.
+    private float HeadingTolerance {
+        get {
+            ScoreManager sm = ScoreManager.Instance;
+            if (sm != null && sm.Config != null) return sm.Config.slingshotHeadingTolerance;
+            return 15f;
+        }
+    }
+
     public float DistanceFromPath(Vector2 worldPos) {
+        return DistanceFromPath(worldPos, out _);
+    }
+
+    public float DistanceFromPath(Vector2 worldPos, out Vector2 pathDirAtClosest) {
+        pathDirAtClosest = Vector2.zero;
         if (snapshotPath == null || snapshotPath.Length < 2) return -1f;
 
         float bestSqr = float.MaxValue;
+        int bestSeg = 0;
         for (int i = 0; i < snapshotPath.Length - 1; i++) {
             Vector2 a = snapshotPath[i];
             Vector2 b = snapshotPath[i + 1];
             float dSqr = NearestPointDistanceSqr(worldPos, a, b);
-            if (dSqr < bestSqr) bestSqr = dSqr;
+            if (dSqr < bestSqr) {
+                bestSqr = dSqr;
+                bestSeg = i;
+            }
         }
+
+        const int LookAhead = 5;
+        int aheadIdx = Mathf.Min(snapshotPath.Length - 1, bestSeg + LookAhead);
+        Vector2 chord = (Vector2)snapshotPath[aheadIdx] - (Vector2)snapshotPath[bestSeg];
+        if (chord.sqrMagnitude > 1e-6f) pathDirAtClosest = chord.normalized;
+
         return Mathf.Sqrt(bestSqr);
     }
 
@@ -180,15 +201,15 @@ public class MarsSlingshotPlanner : MonoBehaviour {
         }
     }
 
-    // Resolves the Mars transform - prefer the manual override, fall back to
-    // the singleton instance.
-    private Transform MarsTf => Mars.Instance.transform;
-
-    // Same lookup pattern for Psyche.
-    private Transform PsycheTf => PsycheAsteroid.Instance.transform;
-
-    // Same lookup pattern for the spacecraft.
-    private Transform ShipTf => Spacecraft.GetInstance() ? Spacecraft.GetInstance().transform : null;
+    // Singleton lookups
+    private Transform MarsTf => Mars.Instance != null ? Mars.Instance.transform : null;
+    private Transform PsycheTf => PsycheAsteroid.Instance != null ? PsycheAsteroid.Instance.transform : null;
+    private Transform ShipTf {
+        get {
+            Spacecraft s = Spacecraft.GetInstance();
+            return s != null ? s.transform : null;
+        }
+    }
 
     // Picks the actual closest-approach radius the math will use.
     // If allowed, reads it from Mars's collider so it scales with the planet sprite.
@@ -311,13 +332,7 @@ public class MarsSlingshotPlanner : MonoBehaviour {
         float angle = Mathf.Acos(Mathf.Clamp(Vector2.Dot(orbitDir, heading), -1f, 1f)) * Mathf.Rad2Deg;
         float trueAngle = Math.Abs(angle - 180);
 
-        if (trueAngle <= headingToleranceDegrees) {
-            MinimapManager.Instance.highlightBorder = true;
-            return true;
-        }
-        
-        MinimapManager.Instance.highlightBorder = false;
-        return false;
+        return trueAngle <= HeadingTolerance;
     }
 
     // A "conic section" - the family of curves that includes ellipses,
@@ -487,7 +502,6 @@ public class MarsSlingshotPlanner : MonoBehaviour {
         if (Mathf.Sign(dirB) == Mathf.Sign(rotSign)) { conic = candB; return true; }
         // Last resort.
         conic = candA;
-        Debug.Log("good orbit path");
         return true;
     }
 
@@ -508,14 +522,6 @@ public class MarsSlingshotPlanner : MonoBehaviour {
         float nu_p = WrapPi(theta_p - omega);
         // Opposite signs = the two angles are on opposite sides of periapsis.
         return nu_s * nu_p < 0f;
-    }
-
-    // Cross product of two unit-direction vectors built from angles.
-    // Tells us which side of the periapsis line Psyche sits on.
-    private static float SignOfPeriSide(float omega, float theta_psyche) {
-        Vector2 periDir = new Vector2(Mathf.Cos(omega), Mathf.Sin(omega));
-        Vector2 psyDir = new Vector2(Mathf.Cos(theta_psyche), Mathf.Sin(theta_psyche));
-        return psyDir.x * periDir.y - psyDir.y * periDir.x;
     }
 
     // Forces an angle into the range (-pi, pi]. Plain modulo math doesn't
@@ -619,11 +625,6 @@ public class MarsSlingshotPlanner : MonoBehaviour {
 
     private void Start() {
         entryRange = entryCollider.radius;
-        // If we weren't given a Mars gravity reference, try to find one on Mars.
-        if (marsGravity == null && MarsTf != null) {
-            marsGravity = MarsTf.GetComponent<PlanetGravitySource>()
-                       ?? MarsTf.GetComponentInChildren<PlanetGravitySource>();
-        }
     }
 
     private void LateUpdate() {
