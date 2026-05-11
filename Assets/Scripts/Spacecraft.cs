@@ -53,8 +53,23 @@ public class Spacecraft : MonoBehaviour {
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        
         rb = GetComponentInChildren<Rigidbody2D>();
+        Settings settings = Settings.Instance;
 
+        if (settings.difficulty == 0) // easy settings
+        {
+            maxHealth = 90f;
+            maxEnergy = 16f;
+        } else if (settings.difficulty == 1) // normal settings
+        {
+            maxHealth = 60f;
+            maxEnergy = 12f;
+        } else if (settings.difficulty == 2) // hard settings
+        {
+            maxHealth = 30f;
+            maxEnergy = 8f;
+        }
         currentHealth = maxHealth;
         currentEnergy = maxEnergy;
         SceneManager.sceneLoaded += OnSceneLoaded;
