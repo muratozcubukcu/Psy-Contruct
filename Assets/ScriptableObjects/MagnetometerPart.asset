@@ -16,8 +16,6 @@ MonoBehaviour:
   partID: 5
   mass: 1
   isStackable: 1
-  connectingDirections:
-  - above
-  - below
-  - left
-  - right
+  isRotatable: 0
+  description: Measures magnetic field strength in space.
+  connectsTo: Spacecraft Body

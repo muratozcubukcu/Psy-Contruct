@@ -16,8 +16,6 @@ MonoBehaviour:
   partID: 8
   mass: 1
   isStackable: 1
-  connectingDirections:
-  - above
-  - below
-  - left
-  - right
+  isRotatable: 0
+  description: Captures images across multiple wavelengths of light.
+  connectsTo: Spacecraft Body

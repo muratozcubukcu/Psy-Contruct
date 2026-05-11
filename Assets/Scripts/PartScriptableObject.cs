@@ -14,4 +14,10 @@ public class PartScriptableObject : ScriptableObject {
 
     //"This parts should only be connectable to the rest of the spacecraft from..."
     //public string[] connectingDirections;
+
+    [Header("Tooltip Info")]
+    [TextArea(2, 4)]
+    public string description;          // e.g. "Provides thrust to propel the spacecraft forward."
+    [TextArea(1, 3)]
+    public string connectsTo;
 }
