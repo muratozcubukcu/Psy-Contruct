@@ -21,6 +21,7 @@ public class ScoreManager : MonoBehaviour {
     [Tooltip("Delay (seconds) before hooking into Spacecraft/Engine, since the Engine is built at runtime from parts.")]
     [SerializeField] private float hookupDelay = 0.5f;
 
+
     // Run state
     private bool isTracking;
     private float startTime;
@@ -44,7 +45,8 @@ public class ScoreManager : MonoBehaviour {
     private bool slingshotInProgress;
     private bool slingshotCompleted;
     private float slingshotDeviationAccum;
-    private int slingshotDeviationSamples;
+    private int slingshotDeviationSamples;   // green frames
+    private int slingshotInRangeFrames;      // every frame in Mars range
 
     public float ElapsedTime => isTracking ? Time.time - startTime : elapsedTimeAtStop;
     public float FuelUsedPercent => fuelUsedPercent;
@@ -75,14 +77,35 @@ public class ScoreManager : MonoBehaviour {
     private void Update() {
         if (!slingshotInProgress || !isTracking) return;
         if (slingshotPlanner == null || spacecraft == null) return;
-        float d = slingshotPlanner.DistanceFromPath(spacecraft.transform.position);
-        if (d >= 0f) {
+
+        Vector2 shipPos = spacecraft.transform.position;
+        float d = slingshotPlanner.DistanceFromPath(shipPos, out Vector2 pathDir);
+        if (d < 0f) return;
+
+        // Heading uses the ship's facing direction, not velocity, so the
+        // check responds the instant the player rotates back on course.
+        float headingAngle = 180f;
+        if (pathDir.sqrMagnitude > 1e-6f) {
+            Vector2 facing = spacecraft.transform.up;
+            if (facing.sqrMagnitude > 1e-6f) {
+                headingAngle = Vector2.Angle(facing.normalized, pathDir);
+            }
+        }
+
+        float distTol    = config != null ? config.slingshotPathTolerance : float.PositiveInfinity;
+        float headingTol = slingshotPlanner.HeadingToleranceDegrees;
+        bool onBoth = d <= distTol && headingAngle <= headingTol;
+
+        // Bonus = correct frames / total in-range frames.
+        slingshotInRangeFrames++;
+
+        if (onBoth) {
             slingshotDeviationAccum += d;
             slingshotDeviationSamples++;
+        }
 
-            if (MinimapManager.Instance != null && config != null) {
-                MinimapManager.Instance.highlightBorder = d <= config.slingshotPathTolerance;
-            }
+        if (MinimapManager.Instance != null) {
+            MinimapManager.Instance.highlightBorder = onBoth;
         }
     }
 
@@ -128,6 +151,7 @@ public class ScoreManager : MonoBehaviour {
         slingshotCompleted = false;
         slingshotDeviationAccum = 0f;
         slingshotDeviationSamples = 0;
+        slingshotInRangeFrames = 0;
         isTracking = true;
     }
 
@@ -228,17 +252,10 @@ public class ScoreManager : MonoBehaviour {
     private float ComputeSlingshotPrecisionBonus(bool died) {
         if (config == null) return 0f;
         if (died && config.zeroScoreOnDeath) return 0f;
-        if (slingshotDeviationSamples == 0) return 0f;
-        if (config.slingshotPathTolerance <= 0f) return 0f;
+        if (slingshotInRangeFrames == 0) return 0f;
 
-        // Bonus is awarded if any deviation was sampled (i.e. ship was inside
-        // Mars range at any point during the run). Don't gate on the
-        // slingshotCompleted flag, because OnSlingshotExited can fire AFTER
-        // FinalizeRun on the same frame -- the planner detects exit in
-        // LateUpdate, but OrbitAssist's OnEnteredOrbit fires in Update and
-        // immediately drives the breakdown popup.
-        float avgDev = slingshotDeviationAccum / slingshotDeviationSamples;
-        float quality = config.slingshotPathTolerance / (config.slingshotPathTolerance + avgDev);
+
+        float quality = (float)slingshotDeviationSamples / slingshotInRangeFrames;
         return config.slingshotPrecisionBonusMax * quality;
     }
 

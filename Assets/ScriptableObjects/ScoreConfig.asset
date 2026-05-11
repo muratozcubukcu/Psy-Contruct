@@ -16,8 +16,7 @@ MonoBehaviour:
   timeBonusDurationSeconds: 200
   fuelBonusMax: 3000
   healthBonusMax: 5000
-  slingshotBonusMax: 1500
   slingshotPrecisionBonusMax: 2000
-  slingshotPathTolerance: 20
+  slingshotPathTolerance: 4
   minScore: 0
-  zeroScoreOnDeath: 0
+  zeroScoreOnDeath: 1

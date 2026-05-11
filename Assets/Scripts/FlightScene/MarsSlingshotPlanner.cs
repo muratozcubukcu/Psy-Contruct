@@ -131,16 +131,33 @@ public class MarsSlingshotPlanner : MonoBehaviour {
 
     public bool InSlingshotRange => inMarsRange;
 
+    public float HeadingToleranceDegrees => headingToleranceDegrees;
+
     public float DistanceFromPath(Vector2 worldPos) {
+        return DistanceFromPath(worldPos, out _);
+    }
+
+    public float DistanceFromPath(Vector2 worldPos, out Vector2 pathDirAtClosest) {
+        pathDirAtClosest = Vector2.zero;
         if (snapshotPath == null || snapshotPath.Length < 2) return -1f;
 
         float bestSqr = float.MaxValue;
+        int bestSeg = 0;
         for (int i = 0; i < snapshotPath.Length - 1; i++) {
             Vector2 a = snapshotPath[i];
             Vector2 b = snapshotPath[i + 1];
             float dSqr = NearestPointDistanceSqr(worldPos, a, b);
-            if (dSqr < bestSqr) bestSqr = dSqr;
+            if (dSqr < bestSqr) {
+                bestSqr = dSqr;
+                bestSeg = i;
+            }
         }
+
+        const int LookAhead = 5;
+        int aheadIdx = Mathf.Min(snapshotPath.Length - 1, bestSeg + LookAhead);
+        Vector2 chord = (Vector2)snapshotPath[aheadIdx] - (Vector2)snapshotPath[bestSeg];
+        if (chord.sqrMagnitude > 1e-6f) pathDirAtClosest = chord.normalized;
+
         return Mathf.Sqrt(bestSqr);
     }
 
