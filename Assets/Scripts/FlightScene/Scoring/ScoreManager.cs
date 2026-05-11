@@ -14,6 +14,7 @@ public class ScoreManager : MonoBehaviour {
 
     [Tooltip("Tunable weights / base score. Required.")]
     [SerializeField] private ScoreConfig config;
+    public ScoreConfig Config => config;
 
     [Tooltip("Start tracking automatically when the scene loads.")]
     [SerializeField] private bool autoStart = true;
@@ -92,8 +93,8 @@ public class ScoreManager : MonoBehaviour {
             }
         }
 
-        float distTol    = config != null ? config.slingshotPathTolerance : float.PositiveInfinity;
-        float headingTol = slingshotPlanner.HeadingToleranceDegrees;
+        float distTol    = config != null ? config.slingshotPathTolerance    : float.PositiveInfinity;
+        float headingTol = config != null ? config.slingshotHeadingTolerance : float.PositiveInfinity;
         bool onBoth = d <= distTol && headingAngle <= headingTol;
 
         // Bonus = correct frames / total in-range frames.

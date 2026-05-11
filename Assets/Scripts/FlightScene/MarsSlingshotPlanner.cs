@@ -72,8 +72,9 @@ public class MarsSlingshotPlanner : MonoBehaviour {
     // Color of the last part of the line (heading toward Psyche).
     [SerializeField] private Color exitColor = new Color(0.4f, 1f, 0.5f, 1f);
 
-    [Tooltip("How many degrees off the ideal orbit direction the ship can be and still count as viable.")]
-    [SerializeField] private float headingToleranceDegrees = 15f;
+    // Heading tolerance is now read from ScoreConfig.slingshotHeadingTolerance
+    // so there's a single tuning location for both bonus/border and the
+    // planner's IsSlingshotViable check.
 
     // The LineRenderer that draws the curve in the game world. Created lazily.
     private LineRenderer pathLine;
@@ -131,7 +132,15 @@ public class MarsSlingshotPlanner : MonoBehaviour {
 
     public bool InSlingshotRange => inMarsRange;
 
-    public float HeadingToleranceDegrees => headingToleranceDegrees;
+    // Single source of truth for heading tolerance: ScoreConfig.
+    // Fallback to 15° if the score system isn't wired up.
+    private float HeadingTolerance {
+        get {
+            ScoreManager sm = ScoreManager.Instance;
+            if (sm != null && sm.Config != null) return sm.Config.slingshotHeadingTolerance;
+            return 15f;
+        }
+    }
 
     public float DistanceFromPath(Vector2 worldPos) {
         return DistanceFromPath(worldPos, out _);
@@ -323,7 +332,7 @@ public class MarsSlingshotPlanner : MonoBehaviour {
         float angle = Mathf.Acos(Mathf.Clamp(Vector2.Dot(orbitDir, heading), -1f, 1f)) * Mathf.Rad2Deg;
         float trueAngle = Math.Abs(angle - 180);
 
-        return trueAngle <= headingToleranceDegrees;
+        return trueAngle <= HeadingTolerance;
     }
 
     // A "conic section" - the family of curves that includes ellipses,
