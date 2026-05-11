@@ -81,12 +81,14 @@ public class ScoreManager : MonoBehaviour {
         if (settings.difficulty == 0) {
             difficultyModifier = 1f;
             config.timeBonusDurationSeconds = 200;
+            config.slingshotHeadingTolerance*=1.5f;
         } else if (settings.difficulty == 1) {
             difficultyModifier = 1.5f;
             config.timeBonusDurationSeconds = 175;
         } else if (settings.difficulty == 2) {
             difficultyModifier = 2f;
             config.timeBonusDurationSeconds = 150;
+            config.slingshotHeadingTolerance*=0.8f;
         }
     }
 
