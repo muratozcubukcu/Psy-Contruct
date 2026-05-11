@@ -60,15 +60,15 @@ public class Spacecraft : MonoBehaviour {
         if (settings.difficulty == 0) // easy settings
         {
             maxHealth = 90f;
-            maxEnergy = 15f;
+            maxEnergy = 16f;
         } else if (settings.difficulty == 1) // normal settings
         {
             maxHealth = 60f;
-            maxEnergy = 10f;
+            maxEnergy = 12f;
         } else if (settings.difficulty == 2) // hard settings
         {
             maxHealth = 30f;
-            maxEnergy = 5f;
+            maxEnergy = 8f;
         }
         currentHealth = maxHealth;
         currentEnergy = maxEnergy;
