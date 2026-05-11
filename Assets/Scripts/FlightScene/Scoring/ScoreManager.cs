@@ -46,6 +46,8 @@ public class ScoreManager : MonoBehaviour {
     private float slingshotDeviationAccum;
     private int slingshotDeviationSamples;
 
+    private float difficultyModifier;
+
     public float ElapsedTime => isTracking ? Time.time - startTime : elapsedTimeAtStop;
     public float FuelUsedPercent => fuelUsedPercent;
     public float DamageTakenPercent => damageTakenPercent;
@@ -70,6 +72,19 @@ public class ScoreManager : MonoBehaviour {
         slingshotPlanner = FindFirstObjectByType<MarsSlingshotPlanner>();
         MarsSlingshotPlanner.OnSlingshotEntered += SlingshotPlanner_OnEntered;
         MarsSlingshotPlanner.OnSlingshotExited += SlingshotPlanner_OnExited;
+
+        Settings settings = Settings.Instance;
+        
+        if (settings.difficulty == 0) {
+            difficultyModifier = 1f;
+            config.timeBonusDurationSeconds = 200;
+        } else if (settings.difficulty == 1) {
+            difficultyModifier = 1.5f;
+            config.timeBonusDurationSeconds = 175;
+        } else if (settings.difficulty == 2) {
+            difficultyModifier = 2f;
+            config.timeBonusDurationSeconds = 150;
+        }
     }
 
     private void Update() {
@@ -170,6 +185,8 @@ public class ScoreManager : MonoBehaviour {
 
         float total = timeBonus + fuelBonus + healthBonus + slingshotPrec;
 
+        total *= difficultyModifier;
+
         if (died && config != null && config.zeroScoreOnDeath) total = minScore;
 
         total = Mathf.Max(minScore, total);
@@ -182,6 +199,7 @@ public class ScoreManager : MonoBehaviour {
             slingshotPrecisionBonusMax = config != null ? config.slingshotPrecisionBonusMax : 0f,
             slingshotCompleted = slingshotDeviationSamples > 0,
             averageSlingshotDeviation = avgDev,
+            difficultyModifier = difficultyModifier,
             finalScore = total,
             elapsedSeconds = elapsedTimeAtStop,
             fuelUsedPercent = fuelUsedPercent,
@@ -254,6 +272,7 @@ public class ScoreManager : MonoBehaviour {
         public float slingshotPrecisionBonusMax;
         public bool slingshotCompleted;
         public float averageSlingshotDeviation;
+        public float difficultyModifier;
         public float finalScore;
         public float elapsedSeconds;
         public float fuelUsedPercent;

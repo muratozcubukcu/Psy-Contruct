@@ -54,7 +54,8 @@ public class ScoreBreakdownPopup : MonoBehaviour {
         AppendRow(sb, "Fuel Bonus",        b.fuelBonus,               $"({100f - b.fuelUsedPercent:F0}%)");
         AppendRow(sb, "Health Bonus",      b.healthBonus,             $"({100f - b.damageTakenPercent:F0}%)");
         AppendRow(sb, "Slingshot Bonus",   b.slingshotPrecisionBonus, "");
-
+        sb.Append('\n');
+        sb.Append("Difficulty modifier       x" + b.difficultyModifier + "\n");
         sb.Append('\n');
         sb.Append($"FINAL SCORE: {Mathf.RoundToInt(b.finalScore)}");
         return sb.ToString();
