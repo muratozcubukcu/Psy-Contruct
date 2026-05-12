@@ -251,7 +251,6 @@ MonoBehaviour:
   damage: 10
   destroyOnCollision: 0
   disableAfterCollision: 0
-  justSplitOff: 0
 --- !u!114 &-6809580775993762356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -341,6 +340,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4644351440221104986, guid: aa5477d98f2ff4587a5a69ac6ea2b0a9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4683888666015446412, guid: aa5477d98f2ff4587a5a69ac6ea2b0a9, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6142924997517065586, guid: aa5477d98f2ff4587a5a69ac6ea2b0a9, type: 3}

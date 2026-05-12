@@ -197,7 +197,7 @@ public class Spacecraft : MonoBehaviour {
     }
     
     private IEnumerator VisualBlinking() {
-        SpriteRenderer[] spacecraftSRs = GetComponentsInChildren<SpriteRenderer>();
+        SpriteRenderer[] spacecraftSRs = GetComponentsInChildren<SpriteRenderer>(true);
         TextMeshProUGUI[] spacecraftTMPs = GetComponentsInChildren<TextMeshProUGUI>();
         float currTime = Time.time;
         

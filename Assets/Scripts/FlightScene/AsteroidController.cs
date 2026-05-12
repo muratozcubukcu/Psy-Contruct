@@ -74,17 +74,25 @@ public class AsteroidController : MonoBehaviour {
     public void SplitAsteroid(GameObject sourceAsteroid, GameObject contactAsteroid) {
         AsteroidDamage sourceDamage = sourceAsteroid.GetComponent<AsteroidDamage>();
         
-        if (sourceDamage.splitAster1 != null) 
+        if (sourceDamage.splitAster1 != null) {
             TrySpawnSplitAsteroid(sourceDamage.splitAster1, sourceAsteroid, contactAsteroid);
-        if (sourceDamage.splitAster2 != null) 
+            sourceDamage.aster1Split = true;
+        }
+        if (sourceDamage.splitAster2 != null) {
             TrySpawnSplitAsteroid(sourceDamage.splitAster2, sourceAsteroid, contactAsteroid);
+            sourceDamage.aster2Split = true;
+        }
     }
 
     private void TrySpawnSplitAsteroid(GameObject splitAsterPrefab, GameObject originalAster, GameObject contactAster) {
+        AsteroidDamage OGAsterDamage = originalAster.GetComponent<AsteroidDamage>();
+        if (OGAsterDamage.splitAster1 == splitAsterPrefab && OGAsterDamage.aster1Split) return;
+        if (OGAsterDamage.splitAster2 == splitAsterPrefab && OGAsterDamage.aster2Split) return;
+        
         GameObject splitAster = Instantiate(splitAsterPrefab, splitAsterPrefab.transform.position, Quaternion.identity);
+        Destroy(splitAsterPrefab);
         splitAster.SetActive(true);
         splitAster.transform.localScale = new Vector3(2f, 2f, 2f);
-        
         if (CanSpawnSplitAsteroid(splitAster, originalAster, contactAster)) {
             StartCoroutine(splitAster.GetComponent<AsteroidDamage>().HandlePostSplitImmunity());
             splitAster.GetComponent<SpriteRenderer>().enabled = true;
@@ -94,12 +102,13 @@ public class AsteroidController : MonoBehaviour {
     }
 
     private bool CanSpawnSplitAsteroid(GameObject splitAster, GameObject originalAster, GameObject contactAster) {
+        
         PolygonCollider2D splitAsterCol = splitAster.GetComponent<PolygonCollider2D>();
         List<Collider2D> collisions = new List<Collider2D>();
         splitAsterCol.Overlap(new ContactFilter2D(), collisions);
         
         foreach (Collider2D col in collisions) {
-            if (col.gameObject == Spacecraft.GetInstance().gameObject || 
+            if (col.gameObject.layer == LayerMask.NameToLayer("SpaceCraft") || 
                 (col.gameObject != originalAster && col.gameObject != contactAster)) 
                 return false;
         }

@@ -33,6 +33,9 @@ public class AsteroidDamage : MonoBehaviour {
     private int spacecraftLayer;
     private int asteroidLayer;
     private bool justSplitOff;
+    public bool aster1Split;
+    public bool aster2Split;
+    
     
 
     //Start func is used for this bc AsteroidController Instance is defined after this Awake() method is called.
@@ -62,8 +65,6 @@ public class AsteroidDamage : MonoBehaviour {
     }
     
     private void HandleCollision(GameObject other, Vector3 collisionPosition) {
-        //if (other == spacecraft.gameObject && damageCooldown > 0f && Time.time < lastDamageTime + damageCooldown) return;
-        
         if(!other.TryGetComponent(out AsteroidFlight otherFlight)) {
             AsteroidController.Instance.Explode(collisionPosition);
             return;
@@ -84,18 +85,13 @@ public class AsteroidDamage : MonoBehaviour {
             AsteroidController.Instance.SwapAsteroidMotion(asterFlight, otherFlight);
             return;
         }
-            
-
+        
         AsteroidController.Instance.Explode(collisionPosition);
         
         if (other.layer == asteroidLayer) SplitAsteroid(other);
     }
 
     private void HandleSpacecraftCollision(Collision2D collision) {
-        // if (damageCooldown > 0f && Time.time < lastDamageTime + damageCooldown) {
-        //     Debug.Log("Still on Damage cooldown");
-        // }
-        
         float spacecraftSpeedPreCollision = asterFlight.speed - collision.relativeVelocity.magnitude;
 
         Vector3 dirTowardsAster = (spacecraft.transform.position - (Vector3)collision.contacts[0].point).normalized;
@@ -103,7 +99,6 @@ public class AsteroidDamage : MonoBehaviour {
         SplitAsteroid(collision.gameObject);
         
         if (damageCooldown > 0f && Time.time < lastDamageTime + damageCooldown) return;
-        
         
         spacecraft.TakeDamage(damage);
         lastDamageTime = Time.time;
