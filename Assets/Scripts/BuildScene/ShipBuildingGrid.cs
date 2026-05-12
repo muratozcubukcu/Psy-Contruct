@@ -38,6 +38,7 @@ public class ShipBuildingGrid : MonoBehaviour {
     private (int, int) shipStartPos;
     public Dictionary<(int, int), GameObject> placedParts = new();
     public Dictionary<GameObject, GameObject> partStackedOn = new(); //Key: stacked part, value: ship part
+    public Dictionary<(int, int), direction> partRotations = new(); //Only use with rotatable parts
     private bool someTileSelected = false;
     private SpriteRenderer highlightSprite;
     
@@ -98,34 +99,32 @@ public class ShipBuildingGrid : MonoBehaviour {
         shipTransform.rotation = Quaternion.Euler(0, 0, 0);
         shipTransform.position = GridCoordinatesToUnityPosition(shipStartPos);
         
+        placedParts = partDB.savedPlacedParts;
+        partStackedOn = partDB.savedPartStackedOn;
+        originalSpriteColors = partDB.savedOriginalSpriteColors;
+        partRotations = partDB.savedPartRotations;
+        
         FindAnyObjectByType<DragHintAnimator>().StopHint();
 
         if (SavedPlacedPartsValid()) {
-            placedParts = partDB.savedPlacedParts;
-            partStackedOn = partDB.savedPartStackedOn;
-            originalSpriteColors = partDB.savedOriginalSpriteColors;
             foreach (Transform part in shipTransform) {
                 part.position += spacecraft.GetComponent<Spacecraft>().centerOfMass;
             }
         } else {
-            // Spacecraft was destroyed along with its parts. Rebuild from grid IDs.
-            placedParts = new Dictionary<(int, int), GameObject>();
-
             for (int x = 0; x < gridWidth; x++) {
                 for (int y = 0; y < gridHeight; y++) {
                     if ((x, y) == shipStartPos) continue;
 
                     int partID = grid.GetValue((x, y));
                     if (partID <= 0) continue;
+                    
+                    if(partDB.PartIsRotatable(partID)) {
+                        PlacePartAtCoordinates(partDB.GetPartGameObject(partID), (x, y), partRotations[(x, y)]);
+                        continue;
+                    }
 
-                    GameObject prefab = partDB.GetPartGameObject(partID);
-                    if (prefab == null) continue;
-
-                    GameObject partObject = Instantiate(prefab, spacecraft.transform);
-                    partObject.SetActive(true);
-                    partObject.transform.position = GridCoordinatesToUnityPosition(x, y);
-                    CacheOriginalSpriteColors(partObject);
-                    placedParts[(x, y)] = partObject;
+                    if (partDB.PartIsStackable(partID)) PlacePartAtCoordinates(partDB.GetPartGameObject(1), (x, y));
+                    PlacePartAtCoordinates(partDB.GetPartGameObject(partID), (x, y));
                 }
             }
         }
@@ -309,6 +308,7 @@ public class ShipBuildingGrid : MonoBehaviour {
 
     public bool TryFindRotatableConnectingDirection(GameObject partToBePlaced, (int, int) partCoords, out direction dir) {
         direction currDir = partToBePlaced.GetComponent<RotatablePart>().connectingDirection;
+        
         for (int i = 0; i < 4; i++) {
             if (PartConnectsInDirection(partCoords, currDir)) {
                 dir = currDir;
@@ -380,7 +380,10 @@ public class ShipBuildingGrid : MonoBehaviour {
         spacecraftPart.GetComponent<Rigidbody2D>().freezeRotation = true;
         spacecraftPart.transform.position = GridCoordinatesToUnityPosition(coordinates);
         CacheOriginalSpriteColors(spacecraftPart);
-        if(partDB.PartIsRotatable(spacecraftPart)) spacecraftPart.GetComponent<RotatablePart>().SetRotation(dir);
+        if(partDB.PartIsRotatable(spacecraftPart)) {
+            spacecraftPart.GetComponent<RotatablePart>().SetRotation(dir);
+            partRotations[coordinates] = dir;
+        }
 
         // Track in dictionary
         if (partDB.PartIsStackable(part)) partStackedOn[spacecraftPart] = placedParts[coordinates];
@@ -613,6 +616,7 @@ public class ShipBuildingGrid : MonoBehaviour {
         grid.SaveGridState(save);
         partDB.savedPlacedParts = placedParts;
         partDB.savedPartStackedOn = partStackedOn;
+        partDB.savedPartRotations = partRotations;
         partDB.savedOriginalSpriteColors = originalSpriteColors;
     }
     

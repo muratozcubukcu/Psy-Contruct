@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Codice.Client.Common.EventTracking;
 using TreeEditor;
 using UnityEngine;
 
@@ -10,6 +11,9 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 public class AsteroidDamage : MonoBehaviour {
     [SerializeField] private AsteroidFlight asterFlight;
+    [SerializeField] public GameObject splitAster1 = null;
+    [SerializeField] public GameObject splitAster2 = null;
+    
     [Header("Damage Settings")]
     [Tooltip("Amount of damage to deal to the spacecraft on collision")]
     [SerializeField] private float damage = 10f;
@@ -28,6 +32,7 @@ public class AsteroidDamage : MonoBehaviour {
     private float damageCooldown;
     private int spacecraftLayer;
     private int asteroidLayer;
+    private bool justSplitOff;
     
 
     //Start func is used for this bc AsteroidController Instance is defined after this Awake() method is called.
@@ -35,7 +40,7 @@ public class AsteroidDamage : MonoBehaviour {
         asteroidController = AsteroidController.Instance;
         spacecraft = Spacecraft.GetInstance();
         
-        damageCooldown = asteroidController.GetDamageCoolDown();
+        damageCooldown = spacecraft.damageCooldown;
         lastDamageTime = Time.time;
         
         spacecraftLayer = LayerMask.NameToLayer("SpaceCraft");
@@ -43,7 +48,7 @@ public class AsteroidDamage : MonoBehaviour {
     }
     
     private void OnCollisionEnter2D(Collision2D collision) {
-        if (collision.gameObject == spacecraft.gameObject && spacecraft.currentHealth <= 0) return;
+        if (collision.gameObject.layer == spacecraftLayer && spacecraft.currentHealth <= 0) return;
         
         if (collision.gameObject.CompareTag("Gravity") ||
             collision.gameObject.GetComponentInChildren<PlanetGravitySource>() != null) {
@@ -57,49 +62,63 @@ public class AsteroidDamage : MonoBehaviour {
     }
     
     private void HandleCollision(GameObject other, Vector3 collisionPosition) {
-        Debug.Log("Init: " + other.gameObject.name);
-        if (other == spacecraft.gameObject && damageCooldown > 0f && Time.time < lastDamageTime + damageCooldown) return;
+        //if (other == spacecraft.gameObject && damageCooldown > 0f && Time.time < lastDamageTime + damageCooldown) return;
+        
+        if(!other.TryGetComponent(out AsteroidFlight otherFlight)) {
+            AsteroidController.Instance.Explode(collisionPosition);
+            return;
+        }
         
         //If asteroids are gonna collide off camera, just make them move away from each other instead.
         //This keeps a more steady amount of asteroids over time by avoiding them splitting.
-        if (other.TryGetComponent(out AsteroidFlight otherFlight) &&
-            !AsteroidController.Instance.IsVisibleToCamera(transform.position) &&
+        if (!AsteroidController.Instance.IsVisibleToCamera(transform.position) && 
             !AsteroidController.Instance.IsVisibleToCamera(other.transform.position)) {
             
-            (otherFlight.direction, asterFlight.direction) = (asterFlight.direction, otherFlight.direction);
+            AsteroidController.Instance.SwapAsteroidMotion(asterFlight, otherFlight);
+            return;
+        }
 
-            asterFlight.ChangeMotion((transform.position - other.transform.position).normalized);
-            otherFlight.ChangeMotion((other.transform.position - transform.position).normalized);
-
+        //If an asteroid just split, just make them move away from each other instead.
+        //This helps prevent asteroid splitting chain reactions.
+        if (justSplitOff || (other.TryGetComponent(out AsteroidDamage otherDamage) && otherDamage.justSplitOff)) {
+            AsteroidController.Instance.SwapAsteroidMotion(asterFlight, otherFlight);
             return;
         }
             
 
         AsteroidController.Instance.Explode(collisionPosition);
         
-        if (other.layer == asteroidLayer) SplitAsteroid();
+        if (other.layer == asteroidLayer) SplitAsteroid(other);
     }
 
     private void HandleSpacecraftCollision(Collision2D collision) {
+        // if (damageCooldown > 0f && Time.time < lastDamageTime + damageCooldown) {
+        //     Debug.Log("Still on Damage cooldown");
+        // }
+        
+        float spacecraftSpeedPreCollision = asterFlight.speed - collision.relativeVelocity.magnitude;
+
+        Vector3 dirTowardsAster = (spacecraft.transform.position - (Vector3)collision.contacts[0].point).normalized;
+        spacecraft.GetComponent<Rigidbody2D>().linearVelocity = -dirTowardsAster * spacecraftSpeedPreCollision;
+        SplitAsteroid(collision.gameObject);
+        
         if (damageCooldown > 0f && Time.time < lastDamageTime + damageCooldown) return;
         
-        Spacecraft spacecraft = Spacecraft.GetInstance();
-
-        float relativeSpeed = collision.relativeVelocity.magnitude;
-        float asteroidSpeedPreCollision = asterFlight.speed;
-        float spacecraftSpeedPreCollision = asteroidSpeedPreCollision - relativeSpeed;
-
-        Vector3 directionTowardsAster = (spacecraft.transform.position - (Vector3)collision.contacts[0].point).normalized;
-        spacecraft.GetComponent<Rigidbody2D>().linearVelocity = -directionTowardsAster * spacecraftSpeedPreCollision;
         
         spacecraft.TakeDamage(damage);
-        SplitAsteroid();
         lastDamageTime = Time.time;
     }
 
-    private void SplitAsteroid() {
-        asteroidController.SplitAsteroid(gameObject);
+    private void SplitAsteroid(GameObject contactAsteroid) {
+        asteroidController.SplitAsteroid(gameObject, contactAsteroid);
         Destroy(gameObject);
+    }
+
+    //Minimizes asteroid splittng chain reactions by briefly giving them immunity after splitting
+    public IEnumerator HandlePostSplitImmunity() {
+        justSplitOff = true;
+        yield return new WaitForSeconds(0.15f);
+        justSplitOff = false;
     }
     
     public void SetDamage(float newDamage) {

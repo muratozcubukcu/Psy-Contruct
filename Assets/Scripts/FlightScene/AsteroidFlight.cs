@@ -11,12 +11,6 @@ public class AsteroidFlight : MonoBehaviour {
         speed = UnityEngine.Random.Range(.5f, 8f);
         GetDirection();
         GetComponent<Rigidbody2D>().angularVelocity = UnityEngine.Random.Range(15f, 100f);
-    }
-
-    private void Start() {
-        // offset to prevent asteroids from clipping into eachother during splitting
-        transform.position += direction * (AsteroidController.Instance.largestAsteroidRadius - 2f);
-        
         GetComponent<Rigidbody2D>().linearVelocity = direction * speed;
     }
 

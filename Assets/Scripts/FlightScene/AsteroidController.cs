@@ -20,7 +20,6 @@ public class AsteroidController : MonoBehaviour {
     [SerializeField] private GameObject medAsteroid;
     [SerializeField] private GameObject smallAsteroid;
     [SerializeField] private Camera camera;
-    [SerializeField] private float damageCooldown = 1f;
 
     public float largestAsteroidRadius = 6f; //If largest asteroid size changes, update this number.
     private float timeUntilNextAsteroidSpawn = 5f;
@@ -48,7 +47,7 @@ public class AsteroidController : MonoBehaviour {
     private void Update() {
         foreach (GameObject asteroid in offCameraLifetimes.Keys.ToList()) {
             offCameraLifetimes[asteroid] += Time.deltaTime;
-            if(offCameraLifetimes[asteroid] >= 3f) DestroyAsteroid(asteroid);
+            if(offCameraLifetimes[asteroid] >= 5f) DestroyAsteroid(asteroid);
         }
 
         timeUntilNextAsteroidSpawn -= Time.deltaTime;
@@ -69,37 +68,42 @@ public class AsteroidController : MonoBehaviour {
         GameObject asteroid = Instantiate(nextAsteroid, spawnPosition, Quaternion.identity);
 
         offCameraLifetimes.Add(asteroid, 0f);
-        float shipSpeedDivider = (spacecraftRB.linearVelocity.magnitude / 1.5f) + 1;
-        shipSpeedDivider = 1;
-        timeUntilNextAsteroidSpawn = UnityEngine.Random.Range(.5f / shipSpeedDivider, 1f / shipSpeedDivider);
+        timeUntilNextAsteroidSpawn = UnityEngine.Random.Range(.5f, 1f);
     }
 
-    public void SplitAsteroid(GameObject sourceAsteroid) {
-        AsteroidFlight sourceFlight = sourceAsteroid.GetComponent<AsteroidFlight>();
-        Transform sourceTransform = sourceAsteroid.GetComponent<Transform>();
+    public void SplitAsteroid(GameObject sourceAsteroid, GameObject contactAsteroid) {
+        AsteroidDamage sourceDamage = sourceAsteroid.GetComponent<AsteroidDamage>();
         
-        int sourceAsteroidSize = sourceFlight.asteroidSize;
-        GameObject nextAsteroid;
-        switch (sourceAsteroidSize) {
-            case 3:
-                nextAsteroid = bigAsteroid;
-                break;
-            case 2:
-                nextAsteroid = medAsteroid;
-                break;
-            case 1:
-                nextAsteroid = smallAsteroid;
-                break;
-            default:
-                return;
-        }
+        if (sourceDamage.splitAster1 != null) 
+            TrySpawnSplitAsteroid(sourceDamage.splitAster1, sourceAsteroid, contactAsteroid);
+        if (sourceDamage.splitAster2 != null) 
+            TrySpawnSplitAsteroid(sourceDamage.splitAster2, sourceAsteroid, contactAsteroid);
+    }
 
-        GameObject asteroidLeft = Instantiate(nextAsteroid, sourceTransform.position, Quaternion.identity);
-        asteroidLeft.GetComponent<AsteroidFlight>().direction = Quaternion.Euler(0,0,-120) * sourceFlight.direction;
-        offCameraLifetimes.Add(asteroidLeft, 0f);
-        GameObject asteroidRight = Instantiate(nextAsteroid, sourceTransform.position, Quaternion.identity);
-        asteroidRight.GetComponent<AsteroidFlight>().direction = Quaternion.Euler(0,0,120) * sourceFlight.direction;
-        offCameraLifetimes.Add(asteroidRight, 0f);
+    private void TrySpawnSplitAsteroid(GameObject splitAsterPrefab, GameObject originalAster, GameObject contactAster) {
+        GameObject splitAster = Instantiate(splitAsterPrefab, splitAsterPrefab.transform.position, Quaternion.identity);
+        splitAster.SetActive(true);
+        splitAster.transform.localScale = new Vector3(2f, 2f, 2f);
+        
+        if (CanSpawnSplitAsteroid(splitAster, originalAster, contactAster)) {
+            StartCoroutine(splitAster.GetComponent<AsteroidDamage>().HandlePostSplitImmunity());
+            splitAster.GetComponent<SpriteRenderer>().enabled = true;
+            offCameraLifetimes.Add(splitAster, 0f);
+        }
+        else Destroy(splitAster);
+    }
+
+    private bool CanSpawnSplitAsteroid(GameObject splitAster, GameObject originalAster, GameObject contactAster) {
+        PolygonCollider2D splitAsterCol = splitAster.GetComponent<PolygonCollider2D>();
+        List<Collider2D> collisions = new List<Collider2D>();
+        splitAsterCol.Overlap(new ContactFilter2D(), collisions);
+        
+        foreach (Collider2D col in collisions) {
+            if (col.gameObject == Spacecraft.GetInstance().gameObject || 
+                (col.gameObject != originalAster && col.gameObject != contactAster)) 
+                return false;
+        }
+        return true;
     }
 
     private Vector3 GetSpawnPosition(int tries = 0) {
@@ -136,6 +140,13 @@ public class AsteroidController : MonoBehaviour {
 
         return false;
     }
+
+    public void SwapAsteroidMotion(AsteroidFlight aster1, AsteroidFlight aster2) { 
+        (aster2.direction, aster1.direction) = (aster1.direction, aster2.direction);
+
+        aster1.ChangeMotion((aster1.transform.position - aster2.transform.position).normalized);
+        aster2.ChangeMotion((aster2.transform.position - aster1.transform.position).normalized);
+    }
     
     public void Explode(Vector3 position) => StartCoroutine(DoExplosion(position));
 
@@ -155,6 +166,4 @@ public class AsteroidController : MonoBehaviour {
         if(e.isEntering) offCameraLifetimes.Remove(e.asteroid);
         else offCameraLifetimes.Add(e.asteroid, 0f);
     }
-
-    public float GetDamageCoolDown() => damageCooldown;
 }
