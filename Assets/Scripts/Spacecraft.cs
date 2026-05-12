@@ -294,7 +294,7 @@ public class Spacecraft : MonoBehaviour {
     }
 
     public void SetPartRigidBodies(bool enabled, RigidbodyType2D type = RigidbodyType2D.Dynamic,
-        Vector2 linearVelocity = default, bool noisyVelocity = false) {
+        Vector2 linearVelocity = default, bool messyMotion = false) {
         
         if (enabled) {
             if(linearVelocity == default) linearVelocity = Vector2.zero;
@@ -307,8 +307,9 @@ public class Spacecraft : MonoBehaviour {
                 }
                 
                 childRb.bodyType = type;
-                if (noisyVelocity) {
+                if (messyMotion) {
                     linearVelocity += new Vector2(UnityEngine.Random.Range(-5f, 5f), UnityEngine.Random.Range(-5f, 5f));
+                    childRb.freezeRotation = false;
                 }
                 childRb.linearVelocity = linearVelocity;
             }
