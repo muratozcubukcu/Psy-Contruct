@@ -7,7 +7,6 @@ public class SatelliteDish : MonoBehaviour {
     private RepairQuickTimeUI repairQuickTimeUI;
     
     private GameInput gameInput;
-    private bool doQuickTime = false;
 
     private void Awake() {
         gameInput = GameInput.Instance;

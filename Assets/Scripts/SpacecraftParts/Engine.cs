@@ -47,9 +47,6 @@ public class Engine : MonoBehaviour {
     private Animator engineFireAnimator;
     private bool firingVisual;
 
-    public event System.EventHandler<float> OnFuelChanged;
-
-
     public void Awake() {
         totalEngineCount++;
         engineID = totalEngineCount;

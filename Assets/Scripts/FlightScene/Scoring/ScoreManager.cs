@@ -37,14 +37,12 @@ public class ScoreManager : MonoBehaviour {
     private float lastHealthPercent01 = 1f;
 
     // Subscriptions
-    private Engine engine;
     private Spacecraft spacecraft;
-    private bool subscribedToEngine;
-    private bool subscribedToSpacecraft;
+    private bool subscribedToSpacecraftFuel;
+    private bool subscribedToSpacecraftHealth;
 
     private MarsSlingshotPlanner slingshotPlanner;
     private bool slingshotInProgress;
-    private bool slingshotCompleted;
     private float slingshotDeviationAccum;
     private int slingshotDeviationSamples;   // green frames
     private int slingshotInRangeFrames;      // every frame in Mars range
@@ -133,7 +131,6 @@ public class ScoreManager : MonoBehaviour {
 
     private void SlingshotPlanner_OnExited() {
         slingshotInProgress = false;
-        if (slingshotDeviationSamples > 0) slingshotCompleted = true;
         if (MinimapManager.Instance != null) MinimapManager.Instance.highlightBorder = false;
     }
 
@@ -154,10 +151,10 @@ public class ScoreManager : MonoBehaviour {
         lastHealthPercent01 = spacecraft.HealthPercentage;
 
         spacecraft.OnFuelChanged += Spacecraft_OnFuelChanged;
-        subscribedToEngine = true;
+        subscribedToSpacecraftFuel = true;
 
         spacecraft.OnHealthChanged += Spacecraft_OnHealthChanged;
-        subscribedToSpacecraft = true;
+        subscribedToSpacecraftHealth = true;
     }
 
     public void BeginRun() {
@@ -166,7 +163,6 @@ public class ScoreManager : MonoBehaviour {
         fuelUsedPercent = 0f;
         damageTakenPercent = 0f;
         slingshotInProgress = false;
-        slingshotCompleted = false;
         slingshotDeviationAccum = 0f;
         slingshotDeviationSamples = 0;
         slingshotInRangeFrames = 0;
@@ -284,8 +280,10 @@ public class ScoreManager : MonoBehaviour {
         OrbitAssist.OnEnteredOrbit -= OrbitAssist_OnEnteredOrbit;
         MarsSlingshotPlanner.OnSlingshotEntered -= SlingshotPlanner_OnEntered;
         MarsSlingshotPlanner.OnSlingshotExited -= SlingshotPlanner_OnExited;
-        if (subscribedToEngine && engine != null) engine.OnFuelChanged -= Spacecraft_OnFuelChanged;
-        if (subscribedToSpacecraft && spacecraft != null) spacecraft.OnHealthChanged -= Spacecraft_OnHealthChanged;
+        if (spacecraft != null) {
+            if (subscribedToSpacecraftFuel) spacecraft.OnFuelChanged -= Spacecraft_OnFuelChanged;
+            if (subscribedToSpacecraftHealth) spacecraft.OnHealthChanged -= Spacecraft_OnHealthChanged;
+        }
         if (Instance == this) Instance = null;
     }
 
