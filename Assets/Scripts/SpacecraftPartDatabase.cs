@@ -13,6 +13,7 @@ public class SpacecraftPartDatabase : MonoBehaviour {
     public int[,] savedGridState;
     public Dictionary<(int, int), GameObject> savedPlacedParts;
     public Dictionary<GameObject, GameObject> savedPartStackedOn;
+    public Dictionary<(int, int), ShipBuildingGrid.direction> savedPartRotations;
     public Dictionary<SpriteRenderer, Color> savedOriginalSpriteColors;
 
     public void Awake() {
@@ -64,8 +65,6 @@ public class SpacecraftPartDatabase : MonoBehaviour {
         return null;
     }
 
-    //public List<string> GetSnapableDirections(GameObject part) => GetSnapableDirections(GetPartID(part));
-
     public float GetMass(GameObject part) {
         if (part == null) return -1;
         foreach (PartScriptableObject partSO in allParts) {
@@ -76,16 +75,6 @@ public class SpacecraftPartDatabase : MonoBehaviour {
     }
 
     public PartScriptableObject[] GetAllParts() => allParts;
-
-    // public List<string> GetSnapableDirections(int id) {
-    //     foreach (PartScriptableObject partSO in allParts) {
-    //         if (partSO.partID == id) {
-    //             return partSO.connectingDirections.ToList();
-    //         }
-    //     }
-    //
-    //     return null;
-    // }
     
     public bool PartIsStackable(int id) {
         foreach (PartScriptableObject partSO in allParts) {

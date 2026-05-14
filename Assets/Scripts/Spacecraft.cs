@@ -4,6 +4,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
+using TMPro;
 
 /// <summary>
 /// The manager of the spacecraft as a whole. responsible for managing what mode each piece is in as well as activating engines
@@ -22,7 +24,8 @@ public class Spacecraft : MonoBehaviour {
     // Health system
     [Header("Health Settings")]
     [SerializeField] private float maxHealth = 100f;
-    [SerializeField] private float currentHealth;
+    [SerializeField] public float currentHealth;
+    [SerializeField] public float damageCooldown;
 
     // Events for health changes
     public event EventHandler<float> OnHealthChanged; // Passes current health percentage (0-1)
@@ -45,6 +48,11 @@ public class Spacecraft : MonoBehaviour {
     public float EnergyPercentage => maxEnergy > 0 ? currentEnergy / maxEnergy : 0f;
     public float FuelPercentage => maxFuel > 0 ? currentFuel / maxFuel : 0f;
     public Vector3 centerOfMass;
+
+    [Space(20)] 
+    [SerializeField] private GameObject[] sparks;
+    private Transform[] sparkSpots;
+    
     
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -83,6 +91,11 @@ public class Spacecraft : MonoBehaviour {
        if(IsFlightMode) SpacecraftMotionUI.Instance.UpdateMotion(rb.linearVelocity.magnitude, rb.linearVelocity.normalized);
     }
 
+    private void FixedUpdate() {
+        //Done in fixed update so different computers dont do varying amounts of sparks
+        if (IsFlightMode && currentHealth < maxHealth) DoSparks();
+    }
+
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
         if(scene.name == "FlightScene") orbitAssist.GetPsycheAsteroid();
         
@@ -100,7 +113,7 @@ public class Spacecraft : MonoBehaviour {
         if (scene.name == "FlightScene") IsFlightMode = false;
     }
 
-    private System.Collections.IEnumerator UpdatePhysicsModeDelayed() {
+    private IEnumerator UpdatePhysicsModeDelayed() {
         // Wait one frame to ensure all child objects are initialized
         yield return null;
         UpdatePhysicsMode();
@@ -187,6 +200,9 @@ public class Spacecraft : MonoBehaviour {
         FuelTank[] fuelTanks = GetComponentsInChildren<FuelTank>();
         maxFuel = fuelPerTank * fuelTanks.Length;
 
+        
+        sparkSpots = GetComponentsInChildren<Transform>().Where(obj => obj.CompareTag("SparkSpot")).ToArray();
+
         // Reset health and energy when entering flight mode
         ResetHealth();
         ResetEnergy();
@@ -201,7 +217,36 @@ public class Spacecraft : MonoBehaviour {
         // Notify listeners of health change
         OnHealthChanged?.Invoke(this, HealthPercentage);
         
-        if (currentHealth <= 0) StartCoroutine(HandleDeath());
+        if (currentHealth <= 0) {
+            StartCoroutine(HandleDeath());
+            return;
+        }
+
+        StartCoroutine(VisualBlinking());
+    }
+    
+    private IEnumerator VisualBlinking() {
+        SpriteRenderer[] spacecraftSRs = GetComponentsInChildren<SpriteRenderer>(true);
+        TextMeshProUGUI[] spacecraftTMPs = GetComponentsInChildren<TextMeshProUGUI>();
+        float currTime = Time.time;
+        
+        while (currTime + damageCooldown > Time.time) {
+            foreach (SpriteRenderer sr in spacecraftSRs) {
+                if(sr != null) sr.enabled = !sr.enabled; //Needs null check bc sparks may get destroyed
+            }
+            foreach (TextMeshProUGUI tmp in spacecraftTMPs) {
+                tmp.enabled = !tmp.enabled;
+            }
+            
+            yield return new WaitForSeconds(0.2f);
+        }
+        
+        foreach (SpriteRenderer sr in spacecraftSRs) {
+            if(sr != null) sr.enabled = true; //Needs null check bc sparks may get destroyed
+        }
+        foreach (TextMeshProUGUI tmp in spacecraftTMPs) {
+            tmp.enabled = true;
+        }
     }
     
     public void Heal(float healAmount) {
@@ -284,7 +329,7 @@ public class Spacecraft : MonoBehaviour {
     }
 
     public void SetPartRigidBodies(bool enabled, RigidbodyType2D type = RigidbodyType2D.Dynamic,
-        Vector2 linearVelocity = default, bool noisyVelocity = false) {
+        Vector2 linearVelocity = default, bool messyMotion = false) {
         
         if (enabled) {
             if(linearVelocity == default) linearVelocity = Vector2.zero;
@@ -297,8 +342,9 @@ public class Spacecraft : MonoBehaviour {
                 }
                 
                 childRb.bodyType = type;
-                if (noisyVelocity) {
+                if (messyMotion) {
                     linearVelocity += new Vector2(UnityEngine.Random.Range(-5f, 5f), UnityEngine.Random.Range(-5f, 5f));
+                    childRb.freezeRotation = false;
                 }
                 childRb.linearVelocity = linearVelocity;
             }
@@ -324,6 +370,16 @@ public class Spacecraft : MonoBehaviour {
         }
 
         Physics2D.SyncTransforms();
+    }
+
+    private void DoSparks() {
+        int activeSparkIndex = UnityEngine.Random.Range(0, sparkSpots.Length + (int)(HealthPercentage * 4000));
+        
+        if (activeSparkIndex >= sparkSpots.Length) return;
+        
+        GameObject spark = sparks[UnityEngine.Random.Range(0, sparks.Length)];
+        Transform sparkSpot = sparkSpots[activeSparkIndex];
+        Instantiate(spark, sparkSpot.position, Quaternion.identity, sparkSpot.parent);
     }
 
     private IEnumerator HandleDeath() {

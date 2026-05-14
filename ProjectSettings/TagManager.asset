@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Gravity
+  - SparkSpot
   layers:
   - Default
   - TransparentFX
@@ -47,6 +48,9 @@ TagManager:
     locked: 0
   - name: MidDrag
     uniqueID: 2786281251
+    locked: 0
+  - name: Effects
+    uniqueID: 2509951249
     locked: 0
   m_RenderingLayers:
   - Default

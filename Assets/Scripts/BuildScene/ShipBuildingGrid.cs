@@ -38,6 +38,7 @@ public class ShipBuildingGrid : MonoBehaviour {
     private (int, int) shipStartPos;
     public Dictionary<(int, int), GameObject> placedParts = new();
     public Dictionary<GameObject, GameObject> partStackedOn = new(); //Key: stacked part, value: ship part
+    public Dictionary<(int, int), direction> partRotations = new(); //Only use with rotatable parts
     private bool someTileSelected = false;
     private SpriteRenderer highlightSprite;
     
@@ -120,6 +121,10 @@ public class ShipBuildingGrid : MonoBehaviour {
                     int partID = grid.GetValue((x, y));
                     if (partID <= 0) continue;
 
+                    if (partDB.PartIsRotatable(partID)) {
+                        PlacePartAtCoordinates(partDB.GetPartGameObject(partID), (x, y), partRotations[(x, y)]);
+                        continue;
+                    }
                     if (partDB.PartIsStackable(partID)) PlacePartAtCoordinates(partDB.GetPartGameObject(1), (x, y));
                     PlacePartAtCoordinates(partDB.GetPartGameObject(partID), (x, y));
                 }
@@ -305,6 +310,7 @@ public class ShipBuildingGrid : MonoBehaviour {
 
     public bool TryFindRotatableConnectingDirection(GameObject partToBePlaced, (int, int) partCoords, out direction dir) {
         direction currDir = partToBePlaced.GetComponent<RotatablePart>().connectingDirection;
+        
         for (int i = 0; i < 4; i++) {
             if (PartConnectsInDirection(partCoords, currDir)) {
                 dir = currDir;
@@ -376,7 +382,10 @@ public class ShipBuildingGrid : MonoBehaviour {
         spacecraftPart.GetComponent<Rigidbody2D>().freezeRotation = true;
         spacecraftPart.transform.position = GridCoordinatesToUnityPosition(coordinates);
         CacheOriginalSpriteColors(spacecraftPart);
-        if(partDB.PartIsRotatable(spacecraftPart)) spacecraftPart.GetComponent<RotatablePart>().SetRotation(dir);
+        if(partDB.PartIsRotatable(spacecraftPart)) {
+            spacecraftPart.GetComponent<RotatablePart>().SetRotation(dir);
+            partRotations[coordinates] = dir;
+        }
 
         // Track in dictionary
         if (partDB.PartIsStackable(part)) partStackedOn[spacecraftPart] = placedParts[coordinates];
@@ -609,6 +618,7 @@ public class ShipBuildingGrid : MonoBehaviour {
         grid.SaveGridState(save);
         partDB.savedPlacedParts = placedParts;
         partDB.savedPartStackedOn = partStackedOn;
+        partDB.savedPartRotations = partRotations;
         partDB.savedOriginalSpriteColors = originalSpriteColors;
     }
     
