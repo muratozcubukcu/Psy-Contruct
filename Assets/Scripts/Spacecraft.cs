@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
 using TMPro;
 
 /// <summary>
@@ -47,6 +48,11 @@ public class Spacecraft : MonoBehaviour {
     public float EnergyPercentage => maxEnergy > 0 ? currentEnergy / maxEnergy : 0f;
     public float FuelPercentage => maxFuel > 0 ? currentFuel / maxFuel : 0f;
     public Vector3 centerOfMass;
+
+    [Space(20)] 
+    [SerializeField] private GameObject[] sparks;
+    private Transform[] sparkSpots;
+    
     
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -68,6 +74,11 @@ public class Spacecraft : MonoBehaviour {
 
     private void Update() {
        if(IsFlightMode) SpacecraftMotionUI.Instance.UpdateMotion(rb.linearVelocity.magnitude, rb.linearVelocity.normalized);
+    }
+
+    private void FixedUpdate() {
+        //Done in fixed update so different computers dont do varying amounts of sparks
+        if (IsFlightMode && currentHealth < maxHealth) DoSparks();
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
@@ -174,6 +185,9 @@ public class Spacecraft : MonoBehaviour {
         FuelTank[] fuelTanks = GetComponentsInChildren<FuelTank>();
         maxFuel = fuelPerTank * fuelTanks.Length;
 
+        
+        sparkSpots = GetComponentsInChildren<Transform>().Where(obj => obj.CompareTag("SparkSpot")).ToArray();
+
         // Reset health and energy when entering flight mode
         ResetHealth();
         ResetEnergy();
@@ -203,7 +217,7 @@ public class Spacecraft : MonoBehaviour {
         
         while (currTime + damageCooldown > Time.time) {
             foreach (SpriteRenderer sr in spacecraftSRs) {
-                sr.enabled = !sr.enabled;
+                if(sr != null) sr.enabled = !sr.enabled; //Needs null check bc sparks may get destroyed
             }
             foreach (TextMeshProUGUI tmp in spacecraftTMPs) {
                 tmp.enabled = !tmp.enabled;
@@ -213,7 +227,7 @@ public class Spacecraft : MonoBehaviour {
         }
         
         foreach (SpriteRenderer sr in spacecraftSRs) {
-            sr.enabled = true;
+            if(sr != null) sr.enabled = true; //Needs null check bc sparks may get destroyed
         }
         foreach (TextMeshProUGUI tmp in spacecraftTMPs) {
             tmp.enabled = true;
@@ -335,6 +349,16 @@ public class Spacecraft : MonoBehaviour {
         }
 
         Physics2D.SyncTransforms();
+    }
+
+    private void DoSparks() {
+        int activeSparkIndex = UnityEngine.Random.Range(0, sparkSpots.Length + (int)(HealthPercentage * 4000));
+        
+        if (activeSparkIndex >= sparkSpots.Length) return;
+        
+        GameObject spark = sparks[UnityEngine.Random.Range(0, sparks.Length)];
+        Transform sparkSpot = sparkSpots[activeSparkIndex];
+        Instantiate(spark, sparkSpot.position, Quaternion.identity, sparkSpot.parent);
     }
 
     private IEnumerator HandleDeath() {
