@@ -613,7 +613,7 @@ GameObject:
   - component: {fileID: 1507299041}
   - component: {fileID: 1507299040}
   m_Layer: 5
-  m_Name: Settings
+  m_Name: Credits
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -745,7 +745,7 @@ GameObject:
   - component: {fileID: 2143408498}
   - component: {fileID: 2143408497}
   m_Layer: 5
-  m_Name: Settings Name
+  m_Name: Credits Name
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -790,7 +790,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'SETTINGS
+  m_text: 'CREDITS
 
 '
   m_isRightToLeft: 0

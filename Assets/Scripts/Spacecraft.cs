@@ -267,6 +267,12 @@ public class Spacecraft : MonoBehaviour {
             numerator += partMass * (Vector2)part.position;
         }
 
+        if (totalMass <= 0f) {
+            centerOfMass = Vector3.zero;
+            rb.mass = 1f;
+            return;
+        }
+
         rb.mass = totalMass;
         centerOfMass = numerator / totalMass;
 
