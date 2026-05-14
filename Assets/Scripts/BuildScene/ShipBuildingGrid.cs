@@ -87,8 +87,7 @@ public class ShipBuildingGrid : MonoBehaviour {
         SetGridCellValue(shipStartPos, baseID);
     }
 
-    private void LoadSpacecraft()
-    {
+    private void LoadSpacecraft() {
         grid.LoadGridState();
 
         Rigidbody2D spacecraftRB = spacecraft.GetComponent<Rigidbody2D>();
@@ -101,35 +100,28 @@ public class ShipBuildingGrid : MonoBehaviour {
 
         FindAnyObjectByType<DragHintAnimator>().StopHint();
 
-        Vector3 com = spacecraft.GetComponent<Spacecraft>().centerOfMass;
-        foreach (Transform part in shipTransform)
-        {
-            part.position += com;
-        }
-
-        if (SavedPlacedPartsValid())
-        {
+        if (SavedPlacedPartsValid()) {
             placedParts = partDB.savedPlacedParts;
             partStackedOn = partDB.savedPartStackedOn;
             originalSpriteColors = partDB.savedOriginalSpriteColors;
-        }
-        else
-        {
+            foreach (Transform part in shipTransform) {
+                part.position += spacecraft.GetComponent<Spacecraft>().centerOfMass;
+            }
+        } else {
+            Vector3 com = spacecraft.GetComponent<Spacecraft>().centerOfMass;
+            foreach (Transform part in shipTransform) {
+                part.position += com;
+            }
+
             placedParts = new Dictionary<(int, int), GameObject>();
-            for (int x = 0; x < gridWidth; x++)
-            {
-                for (int y = 0; y < gridHeight; y++)
-                {
+            for (int x = 0; x < gridWidth; x++) {
+                for (int y = 0; y < gridHeight; y++) {
                     if ((x, y) == shipStartPos) continue;
                     int partID = grid.GetValue((x, y));
                     if (partID <= 0) continue;
-                    GameObject prefab = partDB.GetPartGameObject(partID);
-                    if (prefab == null) continue;
-                    GameObject partObject = Instantiate(prefab, spacecraft.transform);
-                    partObject.SetActive(true);
-                    partObject.transform.position = GridCoordinatesToUnityPosition(x, y);
-                    CacheOriginalSpriteColors(partObject);
-                    placedParts[(x, y)] = partObject;
+
+                    if (partDB.PartIsStackable(partID)) PlacePartAtCoordinates(partDB.GetPartGameObject(1), (x, y));
+                    PlacePartAtCoordinates(partDB.GetPartGameObject(partID), (x, y));
                 }
             }
         }
