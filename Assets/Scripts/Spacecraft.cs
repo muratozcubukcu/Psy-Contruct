@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 
 /// <summary>
 /// The manager of the spacecraft as a whole. responsible for managing what mode each piece is in as well as activating engines
@@ -22,7 +23,8 @@ public class Spacecraft : MonoBehaviour {
     // Health system
     [Header("Health Settings")]
     [SerializeField] private float maxHealth = 100f;
-    [SerializeField] private float currentHealth;
+    [SerializeField] public float currentHealth;
+    [SerializeField] public float damageCooldown;
 
     // Events for health changes
     public event EventHandler<float> OnHealthChanged; // Passes current health percentage (0-1)
@@ -100,7 +102,7 @@ public class Spacecraft : MonoBehaviour {
         if (scene.name == "FlightScene") IsFlightMode = false;
     }
 
-    private System.Collections.IEnumerator UpdatePhysicsModeDelayed() {
+    private IEnumerator UpdatePhysicsModeDelayed() {
         // Wait one frame to ensure all child objects are initialized
         yield return null;
         UpdatePhysicsMode();
@@ -201,7 +203,36 @@ public class Spacecraft : MonoBehaviour {
         // Notify listeners of health change
         OnHealthChanged?.Invoke(this, HealthPercentage);
         
-        if (currentHealth <= 0) StartCoroutine(HandleDeath());
+        if (currentHealth <= 0) {
+            StartCoroutine(HandleDeath());
+            return;
+        }
+
+        StartCoroutine(VisualBlinking());
+    }
+    
+    private IEnumerator VisualBlinking() {
+        SpriteRenderer[] spacecraftSRs = GetComponentsInChildren<SpriteRenderer>(true);
+        TextMeshProUGUI[] spacecraftTMPs = GetComponentsInChildren<TextMeshProUGUI>();
+        float currTime = Time.time;
+        
+        while (currTime + damageCooldown > Time.time) {
+            foreach (SpriteRenderer sr in spacecraftSRs) {
+                sr.enabled = !sr.enabled;
+            }
+            foreach (TextMeshProUGUI tmp in spacecraftTMPs) {
+                tmp.enabled = !tmp.enabled;
+            }
+            
+            yield return new WaitForSeconds(0.2f);
+        }
+        
+        foreach (SpriteRenderer sr in spacecraftSRs) {
+            sr.enabled = true;
+        }
+        foreach (TextMeshProUGUI tmp in spacecraftTMPs) {
+            tmp.enabled = true;
+        }
     }
     
     public void Heal(float healAmount) {
@@ -278,7 +309,7 @@ public class Spacecraft : MonoBehaviour {
     }
 
     public void SetPartRigidBodies(bool enabled, RigidbodyType2D type = RigidbodyType2D.Dynamic,
-        Vector2 linearVelocity = default, bool noisyVelocity = false) {
+        Vector2 linearVelocity = default, bool messyMotion = false) {
         
         if (enabled) {
             if(linearVelocity == default) linearVelocity = Vector2.zero;
@@ -291,8 +322,9 @@ public class Spacecraft : MonoBehaviour {
                 }
                 
                 childRb.bodyType = type;
-                if (noisyVelocity) {
+                if (messyMotion) {
                     linearVelocity += new Vector2(UnityEngine.Random.Range(-5f, 5f), UnityEngine.Random.Range(-5f, 5f));
+                    childRb.freezeRotation = false;
                 }
                 childRb.linearVelocity = linearVelocity;
             }
