@@ -8,7 +8,6 @@ public class Settings : MonoBehaviour
     public bool tutorialEnabled {get; private set;} = true;
     public bool hintsEnabled { get; private set; } = true;
     public bool timerEnabled { get; private set; } = true;
-    public float brightness { get; private set; } = 1f;
     public float musicVolume { get; private set; } = 1f;
     public float sfxVolume { get; private set; } = 1f;
 
@@ -29,11 +28,6 @@ public class Settings : MonoBehaviour
     public bool toggleColorblindMode() {
         colorblindMode = !colorblindMode;
         return colorblindMode;
-    }
-
-    public void setBrightness(float value) {
-        brightness = value;
-        // TODO: Apply to a post-processing volume or overlay CanvasGroup alpha
     }
 
     public void setMusicVolume(float value) {
