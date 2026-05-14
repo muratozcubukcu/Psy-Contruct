@@ -221,8 +221,9 @@ public class GameInput : MonoBehaviour {
             return; // Stop here -> do NOT load FlightScene
         }
         
-        // Passed requirements -> go to FlightFactsScene
-        SceneManager.LoadScene("FlightFactsScene");
+        // Passed requirements -> go to the Opening cutscene, which chains to
+        // the Send-off cutscene, which then loads FlightScene.
+        SceneManager.LoadScene("OpeningCutscene");
         
         Settings.Instance.toggleTutorial(false);
         inputActions.Spacecraft.Disable();
