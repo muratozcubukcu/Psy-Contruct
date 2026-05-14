@@ -74,5 +74,9 @@ public class RepairQuickTimeUI : MonoBehaviour {
         Debug.Log("Done!");
         gameObject.SetActive(false);
     }
+
+    private void OnDestroy() {
+        GameInput.Instance.OnRepairShipCanceledAction -= GameInput_OnRepairShipCanceledAction;
+    }
     
 }
