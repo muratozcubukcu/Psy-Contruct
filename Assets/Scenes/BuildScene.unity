@@ -3854,6 +3854,10 @@ MonoBehaviour:
   fuelPerTank: 50
   currentFuel: 0
   centerOfMass: {x: 0, y: 0, z: 0}
+  sparks:
+  - {fileID: 870301843983053226, guid: f20da479ee55743a2b2ff9cfa79a1197, type: 3}
+  - {fileID: 6971189048656583168, guid: b1b0fd25056d749fc9a88ca94908c6ef, type: 3}
+  - {fileID: 2223393087342528273, guid: 679fce61b5ca14518bff491645c9643b, type: 3}
 --- !u!50 &1823052791
 Rigidbody2D:
   serializedVersion: 5
