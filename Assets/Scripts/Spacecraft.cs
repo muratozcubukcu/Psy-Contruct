@@ -240,6 +240,8 @@ public class Spacecraft : MonoBehaviour {
         float currTime = Time.time;
         
         while (currTime + damageCooldown > Time.time) {
+            DoSparks(true);
+            
             foreach (SpriteRenderer sr in spacecraftSRs) {
                 if(sr != null) sr.enabled = !sr.enabled; //Needs null check bc sparks may get destroyed
             }
@@ -381,8 +383,9 @@ public class Spacecraft : MonoBehaviour {
         Physics2D.SyncTransforms();
     }
 
-    private void DoSparks() {
-        int activeSparkIndex = UnityEngine.Random.Range(0, sparkSpots.Length + (int)(HealthPercentage * 4000));
+    private void DoSparks(bool heavySparks = false) {
+        int activeSparkIndex = UnityEngine.Random.Range(0, sparkSpots.Length +
+                                                           (heavySparks ? 0 : (int)(HealthPercentage * 4000)));
         
         if (activeSparkIndex >= sparkSpots.Length) return;
         
