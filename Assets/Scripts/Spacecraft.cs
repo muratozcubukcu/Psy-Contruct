@@ -25,8 +25,9 @@ public class Spacecraft : MonoBehaviour {
     [Header("Health Settings")]
     [SerializeField] private float maxHealth = 100f;
     [SerializeField] public float currentHealth;
-    [SerializeField] public float damageCooldown;
-
+    [SerializeField] private float damageCooldown;
+    private bool onDamageCoolDown;
+    
     // Events for health changes
     public event EventHandler<float> OnHealthChanged; // Passes current health percentage (0-1)
     
@@ -211,6 +212,7 @@ public class Spacecraft : MonoBehaviour {
 
     public void TakeDamage(float damage) {
         if (damage <= 0) return;
+        if (onDamageCoolDown) return;
         
         currentHealth = Mathf.Max(0, currentHealth - damage);
         
@@ -222,7 +224,14 @@ public class Spacecraft : MonoBehaviour {
             return;
         }
 
+        StartCoroutine(DamageCooldown());
+    }
+
+    private IEnumerator DamageCooldown() {
+        onDamageCoolDown = true;
         StartCoroutine(VisualBlinking());
+        yield return new WaitForSeconds(damageCooldown);
+        onDamageCoolDown = false;
     }
     
     private IEnumerator VisualBlinking() {
@@ -231,6 +240,8 @@ public class Spacecraft : MonoBehaviour {
         float currTime = Time.time;
         
         while (currTime + damageCooldown > Time.time) {
+            DoSparks(true);
+            
             foreach (SpriteRenderer sr in spacecraftSRs) {
                 if(sr != null) sr.enabled = !sr.enabled; //Needs null check bc sparks may get destroyed
             }
@@ -372,8 +383,9 @@ public class Spacecraft : MonoBehaviour {
         Physics2D.SyncTransforms();
     }
 
-    private void DoSparks() {
-        int activeSparkIndex = UnityEngine.Random.Range(0, sparkSpots.Length + (int)(HealthPercentage * 4000));
+    private void DoSparks(bool heavySparks = false) {
+        int activeSparkIndex = UnityEngine.Random.Range(0, sparkSpots.Length +
+                                                           (heavySparks ? 0 : (int)(HealthPercentage * 4000)));
         
         if (activeSparkIndex >= sparkSpots.Length) return;
         

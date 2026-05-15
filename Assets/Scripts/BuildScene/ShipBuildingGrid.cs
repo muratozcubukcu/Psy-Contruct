@@ -98,13 +98,15 @@ public class ShipBuildingGrid : MonoBehaviour {
         Transform shipTransform = spacecraft.transform;
         shipTransform.rotation = Quaternion.Euler(0, 0, 0);
         shipTransform.position = GridCoordinatesToUnityPosition(shipStartPos);
+        
+        placedParts = partDB.savedPlacedParts;
+        partStackedOn = partDB.savedPartStackedOn;
+        originalSpriteColors = partDB.savedOriginalSpriteColors;
+        partRotations = partDB.savedPartRotations;
 
         FindAnyObjectByType<DragHintAnimator>().StopHint();
 
         if (SavedPlacedPartsValid()) {
-            placedParts = partDB.savedPlacedParts;
-            partStackedOn = partDB.savedPartStackedOn;
-            originalSpriteColors = partDB.savedOriginalSpriteColors;
             foreach (Transform part in shipTransform) {
                 part.position += spacecraft.GetComponent<Spacecraft>().centerOfMass;
             }
@@ -113,8 +115,7 @@ public class ShipBuildingGrid : MonoBehaviour {
             foreach (Transform part in shipTransform) {
                 part.position += com;
             }
-
-            placedParts = new Dictionary<(int, int), GameObject>();
+            
             for (int x = 0; x < gridWidth; x++) {
                 for (int y = 0; y < gridHeight; y++) {
                     if ((x, y) == shipStartPos) continue;
@@ -166,7 +167,7 @@ public class ShipBuildingGrid : MonoBehaviour {
         DeselectPart();
     }
 
-    private void SetGridCellValue((int, int) coordinates, int value) { 
+    private void SetGridCellValue((int, int) coordinates, int value) {
         grid.SetValue(coordinates.Item1, coordinates.Item2, value);
     }
     
@@ -177,8 +178,6 @@ public class ShipBuildingGrid : MonoBehaviour {
         
         SetGridCellValue(coordinates, value);
     }
-    
-    public Vector3 GridCoordinatesToUnityPosition(int x, int y) => GridCoordinatesToUnityPosition((x, y));
 
     public Vector3 GridCoordinatesToUnityPosition((int, int) gridCoords) {
         float x = gridOriginPosition.x + cellSize / 2 + (cellSize * gridCoords.Item1);

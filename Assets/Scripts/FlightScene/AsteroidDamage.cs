@@ -26,8 +26,6 @@ public class AsteroidDamage : MonoBehaviour {
     private AsteroidController asteroidController;
     private Spacecraft spacecraft;
     
-    private float lastDamageTime;
-    private float damageCooldown;
     private int spacecraftLayer;
     private int asteroidLayer;
     private bool justSplitOff;
@@ -40,9 +38,6 @@ public class AsteroidDamage : MonoBehaviour {
     private void Start() {
         asteroidController = AsteroidController.Instance;
         spacecraft = Spacecraft.GetInstance();
-        
-        damageCooldown = spacecraft.damageCooldown;
-        lastDamageTime = Time.time;
         
         spacecraftLayer = LayerMask.NameToLayer("SpaceCraft");
         asteroidLayer = LayerMask.NameToLayer("Asteroid");
@@ -96,10 +91,7 @@ public class AsteroidDamage : MonoBehaviour {
         spacecraft.GetComponent<Rigidbody2D>().linearVelocity = -dirTowardsAster * spacecraftSpeedPreCollision;
         SplitAsteroid(collision.gameObject);
         
-        if (damageCooldown > 0f && Time.time < lastDamageTime + damageCooldown) return;
-        
         spacecraft.TakeDamage(damage);
-        lastDamageTime = Time.time;
     }
 
     private void SplitAsteroid(GameObject contactAsteroid) {
