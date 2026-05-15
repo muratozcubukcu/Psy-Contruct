@@ -25,8 +25,9 @@ public class Spacecraft : MonoBehaviour {
     [Header("Health Settings")]
     [SerializeField] private float maxHealth = 100f;
     [SerializeField] public float currentHealth;
-    [SerializeField] public float damageCooldown;
-
+    [SerializeField] private float damageCooldown;
+    private bool onDamageCoolDown;
+    
     // Events for health changes
     public event EventHandler<float> OnHealthChanged; // Passes current health percentage (0-1)
     
@@ -196,6 +197,7 @@ public class Spacecraft : MonoBehaviour {
 
     public void TakeDamage(float damage) {
         if (damage <= 0) return;
+        if (onDamageCoolDown) return;
         
         currentHealth = Mathf.Max(0, currentHealth - damage);
         
@@ -207,7 +209,14 @@ public class Spacecraft : MonoBehaviour {
             return;
         }
 
+        StartCoroutine(DamageCooldown());
+    }
+
+    private IEnumerator DamageCooldown() {
+        onDamageCoolDown = true;
         StartCoroutine(VisualBlinking());
+        yield return new WaitForSeconds(damageCooldown);
+        onDamageCoolDown = false;
     }
     
     private IEnumerator VisualBlinking() {
