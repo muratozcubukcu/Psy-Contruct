@@ -167,7 +167,7 @@ public class ShipBuildingGrid : MonoBehaviour {
         DeselectPart();
     }
 
-    private void SetGridCellValue((int, int) coordinates, int value) { 
+    private void SetGridCellValue((int, int) coordinates, int value) {
         grid.SetValue(coordinates.Item1, coordinates.Item2, value);
     }
     
@@ -178,8 +178,6 @@ public class ShipBuildingGrid : MonoBehaviour {
         
         SetGridCellValue(coordinates, value);
     }
-    
-    public Vector3 GridCoordinatesToUnityPosition(int x, int y) => GridCoordinatesToUnityPosition((x, y));
 
     public Vector3 GridCoordinatesToUnityPosition((int, int) gridCoords) {
         float x = gridOriginPosition.x + cellSize / 2 + (cellSize * gridCoords.Item1);
