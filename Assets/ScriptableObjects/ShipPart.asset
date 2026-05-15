@@ -15,8 +15,7 @@ MonoBehaviour:
   part: {fileID: 6185069549927734299, guid: 619b723e6666b834e91465e459776085, type: 3}
   partID: 1
   mass: 1
-  connectingDirections:
-  - above
-  - below
-  - left
-  - right
+  isStackable: 0
+  isRotatable: 0
+  description: The core of your ship. All other parts must connect to this.
+  connectsTo: Engine, Solar Panel, Fuel Tank, any part

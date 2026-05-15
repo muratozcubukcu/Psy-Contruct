@@ -94,41 +94,43 @@ public class ShipBuildingGrid : MonoBehaviour {
         Rigidbody2D spacecraftRB = spacecraft.GetComponent<Rigidbody2D>();
         spacecraftRB.linearVelocity = Vector2.zero;
         spacecraftRB.angularVelocity = 0f;
-        
+
         Transform shipTransform = spacecraft.transform;
         shipTransform.rotation = Quaternion.Euler(0, 0, 0);
         shipTransform.position = GridCoordinatesToUnityPosition(shipStartPos);
-        
-        placedParts = partDB.savedPlacedParts;
-        partStackedOn = partDB.savedPartStackedOn;
-        originalSpriteColors = partDB.savedOriginalSpriteColors;
-        partRotations = partDB.savedPartRotations;
-        
+
         FindAnyObjectByType<DragHintAnimator>().StopHint();
 
         if (SavedPlacedPartsValid()) {
+            placedParts = partDB.savedPlacedParts;
+            partStackedOn = partDB.savedPartStackedOn;
+            originalSpriteColors = partDB.savedOriginalSpriteColors;
             foreach (Transform part in shipTransform) {
                 part.position += spacecraft.GetComponent<Spacecraft>().centerOfMass;
             }
         } else {
+            Vector3 com = spacecraft.GetComponent<Spacecraft>().centerOfMass;
+            foreach (Transform part in shipTransform) {
+                part.position += com;
+            }
+
+            placedParts = new Dictionary<(int, int), GameObject>();
             for (int x = 0; x < gridWidth; x++) {
                 for (int y = 0; y < gridHeight; y++) {
                     if ((x, y) == shipStartPos) continue;
-
                     int partID = grid.GetValue((x, y));
                     if (partID <= 0) continue;
-                    
-                    if(partDB.PartIsRotatable(partID)) {
+
+                    if (partDB.PartIsRotatable(partID)) {
                         PlacePartAtCoordinates(partDB.GetPartGameObject(partID), (x, y), partRotations[(x, y)]);
                         continue;
                     }
-
                     if (partDB.PartIsStackable(partID)) PlacePartAtCoordinates(partDB.GetPartGameObject(1), (x, y));
                     PlacePartAtCoordinates(partDB.GetPartGameObject(partID), (x, y));
                 }
             }
         }
-        
+
         spacecraft.GetComponent<Spacecraft>().SetPartRigidBodies(true, RigidbodyType2D.Kinematic);
     }
 

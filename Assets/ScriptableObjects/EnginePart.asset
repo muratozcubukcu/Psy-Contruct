@@ -17,3 +17,5 @@ MonoBehaviour:
   mass: 1
   isStackable: 0
   isRotatable: 1
+  description: Provides thrust to propel the spacecraft. Requires fuel.
+  connectsTo: Spacecraft Body, Fuel Tank

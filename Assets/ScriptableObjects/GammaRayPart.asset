@@ -16,8 +16,6 @@ MonoBehaviour:
   partID: 4
   mass: 1
   isStackable: 1
-  connectingDirections:
-  - above
-  - below
-  - left
-  - right
+  isRotatable: 0
+  description: Detects gamma radiation emitted from planetary surfaces.
+  connectsTo: Spacecraft Body

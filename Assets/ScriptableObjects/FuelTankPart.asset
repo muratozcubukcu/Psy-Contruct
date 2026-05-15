@@ -17,3 +17,5 @@ MonoBehaviour:
   mass: 0.33
   isStackable: 1
   isRotatable: 0
+  description: Stores fuel to power the engine.
+  connectsTo: Spacecraft Body, Engine

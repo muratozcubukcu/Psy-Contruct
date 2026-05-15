@@ -41,15 +41,34 @@ public class ScoreBreakdownPopup : MonoBehaviour {
         if (titleText != null) titleText.text = victory ? "VICTORY!" : "MISSION FAILED";
 
         if (breakdownText != null) {
-            breakdownText.text =
-                $"Time Bonus:         +{Mathf.RoundToInt(b.timeBonus)}  ({b.elapsedSeconds:F1}s)\n" +
-                $"Fuel Bonus:         +{Mathf.RoundToInt(b.fuelBonus)}  ({100f - b.fuelUsedPercent:F0}% remaining)\n" +
-                $"Health Bonus:       +{Mathf.RoundToInt(b.healthBonus)}  ({100f - b.damageTakenPercent:F0}% remaining)\n" +
-                $"Completion Bonus: +{Mathf.RoundToInt(b.completionBonus)}\n" +
-                $"\n" +
-                $"FINAL SCORE: {Mathf.RoundToInt(b.finalScore)}";
+            breakdownText.text = BuildBreakdown(b);
         }
 
         if (panelRoot != null) panelRoot.SetActive(true);
     }
+
+    private string BuildBreakdown(ScoreManager.ScoreBreakdown b) {
+        var sb = new System.Text.StringBuilder(512);
+
+        AppendRow(sb, "Time Bonus",        b.timeBonus,               $"({b.elapsedSeconds:F1}s)");
+        AppendRow(sb, "Fuel Bonus",        b.fuelBonus,               $"({100f - b.fuelUsedPercent:F0}%)");
+        AppendRow(sb, "Health Bonus",      b.healthBonus,             $"({100f - b.damageTakenPercent:F0}%)");
+        AppendRow(sb, "Slingshot Bonus",   b.slingshotPrecisionBonus, "");
+        sb.Append('\n');
+        sb.Append("Difficulty modifier       x" + b.difficultyModifier + "\n");
+        sb.Append('\n');
+        sb.Append($"FINAL SCORE: {Mathf.RoundToInt(b.finalScore)}");
+        return sb.ToString();
+    }
+
+    private static void AppendRow(System.Text.StringBuilder sb, string label, float bonus, string note) {
+        const int LABEL_WIDTH = 22;
+        const int BONUS_WIDTH = 8;
+        string labelCell = label.PadRight(LABEL_WIDTH);
+        string bonusCell = ("+" + Mathf.RoundToInt(bonus).ToString()).PadLeft(BONUS_WIDTH);
+        sb.Append(labelCell).Append(bonusCell);
+        if (!string.IsNullOrEmpty(note)) sb.Append("  ").Append(note);
+        sb.Append('\n');
+    }
+
 }

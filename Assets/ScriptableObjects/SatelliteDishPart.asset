@@ -17,3 +17,5 @@ MonoBehaviour:
   mass: 1
   isStackable: 0
   isRotatable: 1
+  description: Transmits and receives data signals to and from Earth.
+  connectsTo: Spacecraft Body
