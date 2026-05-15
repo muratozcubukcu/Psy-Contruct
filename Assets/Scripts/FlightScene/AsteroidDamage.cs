@@ -1,7 +1,5 @@
 using System;
 using System.Collections;
-using Codice.Client.Common.EventTracking;
-using TreeEditor;
 using UnityEngine;
 
 /// <summary>
