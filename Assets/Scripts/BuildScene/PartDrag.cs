@@ -11,7 +11,7 @@ public class PartDrag : MonoBehaviour {
     [SerializeField] private GameObject selectedObject;
     [SerializeField] private GameObject objectVisual;
     
-    [SerializeField] private GameObject highlight;
+    private GameObject highlight;
     private SpriteRenderer highlightSprite;
 
     [SerializeField] private Sprite colorblindValid;
