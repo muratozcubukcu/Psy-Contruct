@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Charges spacecraft energy when the solar panel is facing the sun.
@@ -7,28 +9,35 @@ using UnityEngine;
 public class SolarPanel : MonoBehaviour {
 
     [SerializeField] private Spacecraft spacecraft;
+    [SerializeField] private GameObject solarPanelVisualDefault;
+    [SerializeField] private GameObject solarPanelVisualShining;
 
     [Header("Charging Settings")]
     [SerializeField] private float chargeRate;
-    [SerializeField] private float facingThreshold = 0f;
+    [SerializeField] private float facingThreshold;
 
     private Sun sun;
 
-    public bool IsCharging { get; private set; }
+    private bool isCharging;
+    private bool prevState;
 
     public void Awake() => enabled = false;
 
+    private void Start() {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
     private void OnEnable() {
         sun = Sun.Instance;
-        if (spacecraft == null)
-            spacecraft = GetComponentInParent<Spacecraft>();
+        
+        spacecraft = Spacecraft.GetInstance();
     }
 
     private void Update() {
         if (sun == null) {
             sun = Sun.Instance;
             if (sun == null) {
-                IsCharging = false;
+                isCharging = false;
                 return;
             }
         }
@@ -36,11 +45,34 @@ public class SolarPanel : MonoBehaviour {
         Vector2 directionToSun = (sun.transform.position - transform.position).normalized;
         float dot = Vector2.Dot(transform.up, directionToSun);
 
-        IsCharging = dot > facingThreshold;
+        isCharging = dot > facingThreshold;
 
-        if (IsCharging && spacecraft != null) {
+        if (isCharging && spacecraft != null) {
             float chargeAmount = chargeRate * dot * Time.deltaTime;
             spacecraft.AddEnergy(chargeAmount);
         }
+
+        if (isCharging != prevState) SwapVisuals();
+        prevState = isCharging;
+    }
+
+    private void SwapVisuals() {
+        if (isCharging) {
+            solarPanelVisualShining.SetActive(true);
+            solarPanelVisualDefault.SetActive(false);
+            return;
+        }
+        
+        solarPanelVisualShining.SetActive(false);
+        solarPanelVisualDefault.SetActive(true);
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
+        solarPanelVisualShining.SetActive(false);
+        solarPanelVisualDefault.SetActive(true);
+    }
+
+    private void OnDestroy() {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 }
