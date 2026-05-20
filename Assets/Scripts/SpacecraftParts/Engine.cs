@@ -8,7 +8,6 @@ public class Engine : MonoBehaviour {
     [SerializeField] private float initialSpeedRampUpLength;
     [SerializeField] private float softSpeedLimit;
     [SerializeField] private float thrustFalloffStrength;
-    [SerializeField] private float stabilizationStrength;
     [SerializeField] private SpriteRenderer engineVisual;
     [SerializeField] private TextMeshProUGUI idUI;
 
@@ -84,8 +83,14 @@ public class Engine : MonoBehaviour {
         Vector2 initialThrust = speed * InitialSpeedRampUp() * -transform.up;
         Vector2 finalThrust = SoftSpeedLimitMultiplier(initialThrust);
         
+        Vector2 distanceToShipCOM = (Vector2)transform.position - spacecraftRB.worldCenterOfMass;
+        float torqueApplied = distanceToShipCOM.x * finalThrust.y - distanceToShipCOM.y * finalThrust.x;
+        float torqueWithoutSoftLimit = distanceToShipCOM.x * initialThrust.y - distanceToShipCOM.y * initialThrust.x;
+        
         spacecraftRB.AddForceAtPosition(finalThrust, transform.position);
-        spacecraftRB.AddTorque(-spacecraftRB.angularVelocity * stabilizationStrength);
+        
+        //Adds the additional torque that got removed from the soft speed limit multiplier
+        spacecraftRB.AddTorque(torqueWithoutSoftLimit - torqueApplied);
     }
 
     //Makes gaining speed increasingly difficult as speed increases, especially past the soft speed limit. Only applies
@@ -108,9 +113,11 @@ public class Engine : MonoBehaviour {
         //Uses Mathf.Lerp to allow for a smooth transition from the soft speed limit effecting the engine thrust when
         //the thrust is facing in the direction of motion, to a non-existent soft speed limit effect when the thrust is
         //facing opposite the direction of motion.
-        float finalParallelThrustMultiplier = Mathf.Lerp(1f, initialParallelThrustMultiplier, forceFacingMotion);
+        //Going faster and in dir of motion  ->  smaller thrustMultiplier
+        //Smaller thrustMultiplier           ->  engine has less impact
+        float thrustMultiplier = Mathf.Lerp(1f, initialParallelThrustMultiplier, forceFacingMotion);
         
-        return (parallelThrust * finalParallelThrustMultiplier) + perpendicularThrust;
+        return (parallelThrust * thrustMultiplier) + perpendicularThrust;
     }
 
     private float InitialSpeedRampUp() {
