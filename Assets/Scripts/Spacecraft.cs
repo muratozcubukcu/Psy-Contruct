@@ -240,6 +240,12 @@ public class Spacecraft : MonoBehaviour {
         float currTime = Time.time;
         
         while (currTime + damageCooldown > Time.time) {
+            if (SceneManager.GetActiveScene().name != "FlightScene") {
+                Sparks[] childSparks = GetComponentsInChildren<Sparks>();
+                foreach(Sparks s in childSparks) Destroy(s.gameObject);
+                break;
+            }
+            
             DoSparks(true);
             
             foreach (SpriteRenderer sr in spacecraftSRs) {
