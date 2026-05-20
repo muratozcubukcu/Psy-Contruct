@@ -17,25 +17,25 @@ public class RotatablePart : MonoBehaviour {
     
     public void SetRotation(ShipBuildingGrid.direction newConnectingDirection) {
         connectingDirection = newConnectingDirection;
+        TextMeshProUGUI tmp = GetComponentInChildren<TextMeshProUGUI>();
+        Quaternion rotation = new Quaternion();
         
-        TextMeshProUGUI tmp = GetComponentInChildren<TextMeshProUGUI>();;
         switch (newConnectingDirection) {
             case ShipBuildingGrid.direction.above:
-                transform.localRotation = Quaternion.Euler(0, 0, 180);
-                if(tmp != null) tmp.gameObject.GetComponent<RectTransform>().localRotation = Quaternion.Euler(0, 0, 180);
+                rotation = Quaternion.Euler(0, 0, 180);
                 break;
             case ShipBuildingGrid.direction.below:
-                transform.localRotation = Quaternion.Euler(0, 0, 0);
-                if(tmp != null) tmp.gameObject.GetComponent<RectTransform>().localRotation = Quaternion.Euler(0, 0, 0);
+                rotation = Quaternion.Euler(0, 0, 0);
                 break;
             case ShipBuildingGrid.direction.left:
-                transform.localRotation = Quaternion.Euler(0, 0, -90);
-                if(tmp != null) tmp.gameObject.GetComponent<RectTransform>().localRotation = Quaternion.Euler(0, 0, 90);
+                rotation = Quaternion.Euler(0, 0, -90);
                 break;
             case ShipBuildingGrid.direction.right:
-                transform.localRotation = Quaternion.Euler(0, 0, 90);
-                if(tmp != null) tmp.gameObject.GetComponent<RectTransform>().localRotation = Quaternion.Euler(0, 0, -90);
+                rotation = Quaternion.Euler(0, 0, 90);
                 break;
         }
+        
+        transform.localRotation = rotation;
+        if(tmp != null) tmp.gameObject.GetComponent<RectTransform>().localRotation = rotation;
     }
 }
