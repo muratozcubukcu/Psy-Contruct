@@ -258,14 +258,11 @@ public class GameInput : MonoBehaviour {
         inputActions.SpacecraftBuilding.Disable();
     }
 
-    public void SetMainMenuScene() {
-        SceneManager.LoadScene("MainMenuScene");
-        
-        Spacecraft spacecraft = Spacecraft.GetInstance();
-        if (spacecraft != null) Destroy(spacecraft.gameObject);
-
+    public void SetMainMenuScene()
+    {
         inputActions.Spacecraft.Disable();
         inputActions.SpacecraftBuilding.Disable();
+        SceneManager.LoadScene("MainMenuScene");
     }
 
     public void SetGameOverScene(bool victory) {

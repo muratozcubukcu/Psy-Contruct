@@ -97,10 +97,15 @@ public class Spacecraft : MonoBehaviour {
         if (IsFlightMode && currentHealth < maxHealth) DoSparks();
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
-        if(scene.name == "FlightScene") orbitAssist.GetPsycheAsteroid();
-        
-        // Delay physics update to next frame to ensure all children are initialized
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "MainMenuScene")
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        if (scene.name == "FlightScene") orbitAssist.GetPsycheAsteroid();
         StartCoroutine(UpdatePhysicsModeDelayed());
     }
 
