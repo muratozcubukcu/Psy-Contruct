@@ -32,6 +32,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SettingsScene.unity
     guid: 9989c791b40adc344a718832e3048b5a
+  - enabled: 1
+    path: Assets/Scenes/OpeningCutscene.unity
+    guid: a9c9b9e20f1a52848b52768ccb370c03
+  - enabled: 1
+    path: Assets/Scenes/SendOffCutscene.unity
+    guid: f0a4b6981439c4f488e5316a1ef577e7
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
