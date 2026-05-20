@@ -80,7 +80,8 @@ public class AsteroidDamage : MonoBehaviour {
         }
         
         AsteroidController.Instance.Explode(collisionPosition);
-        
+        if (FlightSFXManager.Instance != null) FlightSFXManager.Instance.PlayAsteroidImpact();
+
         if (other.layer == asteroidLayer) SplitAsteroid(other);
     }
 
@@ -90,8 +91,9 @@ public class AsteroidDamage : MonoBehaviour {
         Vector3 dirTowardsAster = (spacecraft.transform.position - (Vector3)collision.contacts[0].point).normalized;
         spacecraft.GetComponent<Rigidbody2D>().linearVelocity = -dirTowardsAster * spacecraftSpeedPreCollision;
         SplitAsteroid(collision.gameObject);
-        
+
         spacecraft.TakeDamage(damage);
+        if (FlightSFXManager.Instance != null) FlightSFXManager.Instance.PlayImpact();
     }
 
     private void SplitAsteroid(GameObject contactAsteroid) {

@@ -76,6 +76,7 @@ public class Engine : MonoBehaviour {
         if (thrusting != firingVisual) {
             firingVisual = thrusting;
             ApplyVisualState(thrusting);
+            if (FlightSFXManager.Instance != null) FlightSFXManager.Instance.NotifyEngineFiring(thrusting);
         }
     }
 
@@ -138,6 +139,7 @@ public class Engine : MonoBehaviour {
         if (!active && firingVisual) {
             firingVisual = false;
             ApplyVisualState(false);
+            if (FlightSFXManager.Instance != null) FlightSFXManager.Instance.NotifyEngineFiring(false);
         }
     }
 
@@ -182,6 +184,10 @@ public class Engine : MonoBehaviour {
     }
 
     private void OnDestroy() {
+        if (firingVisual && FlightSFXManager.Instance != null) {
+            FlightSFXManager.Instance.NotifyEngineFiring(false);
+            firingVisual = false;
+        }
         if (gameInput != null) {
             gameInput.OnEnginePerformedAction -= GameInput_OnNumericEngineAction;
             gameInput.OnEngineCanceledAction -= GameInput_OnNumericEngineAction;
