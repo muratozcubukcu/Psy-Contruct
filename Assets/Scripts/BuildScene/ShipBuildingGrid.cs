@@ -276,14 +276,7 @@ public class ShipBuildingGrid : MonoBehaviour {
     public bool CanPlacePart(GameObject partToBePlaced, (int, int) coords) {
         if (coords == shipStartPos) return false;
         if (partDB.PartIsStackable(partToBePlaced)) return CanPlaceStackablePart(partToBePlaced, coords);
-        
-        if (partDB.PartIsRotatable(partToBePlaced)) {
-            if (TryFindRotatableConnectingDirection(partToBePlaced, coords, out direction dir)) {
-                partToBePlaced.GetComponent<RotatablePart>().SetRotation(dir);
-                return true;
-            }
-            return false;
-        }
+        if (partToBePlaced.TryGetComponent(out RotatablePart rotatable)) return rotatable.TryAutoSetRotation(coords);
 
         for (int i = 0; i < 4; i++) {
             if (PartConnectsInDirection(coords, (direction)i)) return true;
@@ -329,7 +322,7 @@ public class ShipBuildingGrid : MonoBehaviour {
         
         if (shipStartPos == coordsInDirection) return true;
         if (!placedParts.TryGetValue(coordsInDirection, out connectingPart)) return false;
-        if (PartCanConnect(connectingPart, direction.below)) return true;
+        if (PartCanConnect(connectingPart, GetOppositeDirection(dir))) return true;
         
         return false;
     }
@@ -409,7 +402,8 @@ public class ShipBuildingGrid : MonoBehaviour {
     public void SetPlacedPartAtWorldPosition(Vector3 worldPos, GameObject partObject) {
         (int, int) coords = UnityPositionToGridCoordinates(worldPos);
         
-        if(partDB.PartIsStackable(partObject)) partStackedOn[partObject] = placedParts[coords];
+        if (partDB.PartIsStackable(partObject)) partStackedOn[partObject] = placedParts[coords];
+        if (partObject.TryGetComponent(out RotatablePart rotate)) partRotations[coords] = rotate.connectingDirection;
         placedParts[coords] = partObject;
     }
 

@@ -38,4 +38,14 @@ public class RotatablePart : MonoBehaviour {
                 break;
         }
     }
+
+    public bool TryAutoSetRotation((int, int) coords) {
+        ShipBuildingGrid shipGrid = ShipBuildingGrid.Instance;
+        if (!shipGrid.TryFindRotatableConnectingDirection(gameObject, coords, out ShipBuildingGrid.direction dir)) {
+            return false;
+        }
+
+        SetRotation(dir);
+        return true;
+    }
 }
