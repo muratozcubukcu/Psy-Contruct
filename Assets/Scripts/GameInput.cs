@@ -213,11 +213,13 @@ public class GameInput : MonoBehaviour {
         
         if (!requirements.IsReadyForFlight(out string message)) {
             Debug.Log(message); // Example: "Missing parts: SolarPanel, SatelliteDish"
+            if (MenuButtonSFX.Instance != null) MenuButtonSFX.Instance.PlayInvalid();
             return; // Stop here -> do NOT load FlightScene
         }
         if (ShipBuildingGrid.Instance != null && ShipBuildingGrid.Instance.HighlightDisconnectedParts()) {
             DisconnectedPartsWarningManager.Instance.DisplayWarning();
             Debug.Log("Warning: Some ship parts are not connected to the spacecraft core.");
+            if (MenuButtonSFX.Instance != null) MenuButtonSFX.Instance.PlayInvalid();
             return; // Stop here -> do NOT load FlightScene
         }
         
