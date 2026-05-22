@@ -99,7 +99,7 @@ public class PartDrag : MonoBehaviour {
         SetSortingLayer(midDragLayer);
         SetLayer(midDragLayer);
         
-        // Enable physics temporarily for dragging
+        //Enable physics temporarily for dragging
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         if (rb != null) {
             rb.bodyType = RigidbodyType2D.Dynamic;
@@ -117,7 +117,7 @@ public class PartDrag : MonoBehaviour {
         if (snapPos != null) {
             transform.position = (Vector3)snapPos;
             (int, int) coords = shipGrid.UnityPositionToGridCoordinates((Vector3)snapPos);
-            bool valid = shipGrid.CanPlacePart(gameObject, coords) || CanSwapPart(gameObject, originalPosition);
+            bool valid = shipGrid.CanPlacePart(gameObject, coords) || CanSwapPart(gameObject, shipGrid.GetPlacedPartByWorldPosition(transform.position));
             objectSprite.color = valid ? colorValid : colorInvalid;
             
             highlight.transform.position = transform.position;
@@ -190,6 +190,11 @@ public class PartDrag : MonoBehaviour {
             shipGrid.partStackedOn[part] = shipGrid.GetPlacedPartByWorldPosition(worldPosition);
         }
         else SetSortingLayer(defaultLayer, part);
+        
+        if(part.TryGetComponent(out RotatablePart rotatable)) {
+            rotatable.TryAutoSetRotation(shipGrid.UnityPositionToGridCoordinates(worldPosition));
+            
+        }
 
         // Update BOTH grid + dictionary at the new cell
         shipGrid.SetGridCellValueByUnityPosition(part.transform.position, partDB.GetPartID(part));
@@ -202,45 +207,21 @@ public class PartDrag : MonoBehaviour {
         
         SetKinematicRB(part);
     }
-
-    private bool CanSwapPart(GameObject draggedPart, Vector3 draggedOGPosition, GameObject otherPart, Vector3 otherOGPosition) {
-        if (partDB.GetPartID(otherPart) == 0) return false;
+    
+    private bool CanSwapPart(GameObject draggedPart, GameObject otherPart) {
+        if (partDB.GetPartID(otherPart) <= 0) return false;
         
         int otherID = partDB.GetPartID(otherPart);
         int draggedID = partDB.GetPartID(draggedPart);
 
         if (partDB.PartIsStackable(otherID) && partDB.PartIsStackable(draggedID)) return true;
-        
-        shipGrid.SetGridCellValueByUnityPosition(otherOGPosition, -1);
-        shipGrid.SetGridCellValueByUnityPosition(draggedOGPosition, otherID);
-        bool canPlaceDraggedPart = shipGrid.CanPlacePart(draggedPart, shipGrid.UnityPositionToGridCoordinates(otherOGPosition));
-        shipGrid.SetGridCellValueByUnityPosition(draggedOGPosition, -1);
-        
-        shipGrid.SetGridCellValueByUnityPosition(otherOGPosition, draggedID);
-        bool canPlaceOtherPart = shipGrid.CanPlacePart(otherPart, shipGrid.UnityPositionToGridCoordinates(draggedOGPosition));
-        shipGrid.SetGridCellValueByUnityPosition(otherOGPosition, -1);
-        
-        shipGrid.SetGridCellValueByUnityPosition(otherOGPosition, otherID);
-        
-        if (canPlaceDraggedPart && canPlaceOtherPart) return true;
-        
-        return false;
-    }
 
-    private bool CanSwapPart(GameObject draggedPart, Vector3 draggedOGPosition) {
-        Vector3? nullableGridSnapPosition = shipGrid.PostionToGridPosition(transform.position);
-        if (nullableGridSnapPosition == null) return false;
-        Vector3 gridSnapPosition = (Vector3)nullableGridSnapPosition;
-        
-        GameObject partToBeSwapped = shipGrid.GetPlacedPartByWorldPosition(gridSnapPosition);
-        if (partToBeSwapped == null) return false;
-
-        return CanSwapPart(draggedPart, draggedOGPosition, partToBeSwapped, gridSnapPosition);
+        return !partDB.PartIsStackable(draggedPart);
     }
 
     private bool TrySwapPart(GameObject draggedPart, Vector3 draggedOGPosition, GameObject otherPart, Vector3 otherOGPosition) {
         if (draggedPart == otherPart) return true;
-        if (!CanSwapPart(draggedPart, draggedOGPosition, otherPart, otherOGPosition)) return false;
+        if (!CanSwapPart(draggedPart, otherPart)) return false;
         
         //If swapping a part that has a stacked part on top of it with another stacked part,
         //just swap the stacked parts and leave the ship parts where they are.

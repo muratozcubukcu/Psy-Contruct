@@ -276,14 +276,7 @@ public class ShipBuildingGrid : MonoBehaviour {
     public bool CanPlacePart(GameObject partToBePlaced, (int, int) coords) {
         if (coords == shipStartPos) return false;
         if (partDB.PartIsStackable(partToBePlaced)) return CanPlaceStackablePart(partToBePlaced, coords);
-        
-        if (partDB.PartIsRotatable(partToBePlaced)) {
-            if (TryFindRotatableConnectingDirection(partToBePlaced, coords, out direction dir)) {
-                partToBePlaced.GetComponent<RotatablePart>().SetRotation(dir);
-                return true;
-            }
-            return false;
-        }
+        if (partToBePlaced.TryGetComponent(out RotatablePart rotatable)) return rotatable.TryAutoSetRotation(coords);
 
         for (int i = 0; i < 4; i++) {
             if (PartConnectsInDirection(coords, (direction)i)) return true;
@@ -324,34 +317,27 @@ public class ShipBuildingGrid : MonoBehaviour {
     }
 
     private bool PartConnectsInDirection((int, int) partCoords, direction dir) {
-        int x = partCoords.Item1;
-        int y = partCoords.Item2;
         GameObject connectingPart;
+        (int, int) coordsInDirection = GetCoordsInDirection(partCoords, dir);
         
-        switch (dir) {
-            case direction.above:
-                if (shipStartPos == (x, y + 1)) return true;
-                if (!placedParts.TryGetValue((x, y + 1), out connectingPart)) break;
-                if (PartCanConnect(connectingPart, direction.below)) return true;
-                break;
-            case direction.below:
-                if (shipStartPos == (x, y - 1)) return true;
-                if (!placedParts.TryGetValue((x, y - 1), out connectingPart)) break;
-                if (PartCanConnect(connectingPart, direction.above)) return true;
-                break;
-            case direction.left:
-                if (shipStartPos == (x - 1, y)) return true;
-                if (!placedParts.TryGetValue((x - 1, y), out connectingPart)) break;
-                if (PartCanConnect(connectingPart, direction.right)) return true;
-                break;
-            case direction.right:
-                if (shipStartPos == (x + 1, y)) return true;
-                if (!placedParts.TryGetValue((x + 1, y), out connectingPart)) break;
-                if (PartCanConnect(connectingPart, direction.left)) return true;
-                break;
-        }
+        if (shipStartPos == coordsInDirection) return true;
+        if (!placedParts.TryGetValue(coordsInDirection, out connectingPart)) return false;
+        if (PartCanConnect(connectingPart, GetOppositeDirection(dir))) return true;
         
         return false;
+    }
+
+    private (int, int) GetCoordsInDirection((int, int) currCoords, direction dir) {
+        int x = currCoords.Item1;
+        int y = currCoords.Item2;
+        
+        switch (dir) {
+            case direction.above: return (x, y + 1);
+            case direction.below: return (x, y - 1);
+            case direction.left:  return (x - 1, y);
+            case direction.right: return (x + 1, y);
+            default: return (-1, -1);
+        }
     }
     
     public Vector3? PostionToGridPosition(Vector3 originalPosition) {
@@ -416,7 +402,8 @@ public class ShipBuildingGrid : MonoBehaviour {
     public void SetPlacedPartAtWorldPosition(Vector3 worldPos, GameObject partObject) {
         (int, int) coords = UnityPositionToGridCoordinates(worldPos);
         
-        if(partDB.PartIsStackable(partObject)) partStackedOn[partObject] = placedParts[coords];
+        if (partDB.PartIsStackable(partObject)) partStackedOn[partObject] = placedParts[coords];
+        if (partObject.TryGetComponent(out RotatablePart rotate)) partRotations[coords] = rotate.connectingDirection;
         placedParts[coords] = partObject;
     }
 
@@ -458,44 +445,26 @@ public class ShipBuildingGrid : MonoBehaviour {
 
         foreach (direction dir in snapableDirections) {
             GameObject otherPart;
-            switch (dir) {
-                case direction.above:
-                    if (shipStartPos == (x, y + 1)) return true;
-                    if (!placedParts.TryGetValue((x, y + 1), out otherPart)) continue;
-                    if (!visitedCells.Contains((x, y + 1))) {
-                        if (!PartCanConnect(otherPart, direction.below)) continue;
-                        if (PartIsConnectedHelper((x, y + 1), visitedCells)) return true;
-                    }
-                    break;
-                case direction.below:
-                    if (shipStartPos == (x, y - 1)) return true;
-                    if (!placedParts.TryGetValue((x, y - 1), out otherPart)) continue;
-                    if (!visitedCells.Contains((x, y - 1))) {
-                        if (!PartCanConnect(otherPart, direction.above)) continue;
-                        if (PartIsConnectedHelper((x, y - 1), visitedCells)) return true;
-                    }
-                    break;
-                case direction.left:
-                    if (shipStartPos == (x - 1, y)) return true;
-                    if (!placedParts.TryGetValue((x - 1, y), out otherPart)) continue;
-                    if (!visitedCells.Contains((x - 1, y))) {
-                        if (!PartCanConnect(otherPart, direction.right)) continue;
-                        if (PartIsConnectedHelper((x - 1, y), visitedCells)) return true;
-                    }
-                    break;
-                case direction.right:
-                    if (shipStartPos == (x + 1, y)) return true;
-                    if (!placedParts.TryGetValue((x + 1, y), out otherPart)) continue;
-                    if (!visitedCells.Contains((x + 1, y))) {
-                        if (!PartCanConnect(otherPart, direction.left)) continue;
-                        if (PartIsConnectedHelper((x + 1, y), visitedCells)) return true;
-                    }
-                    break;
-                default:
-                    continue;
+            (int, int) coordsInDirection = GetCoordsInDirection(coordinates, dir);
+            
+            if (shipStartPos == coordsInDirection) return true;
+            if (!placedParts.TryGetValue(coordsInDirection, out otherPart)) continue;
+            if (!visitedCells.Contains(coordsInDirection)) {
+                if (!PartCanConnect(otherPart, GetOppositeDirection(dir))) continue;
+                if (PartIsConnectedHelper(coordsInDirection, visitedCells)) return true;
             }
         }
         return false;
+    }
+
+    private direction GetOppositeDirection(direction dir) {
+        switch (dir) {
+            case direction.above: return direction.below;
+            case direction.below: return direction.above;
+            case direction.left:  return direction.right;
+            case direction.right: return direction.left;
+            default: return direction.none;
+        }
     }
     
     private bool PartCanConnect(GameObject part, direction connectingDirection) {
