@@ -30,7 +30,7 @@ public class FlightSFXManager : MonoBehaviour {
     [Header("Impacts")]
     [Tooltip("AudioSource ship-hit impact clips play through (PlayOneShot). Put one on this GameObject.")]
     [SerializeField] private AudioSource impactSource;
-    [Tooltip("AudioSource for asteroid-vs-asteroid impacts. MUST live on its own GameObject (typically a child), because the AudioLowPassFilter this script attaches would otherwise muffle every other AudioSource on the same GameObject. If left null, falls back to impactSource (no muffling).")]
+    [Tooltip("AudioSource for asteroid-vs-asteroid impacts. MUST live on its own GameObject, because the AudioLowPassFilter this script attaches would otherwise muffle every other AudioSource on the same GameObject. If left null, falls back to impactSource (no muffling).")]
     [SerializeField] private AudioSource asteroidImpactSource;
     [Tooltip("Lower = more muffled. ~22000 = no filtering, ~1500 = in another room, ~800 = inside cockpit, ~500 = underwater.")]
     [Range(80f, 22000f)]
@@ -47,20 +47,20 @@ public class FlightSFXManager : MonoBehaviour {
     [Range(0f, 1f)]
     [SerializeField] private float asteroidImpactVolumeScale = 0.35f;
 
-    [Header("Low Resource Warnings")]
-    [Tooltip("AudioSource fuel/energy low warnings play through (PlayOneShot).")]
+    [Header("Resource Depletion Warnings")]
+    [Tooltip("AudioSource fuel/energy depleted warnings play through (PlayOneShot).")]
     [SerializeField] private AudioSource lowResourceSource;
     [SerializeField] private AudioClip fuelLowClip;
     [SerializeField] private AudioClip energyLowClip;
-    [Tooltip("Volume multiplier for low-resource warnings.")]
+    [Tooltip("Volume multiplier for depletion warnings.")]
     [Range(0f, 1f)]
     [SerializeField] private float lowResourceVolumeScale = 1f;
-    [Tooltip("Fuel percentage at/below which the fuel-low warning plays. 0.25 = 25% fuel remaining.")]
+    [Tooltip("Fuel percentage at/below which the fuel-depleted warning plays.")]
     [Range(0f, 1f)]
-    [SerializeField] private float fuelLowThreshold = 0.25f;
-    [Tooltip("Energy percentage at/below which the energy-low warning plays.")]
+    [SerializeField] private float fuelLowThreshold = 0.005f;
+    [Tooltip("Energy percentage at/below which the energy-depleted warning plays.")]
     [Range(0f, 1f)]
-    [SerializeField] private float energyLowThreshold = 0.25f;
+    [SerializeField] private float energyLowThreshold = 0.005f;
 
     [Header("Solar Charging")]
     [Tooltip("Looping AudioSource that plays while any solar panel is charging. Script sets loop=true on Awake.")]

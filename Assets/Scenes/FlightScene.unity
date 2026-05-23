@@ -5493,8 +5493,8 @@ MonoBehaviour:
   fuelLowClip: {fileID: 8300000, guid: 29d90c391f5982342987ec39d5c513d0, type: 3}
   energyLowClip: {fileID: 8300000, guid: 65f2520780377484d994f4de88113976, type: 3}
   lowResourceVolumeScale: 1
-  fuelLowThreshold: 0.25
-  energyLowThreshold: 0.25
+  fuelLowThreshold: 0.005
+  energyLowThreshold: 0.005
   solarChargingSource: {fileID: 1684739991}
   solarChargingClip: {fileID: 8300000, guid: 6268fd35f7addf646b21000f5325ade7, type: 3}
   solarChargingVolumeScale: 0.5
