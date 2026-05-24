@@ -1763,9 +1763,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 2030972924}
-  clickClips:
-  - {fileID: 8300000, guid: 8414da911f3bfb34ea3d3666823c66d7, type: 3}
-  - {fileID: 8300000, guid: 790a4fb839674e04bb2ab2a78d018312, type: 3}
+  clickClip: {fileID: 8300000, guid: 8414da911f3bfb34ea3d3666823c66d7, type: 3}
+  invalidClip: {fileID: 8300000, guid: 790a4fb839674e04bb2ab2a78d018312, type: 3}
   volumeScale: 1
 --- !u!82 &2030972924
 AudioSource:

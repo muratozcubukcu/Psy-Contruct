@@ -52,7 +52,10 @@ public class SolarPanel : MonoBehaviour {
             spacecraft.AddEnergy(chargeAmount);
         }
 
-        if (isCharging != prevState) SwapVisuals();
+        if (isCharging != prevState) {
+            SwapVisuals();
+            if (FlightSFXManager.Instance != null) FlightSFXManager.Instance.NotifyPanelCharging(isCharging);
+        }
         prevState = isCharging;
     }
 
@@ -73,6 +76,10 @@ public class SolarPanel : MonoBehaviour {
     }
 
     private void OnDestroy() {
+        if (isCharging && FlightSFXManager.Instance != null) {
+            FlightSFXManager.Instance.NotifyPanelCharging(false);
+            isCharging = false;
+        }
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 }
