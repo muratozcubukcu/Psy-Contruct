@@ -142,12 +142,13 @@ public class PartDrag : MonoBehaviour {
         transform.position = correctPosition;
             
         objectSprite.color = baseColor;
-
+        
         Vector3? nullableSnapPos = shipGrid.PostionToGridPosition(transform.position);
         if (nullableSnapPos == null) {
+            //Delete part
             PlacePart(gameObject, originalPosition); //Place part bc the part needs to be placed to be deleted
-            if(stackedPart != null) stackedPart.GetComponent<PartDrag>().OnMouseUp();
             shipGrid.DeletePart(shipGrid.UnityPositionToGridCoordinates(originalPosition));
+            if(stackedPart != null) stackedPart.GetComponent<PartDrag>().OnMouseUp();
             return;
         }
 
@@ -156,21 +157,23 @@ public class PartDrag : MonoBehaviour {
         int gridCellValue = shipGrid.GetGridCellValue(shipGrid.UnityPositionToGridCoordinates(snapPos));
         if (gridCellValue == -1 || (draggingStackablePart && gridCellValue == 1)) {
             if (TryPlacePart(gameObject, snapPos)) {
+                //Place part
                 if(stackedPart != null) stackedPart.GetComponent<PartDrag>().OnMouseUp();
                 return;
             }
         } else {
             GameObject partToBeSwapped = shipGrid.GetPlacedPartByWorldPosition(snapPos);
             if (partToBeSwapped != null && TrySwapPart(gameObject, originalPosition, partToBeSwapped.gameObject, snapPos)) {
+                //Swap part
                 if(stackedPart != null) stackedPart.GetComponent<PartDrag>().OnMouseUp();
                 return;
             }
         }
         
+        //Place part back where it originally was
         PlacePart(gameObject, originalPosition);
         shipGrid.HandleLeftClick();
         highlightSprite.color = ShipBuildingGrid.colorHighlight;
-
         if(stackedPart != null) stackedPart.GetComponent<PartDrag>().OnMouseUp();
     }
 
@@ -193,7 +196,6 @@ public class PartDrag : MonoBehaviour {
         
         if(part.TryGetComponent(out RotatablePart rotatable)) {
             rotatable.TryAutoSetRotation(shipGrid.UnityPositionToGridCoordinates(worldPosition));
-            
         }
 
         // Update BOTH grid + dictionary at the new cell
@@ -204,6 +206,8 @@ public class PartDrag : MonoBehaviour {
         else SetSortingLayer(defaultLayer, part);
         
         SetLayer(spacecraftLayer, part);
+        
+        BuildSceneSFX.Instance.PlayRandomBuildSound();
         
         SetKinematicRB(part);
     }
