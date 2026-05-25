@@ -21,7 +21,10 @@ public class BuildSceneSFX : MonoBehaviour {
     public void PlayRandomBuildSound() {
         if (dontPlaySound) return;
 
-        audioSource.PlayOneShot(buildSounds[UnityEngine.Random.Range(0, 5)]);
+        AudioClip clip = buildSounds[UnityEngine.Random.Range(0, 5)];
+        float v = 1f;
+        if (Settings.Instance != null) v *= Settings.Instance.sfxVolume;
+        if (v > 0f) audioSource.PlayOneShot(clip, v);
         StartCoroutine(DontAllowNewSound());
     }
 
