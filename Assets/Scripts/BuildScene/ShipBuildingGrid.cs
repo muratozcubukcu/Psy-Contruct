@@ -377,9 +377,9 @@ public class ShipBuildingGrid : MonoBehaviour {
         placedParts[coordinates] = spacecraftPart;
 
         // Keep selection synced if placing in selected tile
-        if (someTileSelected && selectedTileCoords.Equals(coordinates)){
-            selectedPart = spacecraftPart;
-        }
+        if (someTileSelected && selectedTileCoords.Equals(coordinates)) selectedPart = spacecraftPart;
+        
+        BuildSceneSFX.Instance.PlayRandomBuildSound();
         ClearDisconnectedHighlights();
     }
 
