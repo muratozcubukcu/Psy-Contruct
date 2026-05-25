@@ -20,6 +20,7 @@ public class SolarPanel : MonoBehaviour {
 
     private bool isCharging;
     private bool prevState;
+    private bool soundActive;
 
     public void Awake() => enabled = false;
 
@@ -54,9 +55,15 @@ public class SolarPanel : MonoBehaviour {
 
         if (isCharging != prevState) {
             SwapVisuals();
-            if (FlightSFXManager.Instance != null) FlightSFXManager.Instance.NotifyPanelCharging(isCharging);
         }
         prevState = isCharging;
+
+        // Sound only plays when energy isnt full
+        bool newSoundActive = isCharging && spacecraft != null && spacecraft.EnergyPercentage < 1f;
+        if (newSoundActive != soundActive) {
+            soundActive = newSoundActive;
+            if (FlightSFXManager.Instance != null) FlightSFXManager.Instance.NotifyPanelCharging(soundActive);
+        }
     }
 
     private void SwapVisuals() {
@@ -76,9 +83,9 @@ public class SolarPanel : MonoBehaviour {
     }
 
     private void OnDestroy() {
-        if (isCharging && FlightSFXManager.Instance != null) {
+        if (soundActive && FlightSFXManager.Instance != null) {
             FlightSFXManager.Instance.NotifyPanelCharging(false);
-            isCharging = false;
+            soundActive = false;
         }
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
