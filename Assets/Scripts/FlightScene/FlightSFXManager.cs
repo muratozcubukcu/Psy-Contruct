@@ -68,7 +68,7 @@ public class FlightSFXManager : MonoBehaviour {
     [SerializeField] private AudioClip solarChargingClip;
     [Tooltip("Volume multiplier for the solar charging loop. Kept lower than thrusters/impacts since it can play continuously while the ship faces the sun.")]
     [Range(0f, 1f)]
-    [SerializeField] private float solarChargingVolumeScale = 0.5f;
+    [SerializeField] private float solarChargingVolumeScale = 0.75f;
     [Tooltip("Seconds for the solar loop to ramp up when the first panel starts charging.")]
     [Range(0f, 2f)]
     [SerializeField] private float solarFadeInDuration = 0.3f;

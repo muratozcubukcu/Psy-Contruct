@@ -1058,7 +1058,7 @@ MonoBehaviour:
   arpClip: {fileID: 8300000, guid: 06be7fbb3b05a4147b91a60d228fb324, type: 3}
   blockLength: 38
   blocksPerMainDrum: 2
-  musicVolumeScale: 1
+  musicVolumeScale: 0.25
   layerFadeDuration: 1.5
   drumLayerFadeDuration: 0.05
   buildSceneName: BuildScene

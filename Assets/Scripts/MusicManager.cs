@@ -39,7 +39,7 @@ public class MusicManager : MonoBehaviour {
     [Header("Tuning")]
     [Tooltip("Master music multiplier applied on top of Settings.musicVolume.")]
     [Range(0f, 1f)]
-    [SerializeField] private float musicVolumeScale = 1f;
+    [SerializeField] private float musicVolumeScale = 0.25f;
     [Tooltip("Seconds for chords/bass/arp to fade in/out when toggled (scene transitions).")]
     [Range(0f, 5f)]
     [SerializeField] private float layerFadeDuration = 1.5f;
