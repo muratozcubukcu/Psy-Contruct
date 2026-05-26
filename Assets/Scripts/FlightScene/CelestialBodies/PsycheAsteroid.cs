@@ -12,6 +12,9 @@ public class PsycheAsteroid : MonoBehaviour {
         Instance = this;
         
         spacecraft = Spacecraft.GetInstance();
+        transform.position = Settings.Instance.psychePosition;
+        
+        Debug.Log(Settings.Instance.psychePosition);
     }
     
     private void OnCollisionEnter2D(Collision2D collision) {

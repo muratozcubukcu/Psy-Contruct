@@ -16,6 +16,9 @@ public class Settings : MonoBehaviour
     public int difficulty { get; private set; } = 1;
     public string DifficultyLabel => difficulty switch { 0 => "EASY", 2 => "HARD", _ => "MEDIUM" };
 
+    public Vector3 psychePosition = new Vector3(420,138,0);
+    public Vector3 marsPosition = new Vector3(203,174,0);
+
     void Awake() {
         if (Instance != null && Instance != this) {
             Destroy(gameObject);
@@ -33,6 +36,15 @@ public class Settings : MonoBehaviour
     public void setMusicVolume(float value) {
         musicVolume = value;
         // TODO: AudioManager.Instance.SetMusicVolume(musicVolume);
+    }
+
+    public void randomizeLocations()
+    {
+        float newPsycheAngle = Random.Range(0f,360f);
+        float newMarsAngle = newPsycheAngle + Random.Range(-30, 30);
+        psychePosition = Quaternion.Euler(0,0,newPsycheAngle) * new Vector3(442,0,0);
+        marsPosition = Quaternion.Euler(0,0,newMarsAngle) * new Vector3(268,0,0);
+        Debug.Log(psychePosition);
     }
 
     public void setSFXVolume(float value) {

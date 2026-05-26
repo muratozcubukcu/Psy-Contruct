@@ -15,6 +15,7 @@ public class Mars : MonoBehaviour {
         Instance = this;
         
         spacecraft = Spacecraft.GetInstance();
+        transform.position = Settings.Instance.marsPosition;
     }
     
     private void OnCollisionEnter2D(Collision2D collision) {
