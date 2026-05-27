@@ -98,13 +98,12 @@ public class ScoreManager : MonoBehaviour {
         float d = slingshotPlanner.DistanceFromPath(shipPos, out Vector2 pathDir);
         if (d < 0f) return;
 
-        // Heading uses the ship's facing direction, not velocity, so the
-        // check responds the instant the player rotates back on course.
         float headingAngle = 180f;
         if (pathDir.sqrMagnitude > 1e-6f) {
-            Vector2 facing = spacecraft.transform.up;
-            if (facing.sqrMagnitude > 1e-6f) {
-                headingAngle = Vector2.Angle(facing.normalized, pathDir);
+            Rigidbody2D rb = spacecraft.GetComponent<Rigidbody2D>();
+            Vector2 vel = rb != null ? rb.linearVelocity : Vector2.zero;
+            if (vel.sqrMagnitude > 1e-4f) {
+                headingAngle = Vector2.Angle(vel.normalized, pathDir);
             }
         }
 
