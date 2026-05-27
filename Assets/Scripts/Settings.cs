@@ -42,8 +42,8 @@ public class Settings : MonoBehaviour
     {
         float newPsycheAngle = Random.Range(0f,360f);
         float newMarsAngle = newPsycheAngle + Random.Range(-30, 30);
-        psychePosition = Quaternion.Euler(0,0,newPsycheAngle) * new Vector3(442,0,0);
-        marsPosition = Quaternion.Euler(0,0,newMarsAngle) * new Vector3(268,0,0);
+        psychePosition = Quaternion.Euler(0,0,newPsycheAngle) * new Vector3(550,0,0);
+        marsPosition = Quaternion.Euler(0,0,newMarsAngle) * new Vector3(300,0,0);
         Debug.Log(psychePosition);
     }
 
