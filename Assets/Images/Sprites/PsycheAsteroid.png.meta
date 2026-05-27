@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 00ca4f2b9420d984a894e4f83783ce6a
+guid: 01c3f88c5058c8c42b761ea78b342547
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5920689154985916942
-    second: PsycheAsteroid_0
+      213: -7097277897436437895
+    second: PsycheAsteroid_DraftFinal_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,24 +96,11 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: PsycheAsteroid_0
+      name: PsycheAsteroid_DraftFinal_0
       rect:
         serializedVersion: 2
         x: 3
@@ -128,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2f58e8b259c75dda0800000000000000
-      internalID: -5920689154985916942
+      spriteID: 972e113fa57618d90800000000000000
+      internalID: -7097277897436437895
       vertices: []
       indices: 
       edges: []
@@ -148,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      PsycheAsteroid_0: -5920689154985916942
+      PsycheAsteroid_DraftFinal_0: -7097277897436437895
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
