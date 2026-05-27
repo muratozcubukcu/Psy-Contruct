@@ -112,9 +112,12 @@ public class BuildPanelUI : MonoBehaviour {
         RectTransform itemRect = itemGO.AddComponent<RectTransform>();
         itemRect.sizeDelta = new Vector2(0, 70);
 
-        // Item background uses the part's color tinted dark so it's identifiable
+        // Item background uses the part's color tinted dark so it's identifiable.
+        // When the SO supplies an explicit icon, prefer a neutral dark background.
         SpriteRenderer partVisual = partSO.part.GetComponentInChildren<SpriteRenderer>();
-        Color partColor = partVisual != null ? partVisual.color : Color.white;
+        Color partColor = partSO.icon != null
+            ? Color.white
+            : (partVisual != null ? partVisual.color : Color.white);
 
         Image itemBg = itemGO.AddComponent<Image>();
         itemBg.color = new Color(partColor.r * 0.3f, partColor.g * 0.3f, partColor.b * 0.3f, 0.95f);
@@ -143,11 +146,13 @@ public class BuildPanelUI : MonoBehaviour {
         Image swatchImg = swatchGO.AddComponent<Image>();
         swatchImg.raycastTarget = false;
 
-        // Try to use the sprite, otherwise just show the part color
-        Sprite partSprite = partVisual != null ? partVisual.sprite : null;
+        // Prefer the SO-defined icon. Fall back to the prefab's SpriteRenderer.
+        Sprite partSprite = partSO.icon != null
+            ? partSO.icon
+            : (partVisual != null ? partVisual.sprite : null);
         if (partSprite != null) {
             swatchImg.sprite = partSprite;
-            swatchImg.color = partColor;
+            swatchImg.color = partSO.icon != null ? Color.white : partColor;
             swatchImg.preserveAspect = true;
             swatchImg.type = Image.Type.Simple;
         } else {

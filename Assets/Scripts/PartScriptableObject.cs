@@ -4,12 +4,16 @@ using UnityEngine;
 public class PartScriptableObject : ScriptableObject {
     public GameObject part;
 
+    // Optional override for the BuildPanel icon. When set, the panel uses this directly
+    // instead of pulling from the prefab's SpriteRenderer.
+    public Sprite icon;
+
     public int partID;
 
     public float mass;
 
     public bool isStackable;
-    
+
     public bool isRotatable;
 
     //"This parts should only be connectable to the rest of the spacecraft from..."

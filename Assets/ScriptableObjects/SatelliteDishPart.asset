@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SatelliteDishPart
   m_EditorClassIdentifier: 
   part: {fileID: 2624134581080421435, guid: 525d5c850f752b84c98a3d3229271a61, type: 3}
+  icon: {fileID: -1978435023385641888, guid: 1cc39075fe78bed418773d14169dd37f, type: 3}
   partID: 7
   mass: 1
   isStackable: 0

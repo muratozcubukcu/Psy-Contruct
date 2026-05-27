@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: GammaRayPart
   m_EditorClassIdentifier: 
   part: {fileID: 6269006834175180344, guid: 9d31b909ed3c6fa45ae0abc631f32e0e, type: 3}
+  icon: {fileID: 8218429904198552881, guid: ac191c3d2124cc740b96099d2b2274be, type: 3}
   partID: 4
   mass: 1
   isStackable: 1

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: MagnetometerPart
   m_EditorClassIdentifier: 
   part: {fileID: 22678911187016829, guid: 9767441d001d9b44984b90ebf2dfafe9, type: 3}
+  icon: {fileID: 3856734201837372771, guid: ae002beac92bf4987a5a418ba305e803, type: 3}
   partID: 5
   mass: 1
   isStackable: 1

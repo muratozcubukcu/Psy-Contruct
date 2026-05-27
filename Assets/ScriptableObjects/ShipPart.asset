@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: ShipPart
   m_EditorClassIdentifier: 
   part: {fileID: 6185069549927734299, guid: 619b723e6666b834e91465e459776085, type: 3}
+  icon: {fileID: 4141450195549646618, guid: b37dd2a5802b45745b887d32d46a9902, type: 3}
   partID: 1
   mass: 1
   isStackable: 0

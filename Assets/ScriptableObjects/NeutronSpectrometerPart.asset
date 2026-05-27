@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: NeutronSpectrometerPart
   m_EditorClassIdentifier: 
   part: {fileID: 3898192504596313925, guid: b79a2ac292f76884d8e2803926ab2d7b, type: 3}
+  icon: {fileID: 3774334931004127000, guid: e1a98bf2516134c5a88da29152f4bdd7, type: 3}
   partID: 6
   mass: 1
   isStackable: 1
