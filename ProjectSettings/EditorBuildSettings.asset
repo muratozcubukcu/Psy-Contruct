@@ -24,12 +24,6 @@ EditorBuildSettings:
     path: Assets/Scenes/GameOverScene.unity
     guid: d4474762b2a412149a7d6a647ef72673
   - enabled: 1
-    path: Assets/Scenes/FlightFactsScene.unity
-    guid: ff777db05c4335f479d3baa2eb668dec
-  - enabled: 1
-    path: Assets/Scenes/MissionFactsScene.unity
-    guid: 1836727a36634ef45b044378be3efb39
-  - enabled: 1
     path: Assets/Scenes/SettingsScene.unity
     guid: 9989c791b40adc344a718832e3048b5a
   - enabled: 1
