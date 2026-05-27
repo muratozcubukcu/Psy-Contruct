@@ -218,6 +218,7 @@ public class Spacecraft : MonoBehaviour {
     public void TakeDamage(float damage) {
         if (damage <= 0) return;
         if (onDamageCoolDown) return;
+        if (orbitAssist != null && orbitAssist.InOrbit) return;
         
         currentHealth = Mathf.Max(0, currentHealth - damage);
         
