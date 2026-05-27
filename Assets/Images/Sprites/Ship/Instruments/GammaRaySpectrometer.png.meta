@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c4a7d9203e6d1458785042c6b9278572
+guid: ac191c3d2124cc740b96099d2b2274be
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5995821480663471535
-    second: pointerResized_0
+      213: 8218429904198552881
+    second: GammaRaySpectrometer_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -24,7 +24,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 1
+  isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: pointerResized_0
+      name: GammaRaySpectrometer_0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 3
-        width: 106
-        height: 122
+        x: 0
+        y: 0
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: fa55a939edf653350800000000000000
-      internalID: 5995821480663471535
+      spriteID: 13dc33b647abd0270800000000000000
+      internalID: 8218429904198552881
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      pointerResized_0: 5995821480663471535
+      GammaRaySpectrometer_0: 8218429904198552881
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
