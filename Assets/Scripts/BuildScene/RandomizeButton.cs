@@ -4,7 +4,7 @@ public class RandomizeButton : MonoBehaviour
 {
     private Settings settingsInstance;
 
-    void Start()
+    void Awake()
     {
         settingsInstance = Settings.Instance;
     }
@@ -12,5 +12,6 @@ public class RandomizeButton : MonoBehaviour
     public void randomizeLocations()
     {
         settingsInstance.randomizeLocations();
+
     }
 }

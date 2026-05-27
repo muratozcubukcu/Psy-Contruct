@@ -3088,6 +3088,7 @@ GameObject:
   - component: {fileID: 1033650642}
   - component: {fileID: 1033650641}
   - component: {fileID: 1033650640}
+  - component: {fileID: 1033650643}
   m_Layer: 5
   m_Name: RandomizeButton
   m_TagString: Untagged
@@ -3159,8 +3160,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1709723578}
-        m_TargetAssemblyTypeName: Settings, Scripts
+      - m_Target: {fileID: 1033650643}
+        m_TargetAssemblyTypeName: RandomizeButton, Scripts
         m_MethodName: randomizeLocations
         m_Mode: 1
         m_Arguments:
@@ -3209,6 +3210,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1033650638}
   m_CullTransparentMesh: 1
+--- !u!114 &1033650643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1033650638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eda090f7f433ba4396a1eada0dfb54c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1169754975 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8928962328480588919, guid: a8ded188f06cb4f39b60eb2d5f3a5784, type: 3}
