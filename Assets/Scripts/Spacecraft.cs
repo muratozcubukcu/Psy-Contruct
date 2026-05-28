@@ -90,6 +90,7 @@ public class Spacecraft : MonoBehaviour {
 
     private void Update() {
        if(IsFlightMode) SpacecraftMotionUI.Instance.UpdateMotion(rb.linearVelocity.magnitude, rb.linearVelocity.normalized);
+        if (IsFlightMode) Debug.Log($"Speed: {rb.linearVelocity.magnitude:F2}");
     }
 
     private void FixedUpdate() {
@@ -181,6 +182,7 @@ public class Spacecraft : MonoBehaviour {
         transform.rotation = Quaternion.identity;
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
+        rb.linearDamping = 0f;
 
         rb.simulated = true;
         rb.bodyType = RigidbodyType2D.Dynamic;
