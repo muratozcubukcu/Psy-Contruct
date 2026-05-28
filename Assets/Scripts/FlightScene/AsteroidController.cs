@@ -27,7 +27,8 @@ public class AsteroidController : MonoBehaviour {
     private float defaultXSpawnRange;
     private float defaultYSpawnRange;
     private Rigidbody2D spacecraftRB;
-    
+    private bool spawningEnabled = true;
+
     private Dictionary<GameObject, float> offCameraLifetimes = new();
     private void Awake() {
         Instance = this;
@@ -40,7 +41,8 @@ public class AsteroidController : MonoBehaviour {
 
     private void Start() {
         FlightCamera.OnAsteroidPassing += FlightCamera_OnAsteroidPassingAction;
-        
+        OrbitAssist.OnEnteredOrbit += OnEnteredOrbit;
+
         spacecraftRB = Spacecraft.GetInstance().GetComponent<Rigidbody2D>();
     }
     
@@ -51,7 +53,7 @@ public class AsteroidController : MonoBehaviour {
         }
 
         timeUntilNextAsteroidSpawn -= Time.deltaTime;
-        if (timeUntilNextAsteroidSpawn <= 0) SpawnAsteroid();
+        if (timeUntilNextAsteroidSpawn <= 0 && spawningEnabled) SpawnAsteroid();
     }
 
     private void SpawnAsteroid() {
@@ -165,6 +167,14 @@ public class AsteroidController : MonoBehaviour {
         Destroy(explosion);
     }
 
+    private void OnEnteredOrbit(object sender, System.EventArgs e) {
+        spawningEnabled = false;
+    }
+
+    private void OnDestroy() {
+        FlightCamera.OnAsteroidPassing -= FlightCamera_OnAsteroidPassingAction;
+        OrbitAssist.OnEnteredOrbit -= OnEnteredOrbit;
+    }
 
     public void DestroyAsteroid(GameObject asteroid) {
         offCameraLifetimes.Remove(asteroid);
