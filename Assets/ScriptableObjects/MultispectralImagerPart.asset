@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: MultispectralImagerPart
   m_EditorClassIdentifier: 
   part: {fileID: 4834617215245572854, guid: 2e82c3b80717b854ea0cd30a7d0bdd24, type: 3}
+  icon: {fileID: 1518237576833771061, guid: c2fd875e14ce2a847b2cefdc7aec8ac1, type: 3}
   partID: 8
   mass: 1
   isStackable: 1

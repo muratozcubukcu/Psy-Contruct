@@ -499,7 +499,7 @@ MonoBehaviour:
   engineOffSprite: {fileID: 7482667652216324306, guid: b2e8d3c4a5f60708091a2b3c4d5e6f7a, type: 3}
   engineOnSprite: {fileID: 7482667652216324306, guid: c3d9e4f50a1b2c3d4e5f6a7b8c9d0e1f, type: 3}
   engineFirePrefab: {fileID: 7991122334455667792, guid: e3f4a5b6c7d8e9f01a2b3c4d5e6f7081, type: 3}
-  engineFireOffset: {x: 0, y: 0.5}
+  engineFireOffset: {x: 0, y: 0.375}
   fuelCostPerSecond: 1
   energyCostPerSecond: 2
   _engineID: 0

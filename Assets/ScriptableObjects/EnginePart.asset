@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: EnginePart
   m_EditorClassIdentifier: 
   part: {fileID: 6762445239661676325, guid: 74a88790636774073b1ba566f11faf4a, type: 3}
+  icon: {fileID: 7482667652216324306, guid: c3d9e4f50a1b2c3d4e5f6a7b8c9d0e1f, type: 3}
   partID: 2
   mass: 1
   isStackable: 0

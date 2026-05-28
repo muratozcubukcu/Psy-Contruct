@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: FuelTankPart
   m_EditorClassIdentifier: 
   part: {fileID: 6185069549927734299, guid: fcbda86eec24ffe479dc90fad9947b2d, type: 3}
+  icon: {fileID: -1062437226922483601, guid: 472fc0f9ca1dbfc4289c04b76ed4d2a3, type: 3}
   partID: 9
   mass: 0.33
   isStackable: 1

@@ -14,6 +14,7 @@ public class OrbitAssist : MonoBehaviour {
     
     private Transform psycheAsteroid;
     private float angle = 0f;
+    public bool InOrbit => inOrbit;
     private bool inOrbit = false;
     private bool inFlightScene = false;
     private bool movingIntoOrbit = false;

@@ -24,8 +24,8 @@ public class ShipBuildingGrid : MonoBehaviour {
     private Grid grid;
     private int gridWidth = 5;
     private int gridHeight = 7;
-    private float cellSize = 1f;
-    private Vector3 gridOriginPosition = new(-2.5f, -4f);
+    private float cellSize = 0.75f;
+    private Vector3 gridOriginPosition = new(-1.875f, -3.125f);
     [SerializeField] private Sprite baseHighlightSprite;
     public static readonly Color colorHighlight   = new Color(1f, 1f, 0.3f, 0.4f);
     [SerializeField] private Sprite colorblindHighlight;
