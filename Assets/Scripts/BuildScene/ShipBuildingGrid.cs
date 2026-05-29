@@ -104,7 +104,7 @@ public class ShipBuildingGrid : MonoBehaviour {
         originalSpriteColors = partDB.savedOriginalSpriteColors;
         partRotations = partDB.savedPartRotations;
 
-        FindAnyObjectByType<DragHintAnimator>().StopHint();
+        FindAnyObjectByType<DragHintAnimator>()?.StopHint();
 
         if (SavedPlacedPartsValid()) {
             foreach (Transform part in shipTransform) {
@@ -583,13 +583,14 @@ public class ShipBuildingGrid : MonoBehaviour {
     }
     
     public void SaveGridState(bool save = true) {
+        if (grid == null || partDB == null) return;
         grid.SaveGridState(save);
         partDB.savedPlacedParts = placedParts;
         partDB.savedPartStackedOn = partStackedOn;
         partDB.savedPartRotations = partRotations;
         partDB.savedOriginalSpriteColors = originalSpriteColors;
     }
-    
+
     private void OnDisable() => SaveGridState();
     
     private void OnDestroy() {
