@@ -183,16 +183,14 @@ public class Tutorial : MonoBehaviour {
         ClearGlowBorders();
         RestoreSidebarAlpha();
         FindAnyObjectByType<DragHintAnimator>(FindObjectsInactive.Include)?.StopHint();
-        if (welcomePanelGO != null) welcomePanelGO.SetActive(false);
-        if (skipButtonGO   != null) skipButtonGO.SetActive(false);
-        if (dialogPanel    != null) dialogPanel.SetActive(false);
+        HideTutorialUI();
         Settings.Instance.toggleTutorial(false);
-        overlay?.Hide();
         enabled = false;
     }
 
     void Awake() {
         instance = this;
+        HideTutorialUI();
     }
 
     void Start() {
@@ -210,7 +208,11 @@ public class Tutorial : MonoBehaviour {
     }
 
     private void StartTutorial() {
-        if (!Settings.Instance.tutorialEnabled) { enabled = false; return; }
+        if (!Settings.Instance.tutorialEnabled) {
+            HideTutorialUI();
+            enabled = false;
+            return;
+        }
 
         Image legacyBg = GetComponent<Image>();
         if (legacyBg != null) legacyBg.enabled = false;
@@ -226,6 +228,13 @@ public class Tutorial : MonoBehaviour {
             if (skipButtonGO != null) skipButtonGO.SetActive(true);
             StartCoroutine(StartAfterDelay());
         }
+    }
+
+    private void HideTutorialUI() {
+        if (welcomePanelGO != null) welcomePanelGO.SetActive(false);
+        if (skipButtonGO   != null) skipButtonGO.SetActive(false);
+        if (dialogPanel    != null) dialogPanel.SetActive(false);
+        overlay?.Hide();
     }
 
     private IEnumerator StartAfterDelay() {
