@@ -208,7 +208,11 @@ public class GameInput : MonoBehaviour {
     }
 
     public void SetFlightFactsScene() {
-        
+        if (Tutorial.instance != null && Tutorial.instance.BlocksLaunch) {
+            if (MenuButtonSFX.Instance != null) MenuButtonSFX.Instance.PlayInvalid();
+            return;
+        }
+
         BuildRequirements requirements = BuildRequirements.Instance;
         
         if (!requirements.IsReadyForFlight(out string message)) {
@@ -222,7 +226,7 @@ public class GameInput : MonoBehaviour {
             if (MenuButtonSFX.Instance != null) MenuButtonSFX.Instance.PlayInvalid();
             return; // Stop here -> do NOT load FlightScene
         }
-        
+
         // Passed requirements -> go to the Opening cutscene, which chains to
         // the Send-off cutscene, which then loads FlightScene.
         SceneManager.LoadScene("OpeningCutscene");

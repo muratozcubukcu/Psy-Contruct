@@ -104,6 +104,7 @@ public class Tutorial : MonoBehaviour {
         && Settings.Instance != null
         && Settings.Instance.tutorialEnabled
         && currentStep != Step.Complete;
+    public bool BlocksLaunch => IsActive && currentStep != Step.Launch;
 
     public bool CanDragPart(string partName) {
         if (!IsActive) return true;
@@ -209,8 +210,6 @@ public class Tutorial : MonoBehaviour {
     }
 
     private void StartTutorial() {
-        Settings.Instance.toggleTutorial(true);
-
         if (!Settings.Instance.tutorialEnabled) { enabled = false; return; }
 
         Image legacyBg = GetComponent<Image>();
