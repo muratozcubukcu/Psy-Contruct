@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Music singleton. All stems loop in sync; layers mute/unmute per scene.
-/// MainMenu: chords + drums. BuildScene: + bass. FlightScene: + arp + drum rotation
+/// MainMenu: chords + drums. Build/cutscenes: + bass. FlightScene: + arp + drum rotation
 /// (drums1 x N blocks -> 1.5 -> 2 -> 2.5 -> repeat, swaps on block boundaries).
 /// </summary>
 public class MusicManager : MonoBehaviour {
@@ -109,7 +109,7 @@ public class MusicManager : MonoBehaviour {
 
     private void ApplyLayersForScene(string sceneName) {
         chordsActive = true;
-        bassActive = sceneName == buildSceneName || sceneName == flightSceneName;
+        bassActive = sceneName == buildSceneName || sceneName == flightSceneName || IsCutscene(sceneName);
         arpActive = sceneName == flightSceneName;
 
         bool inFlight = sceneName == flightSceneName;
@@ -125,6 +125,10 @@ public class MusicManager : MonoBehaviour {
             }
             drumsPhase = 0; // outside flight, drum layer stays on drum 1
         }
+    }
+
+    private bool IsCutscene(string sceneName) {
+        return !string.IsNullOrEmpty(sceneName) && sceneName.Contains("Cutscene");
     }
 
     private IEnumerator DrumRotationLoop() {
