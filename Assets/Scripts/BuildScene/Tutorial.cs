@@ -33,43 +33,43 @@ public class Tutorial : MonoBehaviour {
             allowedParts  = new[] { "ShipPart" },
             requiredParts = new[] { "ShipPart" },
             instruction   = "Place the Spacecraft Body",
-            explanation   = "Drag it from the panel on the left onto the grid it must connect to the core in the center of the grid."
+            explanation   = "Drag a body part onto a space next to the center core. Other parts can connect to it."
         },
         new StepData {
             allowedParts  = new[] { "EnginePart" },
             requiredParts = new[] { "EnginePart" },
             instruction   = "Add an Engine",
-            explanation   = "Engines propel your spacecraft. Fire them in flight by pressing the number shown on each one."
+            explanation   = "Place an engine on an open side of your ship. In flight, press its number to fire it."
         },
         new StepData {
             allowedParts  = new[] { "FuelTankPart" },
             requiredParts = new[] { "FuelTankPart" },
             instruction   = "Add a Fuel Tank",
-            explanation   = "Without fuel your engines won't fire. Fuel tanks extend how long you can fly."
+            explanation   = "Fuel tanks stack on body parts. Drop one directly on a body part to add fuel."
         },
         new StepData {
             allowedParts  = new[] { "SolarPanelPart" },
             requiredParts = new[] { "SolarPanelPart" },
             instruction   = "Add a Solar Panel",
-            explanation   = "Engines need energy too. Solar panels charge your batteries while facing the Sun."
+            explanation   = "Place a solar panel on an open side of your ship. It charges your batteries in sunlight."
         },
         new StepData {
             allowedParts  = new[] { "SatelliteDishPart" },
             requiredParts = new[] { "SatelliteDishPart" },
             instruction   = "Add a Satellite Dish",
-            explanation   = "Point it at Earth and press Spacebar mid-flight to call for repair assistance."
+            explanation   = "Place a satellite dish on your ship. In flight, point it at Earth and press Spacebar for repairs."
         },
         new StepData {
             allowedParts  = new[] { "GammaRayPart", "MagnetometerPart", "MultispectralImagerPart", "NeutronSpectrometerPart" },
             requiredParts = new[] { "GammaRayPart", "MagnetometerPart", "MultispectralImagerPart", "NeutronSpectrometerPart" },
             instruction   = "Add the 4 Scientific Sensors",
-            explanation   = "These instruments are the heart of the Psyche mission. All four must be on board."
+            explanation   = "Science sensors stack on body parts. Add all four so your spacecraft is mission-ready."
         },
         new StepData {
             allowedParts  = new string[0],
             requiredParts = new string[0],
             instruction   = "Ready to Launch!",
-            explanation   = "Your build is complete. Press the launch button whenever you're ready."
+            explanation   = "Tutorial complete! Keep building, or delete parts with Backspace or by dragging them off the grid."
         },
     };
 

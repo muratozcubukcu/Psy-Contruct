@@ -83,6 +83,7 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         ghostSprite.color = new Color(baseColor.r, baseColor.g, baseColor.b, 0.5f);
         ghostSprite.sortingLayerName = "MidDrag";
 
+        ShipBuildingGrid.Instance?.ShowValidPlacementHighlights(ghostPreview);
         UpdateGhostPosition(eventData);
     }
 
@@ -118,6 +119,7 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         Destroy(ghostPreview);
         ghostPreview = null;
         ghostSprite = null;
+        ShipBuildingGrid.Instance?.ClearValidPlacementHighlights();
         ShipBuildingGrid.Instance?.HandleLeftClick();
 
         if (!placed) {
