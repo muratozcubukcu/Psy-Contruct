@@ -431,8 +431,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Are you sure?
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 10754cda3c210d144ac6395862c902e0, type: 2}
+  m_sharedMaterial: {fileID: 5379065754751089583, guid: 10754cda3c210d144ac6395862c902e0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1183,8 +1183,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 10754cda3c210d144ac6395862c902e0, type: 2}
+  m_sharedMaterial: {fileID: 5379065754751089583, guid: 10754cda3c210d144ac6395862c902e0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1325,8 +1325,8 @@ MonoBehaviour:
   m_text: "Your spacecraft has disconnected parts! \nReconnect them or they will
     be removed."
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 10754cda3c210d144ac6395862c902e0, type: 2}
+  m_sharedMaterial: {fileID: 5379065754751089583, guid: 10754cda3c210d144ac6395862c902e0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1843,8 +1843,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Ignore and Fly
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 10754cda3c210d144ac6395862c902e0, type: 2}
+  m_sharedMaterial: {fileID: 5379065754751089583, guid: 10754cda3c210d144ac6395862c902e0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4861,8 +4861,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Keep Building
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 10754cda3c210d144ac6395862c902e0, type: 2}
+  m_sharedMaterial: {fileID: 5379065754751089583, guid: 10754cda3c210d144ac6395862c902e0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5102,8 +5102,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 10754cda3c210d144ac6395862c902e0, type: 2}
+  m_sharedMaterial: {fileID: 5379065754751089583, guid: 10754cda3c210d144ac6395862c902e0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
