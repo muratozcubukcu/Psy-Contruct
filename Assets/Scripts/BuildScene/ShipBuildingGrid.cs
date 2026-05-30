@@ -30,8 +30,11 @@ public class ShipBuildingGrid : MonoBehaviour {
     public static readonly Color colorHighlight   = new Color(1f, 1f, 0.3f, 0.4f);
     [SerializeField] private Sprite colorblindHighlight;
     public static readonly Color colorHighlightInvisible   = new Color(1f, 1f, 0.3f, 0f);
+    private static readonly Color validPlacementColor = new Color(0.25f, 1f, 0.25f, 0.28f);
     private static Color colorDisconnected = new Color(1f, 0.4f, 0.4f, 1f);
     private Dictionary<SpriteRenderer, Color> originalSpriteColors = new();
+    private readonly List<GameObject> validPlacementHighlights = new();
+    private Sprite validPlacementSprite;
 
     private GameObject selectedPart;
     private (int, int) selectedTileCoords;
@@ -55,6 +58,7 @@ public class ShipBuildingGrid : MonoBehaviour {
         grid = new Grid(gridWidth, gridHeight, cellSize, gridOriginPosition);
         shipStartPos = (gridWidth / 2, gridHeight / 2);
         partDB = SpacecraftPartDatabase.Instance;
+        CreateValidPlacementSprite();
     }
     
     private void Start() {
@@ -104,7 +108,7 @@ public class ShipBuildingGrid : MonoBehaviour {
         originalSpriteColors = partDB.savedOriginalSpriteColors;
         partRotations = partDB.savedPartRotations;
 
-        FindAnyObjectByType<DragHintAnimator>().StopHint();
+        FindAnyObjectByType<DragHintAnimator>()?.StopHint();
 
         if (SavedPlacedPartsValid()) {
             foreach (Transform part in shipTransform) {
@@ -282,6 +286,59 @@ public class ShipBuildingGrid : MonoBehaviour {
             if (PartConnectsInDirection(coords, (direction)i)) return true;
         }
         return false;
+    }
+
+    public void ShowValidPlacementHighlights(GameObject partToBePlaced) {
+        ClearValidPlacementHighlights();
+        if (partToBePlaced == null) return;
+
+        RotatablePart rotatable = partToBePlaced.GetComponent<RotatablePart>();
+        direction originalDirection = rotatable != null ? rotatable.connectingDirection : direction.none;
+        bool draggedPartIsStackable = partDB.PartIsStackable(partToBePlaced);
+
+        for (int x = 0; x < gridWidth; x++) {
+            for (int y = 0; y < gridHeight; y++) {
+                (int, int) coords = (x, y);
+                if (!draggedPartIsStackable && CellHasVisiblePart(coords)) continue;
+                if (!CanPlacePart(partToBePlaced, coords)) continue;
+                CreateValidPlacementHighlight(coords);
+            }
+        }
+
+        if (rotatable != null) rotatable.SetRotation(originalDirection);
+    }
+
+    public void ClearValidPlacementHighlights() {
+        foreach (GameObject marker in validPlacementHighlights) {
+            if (marker != null) Destroy(marker);
+        }
+        validPlacementHighlights.Clear();
+    }
+
+    private void CreateValidPlacementSprite() {
+        Texture2D texture = new Texture2D(1, 1);
+        texture.SetPixel(0, 0, Color.white);
+        texture.Apply();
+        validPlacementSprite = Sprite.Create(texture, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f), 1f);
+    }
+
+    private bool CellHasVisiblePart((int, int) coords) {
+        if (coords == shipStartPos) return true;
+        return placedParts.TryGetValue(coords, out GameObject part) && part != null;
+    }
+
+    private void CreateValidPlacementHighlight((int, int) coords) {
+        GameObject marker = new GameObject("ValidPlacementHighlight");
+        marker.transform.SetParent(transform);
+        marker.transform.position = GridCoordinatesToUnityPosition(coords);
+        marker.transform.localScale = new Vector3(cellSize * 0.98f, cellSize * 0.98f, 1f);
+
+        SpriteRenderer sr = marker.AddComponent<SpriteRenderer>();
+        sr.sprite = validPlacementSprite;
+        sr.color = validPlacementColor;
+        sr.sortingOrder = 1;
+
+        validPlacementHighlights.Add(marker);
     }
 
     private bool CanPlaceStackablePart(GameObject partToBePlaced, (int, int) coords) {
@@ -583,16 +640,18 @@ public class ShipBuildingGrid : MonoBehaviour {
     }
     
     public void SaveGridState(bool save = true) {
+        if (grid == null || partDB == null) return;
         grid.SaveGridState(save);
         partDB.savedPlacedParts = placedParts;
         partDB.savedPartStackedOn = partStackedOn;
         partDB.savedPartRotations = partRotations;
         partDB.savedOriginalSpriteColors = originalSpriteColors;
     }
-    
+
     private void OnDisable() => SaveGridState();
     
     private void OnDestroy() {
+        ClearValidPlacementHighlights();
         gameInput.OnDeletePartPerformedAction -= GameInput_OnDeletePartPerformedAction;
         gameInput.OnLeftMouseClickPerformedAction -= GameInput_OnLeftMouseClickAction;
     }

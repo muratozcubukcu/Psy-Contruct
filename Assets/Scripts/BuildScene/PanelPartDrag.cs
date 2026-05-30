@@ -1,5 +1,7 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 /// <summary>
 /// Handles dragging a part from the side panel onto the build grid.
@@ -12,7 +14,7 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private GameObject ghostPreview;
     private SpriteRenderer ghostSprite;
     private Color baseColor = Color.white;
-    
+
     [SerializeField] private GameObject highlight;
     private SpriteRenderer highlightSprite;
 
@@ -23,6 +25,12 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private static readonly Color colorInvalid = new Color(1f, 0.3f, 0.3f, 0.6f);
 
     private bool colorblindMode;
+
+    private Image itemBackground;
+    private Color originalBackgroundColor;
+    private Coroutine flashCoroutine;
+
+    public string PartName => partData != null && partData.part != null ? partData.part.name : null;
 
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -36,40 +44,46 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void Initialize(PartScriptableObject part) {
         partData = part;
-
-        // Cache the part's visual color for the ghost preview
-        SpriteRenderer sr = part.part.GetComponentInChildren<SpriteRenderer>();
-        if (sr != null) baseColor = sr.color;
+        CacheBaseColor();
     }
 
     private void Awake() {
-        SpriteRenderer sr = partData.part.GetComponentInChildren<SpriteRenderer>();
-        if (sr != null) baseColor = sr.color;
+        CacheBaseColor();
     }
 
     private void Start() {
-        buildFactsPopup = GameObject.Find("BuildFactsPopup").GetComponent<BuildFactsPopup>();
+        GameObject popupGO = GameObject.Find("BuildFactsPopup");
+        if (popupGO != null) buildFactsPopup = popupGO.GetComponent<BuildFactsPopup>();
+
         highlight = GameObject.Find("Highlight");
-        highlightSprite = highlight.GetComponent<SpriteRenderer>();
-        
+        if (highlight != null) highlightSprite = highlight.GetComponent<SpriteRenderer>();
+
         partDB = SpacecraftPartDatabase.Instance;
-        colorblindMode = Settings.Instance.colorblindMode;
+        colorblindMode = Settings.Instance != null && Settings.Instance.colorblindMode;
+
+        itemBackground = GetComponent<Image>();
+        if (itemBackground != null) originalBackgroundColor = itemBackground.color;
     }
     
     public void OnBeginDrag(PointerEventData eventData) {
+        if (partData == null || partData.part == null) return;
+
+        if (Tutorial.instance != null && Tutorial.instance.IsActive
+            && !Tutorial.instance.CanDragPart(partData.part.name)) {
+            FlashBlocked();
+            return;
+        }
+
         PartTooltipUI.Instance?.Hide(partData);
-        // Notify the drag hint to stop
         DragHintAnimator hint = FindAnyObjectByType<DragHintAnimator>();
         if (hint != null) hint.StopHint();
-
-        // Advance the tutorial if necessary
-        Tutorial.instance.partAdded(partData.part.name);
 
         ghostPreview = Instantiate(partData.part);
         ghostSprite = ghostPreview.GetComponentInChildren<SpriteRenderer>();
         ghostSprite.color = new Color(baseColor.r, baseColor.g, baseColor.b, 0.5f);
         ghostSprite.sortingLayerName = "MidDrag";
 
+        ShipBuildingGrid.Instance?.ShowValidPlacementHighlights(ghostPreview);
         UpdateGhostPosition(eventData);
     }
 
@@ -82,6 +96,7 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         if (ghostPreview == null) return;
 
         ShipBuildingGrid grid = ShipBuildingGrid.Instance;
+        bool placed = false;
         if (grid != null) {
             Vector3 worldPos = ScreenToWorld(eventData.position);
             Vector3? snapPos = grid.PostionToGridPosition(worldPos);
@@ -90,11 +105,13 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
                 (int, int) coords = grid.UnityPositionToGridCoordinates((Vector3)snapPos);
                 GameObject part = partData.part;
                 if (grid.CanPlacePart(ghostPreview, coords)) {
-                    if(partDB.PartIsRotatable(part)) {
+                    if(partDB != null && partDB.PartIsRotatable(part)) {
                         grid.PlacePartAtCoordinates(part, coords, ghostPreview.GetComponent<RotatablePart>().connectingDirection);
                     }
                     else grid.PlacePartAtCoordinates(part, coords);
-                    buildFactsPopup.Popup(partData.name);
+                    placed = true;
+                    if (buildFactsPopup != null) buildFactsPopup.Popup(partData.name);
+                    Tutorial.instance?.OnPartSuccessfullyPlaced(partData.part.name);
                 }
             }
         }
@@ -102,7 +119,12 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         Destroy(ghostPreview);
         ghostPreview = null;
         ghostSprite = null;
-        ShipBuildingGrid.Instance.HandleLeftClick();
+        ShipBuildingGrid.Instance?.ClearValidPlacementHighlights();
+        ShipBuildingGrid.Instance?.HandleLeftClick();
+
+        if (!placed) {
+            Tutorial.instance?.RestartDragHint();
+        }
     }
 
     private void UpdateGhostPosition(PointerEventData eventData) {
@@ -120,14 +142,16 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             bool valid = shipGrid.CanPlacePart(ghostPreview, coords);
             
             ghostSprite.color = valid ? colorValid : colorInvalid;
-            highlight.transform.position = ghostPreview.transform.position;
-            
-            highlightSprite.color = colorblindMode ? Color.white : ShipBuildingGrid.colorHighlightInvisible;
-            if (colorblindMode) highlightSprite.sprite = valid ? colorblindValid : colorblindInvalid;
+            if (highlight != null) highlight.transform.position = ghostPreview.transform.position;
+
+            if (highlightSprite != null) {
+                highlightSprite.color = colorblindMode ? Color.white : ShipBuildingGrid.colorHighlightInvisible;
+                if (colorblindMode) highlightSprite.sprite = valid ? colorblindValid : colorblindInvalid;
+            }
         } else {
             ghostPreview.transform.position = worldPos;
-            highlight.transform.position = worldPos;
-            highlightSprite.color = ShipBuildingGrid.colorHighlightInvisible;
+            if (highlight != null) highlight.transform.position = worldPos;
+            if (highlightSprite != null) highlightSprite.color = ShipBuildingGrid.colorHighlightInvisible;
             ghostSprite.color = new Color(baseColor.r, baseColor.g, baseColor.b, 0.5f);
         }
     }
@@ -138,5 +162,31 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             screenPos.x, screenPos.y, Mathf.Abs(cam.transform.position.z)));
         worldPos.z = 0f;
         return worldPos;
+    }
+
+    private void FlashBlocked() {
+        if (itemBackground == null) return;
+        if (flashCoroutine != null) StopCoroutine(flashCoroutine);
+        flashCoroutine = StartCoroutine(FlashBlockedRoutine());
+    }
+
+    private IEnumerator FlashBlockedRoutine() {
+        Color blocked = new Color(0.7f, 0.1f, 0.1f, 0.9f);
+        float duration = 0.45f;
+        float elapsed  = 0f;
+        while (elapsed < duration) {
+            float t = elapsed / duration;
+            itemBackground.color = Color.Lerp(blocked, originalBackgroundColor, t);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        itemBackground.color = originalBackgroundColor;
+    }
+
+    private void CacheBaseColor() {
+        if (partData == null || partData.part == null) return;
+
+        SpriteRenderer sr = partData.part.GetComponentInChildren<SpriteRenderer>();
+        if (sr != null) baseColor = sr.color;
     }
 }

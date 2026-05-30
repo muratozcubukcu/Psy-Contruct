@@ -105,6 +105,8 @@ public class PartDrag : MonoBehaviour {
             rb.bodyType = RigidbodyType2D.Dynamic;
             rb.simulated = true;
         }
+
+        shipGrid.ShowValidPlacementHighlights(gameObject);
     }
 
     void OnMouseDrag() {
@@ -138,6 +140,8 @@ public class PartDrag : MonoBehaviour {
     void OnMouseUp() {
         if (!Spacecraft.IsBuildMode) return;
         if (shipGrid == null || partCollider == null) return;
+
+        shipGrid.ClearValidPlacementHighlights();
         
         transform.position = correctPosition;
             
