@@ -78,6 +78,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spacecraft: {fileID: 0}
+  defaultSprite: {fileID: -4242621081835626320, guid: 8d9e352cf00ed8e4b9870ef1e5f85ad9, type: 3}
+  glowSprite: {fileID: -8234932356969868942, guid: 69300c08f320fcb4fac3fdffdcbacb6e, type: 3}
 --- !u!114 &398190188706771762
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -92,7 +94,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectedObject: {fileID: 22678911187016829}
   objectVisual: {fileID: 7919251410440097260}
-  highlight: {fileID: 0}
   colorblindValid: {fileID: 21300000, guid: ae673aca304d84144b31cd1cc0bdb981, type: 3}
   colorblindInvalid: {fileID: 21300000, guid: 27410deb8893e984e880da0c4fe8c771, type: 3}
 --- !u!114 &-8936569572055432537
