@@ -20,6 +20,7 @@ public class AsteroidController : MonoBehaviour {
     [SerializeField] private GameObject medAsteroid;
     [SerializeField] private GameObject smallAsteroid;
     [SerializeField] private Camera camera;
+    [SerializeField] private bool noAsteroids;
 
     public float largestAsteroidRadius = 6f; //If largest asteroid size changes, update this number.
     private float timeUntilNextAsteroidSpawn = 5f;
@@ -57,6 +58,8 @@ public class AsteroidController : MonoBehaviour {
     }
 
     private void SpawnAsteroid() {
+        if (noAsteroids) return;
+        
         GameObject[] spawnPool = { hugeAsteroid, bigAsteroid, medAsteroid };
         GameObject nextAsteroid = spawnPool[UnityEngine.Random.Range(0, spawnPool.Length)];
 
@@ -94,7 +97,6 @@ public class AsteroidController : MonoBehaviour {
         GameObject splitAster = Instantiate(splitAsterPrefab, splitAsterPrefab.transform.position, Quaternion.identity);
         Destroy(splitAsterPrefab);
         splitAster.SetActive(true);
-        splitAster.transform.localScale = new Vector3(2f, 2f, 2f);
         if (CanSpawnSplitAsteroid(splitAster, originalAster, contactAster)) {
             StartCoroutine(splitAster.GetComponent<AsteroidDamage>().HandlePostSplitImmunity());
             splitAster.GetComponent<SpriteRenderer>().enabled = true;

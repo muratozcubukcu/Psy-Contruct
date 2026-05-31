@@ -7,6 +7,8 @@ using System.Collections;
 /// This is attached to the camera in the flight scene.
 /// </summary>
 public class FlightCamera : MonoBehaviour {
+
+    [SerializeField] private bool dontDoCameraLead;
     
     private const float DEFAULT_CAM_WIDTH = 3.55f;
     private const float DEFAULT_CAM_HEIGHT = 2f;
@@ -26,16 +28,23 @@ public class FlightCamera : MonoBehaviour {
     
     [Tooltip("Offset from the target position")]
     [SerializeField] private Vector3 offset;
+    [SerializeField] private float distanceMultiplier;
+    [SerializeField] private float velocityResponsiveness;
     
-    private Transform spacecraft;
-    private Transform psycheAsteroid;
     private Transform target;
+    private Transform psycheAsteroid;
+    private Transform spacecraft;
+    private Rigidbody2D shipRB;
     private bool transitionToPsyche = false;
+    private Vector3 currentOffset;
+    private Vector3 maxOffset;
+    private Vector3 minOffset;
     
     private void Awake() {
         spacecraft = Spacecraft.GetInstance().transform;
         psycheAsteroid = PsycheAsteroid.Instance.transform;
         target = spacecraft;
+        shipRB = spacecraft.GetComponent<Rigidbody2D>();
         
         SetColliderSize();
     }
@@ -47,11 +56,10 @@ public class FlightCamera : MonoBehaviour {
     private void SetColliderSize() {
         BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
         
-        const float ADDITIONAL_SIZE = .75f;
-        float boxX = GetCameraWidth() + ADDITIONAL_SIZE;
-        float boxY = GetCameraHeight() + ADDITIONAL_SIZE;
 
-        boxCollider.size = new Vector2(boxX, boxY);
+        boxCollider.size = new Vector2(GetCameraWidth() + .75f, GetCameraHeight() + .75f);
+        maxOffset = new Vector3(GetCameraWidth() / 2 - 5.25f, GetCameraHeight() / 2 - 3.75f);
+        minOffset = -maxOffset;
     }
     
     private void LateUpdate() {
@@ -61,7 +69,22 @@ public class FlightCamera : MonoBehaviour {
         }
 
         if (!target) return;
-        transform.position = target.position + offset;
+        transform.position = target.position + offset + SpacecraftVelocityOffset();
+    }
+    
+    private Vector3 SpacecraftVelocityOffset() {
+        if (dontDoCameraLead) return Vector3.zero;
+        if (target == psycheAsteroid) return Vector3.zero;
+
+        Vector3 targetOffset = shipRB.linearVelocity * distanceMultiplier;
+        targetOffset.x = Math.Min(maxOffset.x, targetOffset.x);
+        targetOffset.x = Math.Max(minOffset.x, targetOffset.x);
+        targetOffset.y = Math.Min(maxOffset.y, targetOffset.y);
+        targetOffset.y = Math.Max(minOffset.y, targetOffset.y);
+
+        currentOffset = Vector3.Lerp(currentOffset, targetOffset, velocityResponsiveness * Time.deltaTime);
+
+        return currentOffset;
     }
 
     private void TransitionToPsyche() {
