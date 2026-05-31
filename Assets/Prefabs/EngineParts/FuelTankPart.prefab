@@ -226,7 +226,7 @@ GameObject:
   - component: {fileID: -6725471293297042678}
   - component: {fileID: 631398984511321396}
   - component: {fileID: -1234813427447263554}
-  - component: {fileID: 3371199476172935580}
+  - component: {fileID: 2215581944872328150}
   m_Layer: 6
   m_Name: FuelTankPart
   m_TagString: Untagged
@@ -306,8 +306,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 895c411599837684fa309c4acfdb0693, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!60 &3371199476172935580
-PolygonCollider2D:
+--- !u!61 &2215581944872328150
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -340,7 +340,7 @@ PolygonCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.0020234585, y: 0.0020231009}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -350,12 +350,5 @@ PolygonCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: -0.2527882, y: 0.43684295}
-      - {x: -0.4986131, y: -0.0009602412}
-      - {x: -0.25306588, y: -0.4399038}
-      - {x: 0.2513828, y: -0.43758658}
-      - {x: 0.49862343, y: 0.0006869342}
-      - {x: 0.25188172, y: 0.4384635}
-  m_UseDelaunayMesh: 0
+  m_Size: {x: 0.5103704, y: 0.5103705}
+  m_EdgeRadius: 0
