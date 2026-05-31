@@ -7,6 +7,8 @@ using System.Collections;
 /// This is attached to the camera in the flight scene.
 /// </summary>
 public class FlightCamera : MonoBehaviour {
+
+    [SerializeField] private bool dontDoCameraLead;
     
     private const float DEFAULT_CAM_WIDTH = 3.55f;
     private const float DEFAULT_CAM_HEIGHT = 2f;
@@ -71,6 +73,7 @@ public class FlightCamera : MonoBehaviour {
     }
     
     private Vector3 SpacecraftVelocityOffset() {
+        if (dontDoCameraLead) return Vector3.zero;
         if (target == psycheAsteroid) return Vector3.zero;
 
         Vector3 targetOffset = shipRB.linearVelocity * distanceMultiplier;

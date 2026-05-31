@@ -1,0 +1,2106 @@
+fileFormatVersion: 2
+guid: 5e4b8133d1dff4a9c92139296b4cf6d6
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1316846800600526514
+    second: Space_BG_4littlestars_0
+  - first:
+      213: -1560301345433034678
+    second: Space_BG_4littlestars_1
+  - first:
+      213: 3937839004121610219
+    second: Space_BG_4littlestars_2
+  - first:
+      213: -639307254044149074
+    second: Space_BG_4littlestars_3
+  - first:
+      213: -452875312499222047
+    second: Space_BG_4littlestars_4
+  - first:
+      213: 6342775188154162318
+    second: Space_BG_4littlestars_5
+  - first:
+      213: -9057168553153483626
+    second: Space_BG_4littlestars_6
+  - first:
+      213: 189803309156639414
+    second: Space_BG_4littlestars_7
+  - first:
+      213: 6715507074327688707
+    second: Space_BG_4littlestars_8
+  - first:
+      213: 122471112492104346
+    second: Space_BG_4littlestars_9
+  - first:
+      213: 3838226920344652776
+    second: Space_BG_4littlestars_10
+  - first:
+      213: -5607177548659321793
+    second: Space_BG_4littlestars_11
+  - first:
+      213: 7034800294441332637
+    second: Space_BG_4littlestars_12
+  - first:
+      213: 5420686027400177391
+    second: Space_BG_4littlestars_13
+  - first:
+      213: 5905761841512602645
+    second: Space_BG_4littlestars_14
+  - first:
+      213: -148184291644190813
+    second: Space_BG_4littlestars_15
+  - first:
+      213: -3877382302360058520
+    second: Space_BG_4littlestars_16
+  - first:
+      213: 2260796312734436122
+    second: Space_BG_4littlestars_17
+  - first:
+      213: 5854797205119364664
+    second: Space_BG_4littlestars_18
+  - first:
+      213: -7136459704101968014
+    second: Space_BG_4littlestars_19
+  - first:
+      213: 2046825217712740196
+    second: Space_BG_4littlestars_20
+  - first:
+      213: 7372451201177603593
+    second: Space_BG_4littlestars_21
+  - first:
+      213: 6167353008277108403
+    second: Space_BG_4littlestars_22
+  - first:
+      213: 829291074067495367
+    second: Space_BG_4littlestars_23
+  - first:
+      213: 499657972352924737
+    second: Space_BG_4littlestars_24
+  - first:
+      213: 4651313432445540197
+    second: Space_BG_4littlestars_25
+  - first:
+      213: 5163751513837763504
+    second: Space_BG_4littlestars_26
+  - first:
+      213: 4298110957741772391
+    second: Space_BG_4littlestars_27
+  - first:
+      213: -5227878169395297980
+    second: Space_BG_4littlestars_28
+  - first:
+      213: -6902476502599497777
+    second: Space_BG_4littlestars_29
+  - first:
+      213: 3752183881684283935
+    second: Space_BG_4littlestars_30
+  - first:
+      213: 1955781012470683159
+    second: Space_BG_4littlestars_31
+  - first:
+      213: -3624838466428554266
+    second: Space_BG_4littlestars_32
+  - first:
+      213: 8394321834826483427
+    second: Space_BG_4littlestars_33
+  - first:
+      213: -3452205503644699385
+    second: Space_BG_4littlestars_34
+  - first:
+      213: 3131681627416884139
+    second: Space_BG_4littlestars_35
+  - first:
+      213: -7434536035904044595
+    second: Space_BG_4littlestars_36
+  - first:
+      213: -1519849302087331130
+    second: Space_BG_4littlestars_37
+  - first:
+      213: -7803635525654089787
+    second: Space_BG_4littlestars_38
+  - first:
+      213: -3372120425412126181
+    second: Space_BG_4littlestars_39
+  - first:
+      213: 4127044995656210985
+    second: Space_BG_4littlestars_40
+  - first:
+      213: 5739817176250353730
+    second: Space_BG_4littlestars_41
+  - first:
+      213: 9054994843697260149
+    second: Space_BG_4littlestars_42
+  - first:
+      213: 3927148948317396521
+    second: Space_BG_4littlestars_43
+  - first:
+      213: 8665655689480869062
+    second: Space_BG_4littlestars_44
+  - first:
+      213: -8793330452784517938
+    second: Space_BG_4littlestars_45
+  - first:
+      213: 5442068660492145595
+    second: Space_BG_4littlestars_46
+  - first:
+      213: -3909827575610018921
+    second: Space_BG_4littlestars_47
+  - first:
+      213: -6633352045038861463
+    second: Space_BG_4littlestars_48
+  - first:
+      213: -6088012731151551475
+    second: Space_BG_4littlestars_49
+  - first:
+      213: -5574676050801933098
+    second: Space_BG_4littlestars_50
+  - first:
+      213: -28856397758252415
+    second: Space_BG_4littlestars_51
+  - first:
+      213: 641955723099127509
+    second: Space_BG_4littlestars_52
+  - first:
+      213: 2395696841625671729
+    second: Space_BG_4littlestars_53
+  - first:
+      213: 8410751515343623576
+    second: Space_BG_4littlestars_54
+  - first:
+      213: -5641844690737309915
+    second: Space_BG_4littlestars_55
+  - first:
+      213: 649144004852636135
+    second: Space_BG_4littlestars_56
+  - first:
+      213: 6911733616168206664
+    second: Space_BG_4littlestars_57
+  - first:
+      213: 4025107999536460464
+    second: Space_BG_4littlestars_58
+  - first:
+      213: -2085837834621764013
+    second: Space_BG_4littlestars_59
+  - first:
+      213: 2734244497703680865
+    second: Space_BG_4littlestars_60
+  - first:
+      213: 1927613389691293049
+    second: Space_BG_4littlestars_61
+  - first:
+      213: -7829126094957682409
+    second: Space_BG_4littlestars_62
+  - first:
+      213: -1920744336022632420
+    second: Space_BG_4littlestars_63
+  - first:
+      213: -768914335990663664
+    second: Space_BG_4littlestars_64
+  - first:
+      213: 3515318515039277089
+    second: Space_BG_4littlestars_65
+  - first:
+      213: -7146752446440448860
+    second: Space_BG_4littlestars_66
+  - first:
+      213: -6791396125398046259
+    second: Space_BG_4littlestars_67
+  - first:
+      213: -2325890277006336600
+    second: Space_BG_4littlestars_68
+  - first:
+      213: -8870251240753476431
+    second: Space_BG_4littlestars_69
+  - first:
+      213: 4306034385171640647
+    second: Space_BG_4littlestars_70
+  - first:
+      213: 2326979021091109674
+    second: Space_BG_4littlestars_71
+  - first:
+      213: 2206632193212037739
+    second: Space_BG_4littlestars_72
+  - first:
+      213: -3485406131039780710
+    second: Space_BG_4littlestars_73
+  - first:
+      213: -4439955849399610026
+    second: Space_BG_4littlestars_74
+  - first:
+      213: -875781624794881841
+    second: Space_BG_4littlestars_75
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_0
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 251
+        width: 6
+        height: 5
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2be676d2031664210800000000000000
+      internalID: 1316846800600526514
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_1
+      rect:
+        serializedVersion: 2
+        x: 235
+        y: 247
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4066e27132b85ae0800000000000000
+      internalID: -1560301345433034678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_2
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 239
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be7b85fe5b306a630800000000000000
+      internalID: 3937839004121610219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_3
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 243
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eaa3e5c8079b027f0800000000000000
+      internalID: -639307254044149074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_4
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 239
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e990fe7d4017b9f0800000000000000
+      internalID: -452875312499222047
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_5
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 231
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8c171c9d60160850800000000000000
+      internalID: 6342775188154162318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_6
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 227
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69ca27610397e4280800000000000000
+      internalID: -9057168553153483626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_7
+      rect:
+        serializedVersion: 2
+        x: 239
+        y: 231
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b2a973aa1152a200800000000000000
+      internalID: 189803309156639414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_8
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 223
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 306bce39a16423d50800000000000000
+      internalID: 6715507074327688707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_9
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 219
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9ab653f3da13b100800000000000000
+      internalID: 122471112492104346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_10
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 215
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8eb0c7a5c0f144530800000000000000
+      internalID: 3838226920344652776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_11
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 211
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f349d934abd4f22b0800000000000000
+      internalID: -5607177548659321793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_12
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 207
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9f2df78891a0a160800000000000000
+      internalID: 7034800294441332637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_13
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 203
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe66c1ec8352a3b40800000000000000
+      internalID: 5420686027400177391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_14
+      rect:
+        serializedVersion: 2
+        x: 35
+        y: 195
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51c5a63da1b75f150800000000000000
+      internalID: 5905761841512602645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_15
+      rect:
+        serializedVersion: 2
+        x: 139
+        y: 199
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3af414ffb2b81fdf0800000000000000
+      internalID: -148184291644190813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_16
+      rect:
+        serializedVersion: 2
+        x: 247
+        y: 195
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8654179d655c03ac0800000000000000
+      internalID: -3877382302360058520
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_17
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 183
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1b8c0aa446ff5f10800000000000000
+      internalID: 2260796312734436122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_18
+      rect:
+        serializedVersion: 2
+        x: 183
+        y: 187
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83ee61bb90b604150800000000000000
+      internalID: 5854797205119364664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_19
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 179
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 277ec1fa5b336fc90800000000000000
+      internalID: -7136459704101968014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_20
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 167
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4675413e0b8c76c10800000000000000
+      internalID: 2046825217712740196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_21
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 171
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90ec71a7e45305660800000000000000
+      internalID: 7372451201177603593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_22
+      rect:
+        serializedVersion: 2
+        x: 183
+        y: 167
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b63bce82e6d69550800000000000000
+      internalID: 6167353008277108403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_23
+      rect:
+        serializedVersion: 2
+        x: 235
+        y: 171
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c9f13d86db328b00800000000000000
+      internalID: 829291074067495367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_24
+      rect:
+        serializedVersion: 2
+        x: 43
+        y: 159
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14cb94f47442fe600800000000000000
+      internalID: 499657972352924737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_25
+      rect:
+        serializedVersion: 2
+        x: 243
+        y: 163
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5675bef4ce8cc8040800000000000000
+      internalID: 4651313432445540197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_26
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 155
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0bb7fa2a4a459a740800000000000000
+      internalID: 5163751513837763504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_27
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 131
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76e8969c425f5ab30800000000000000
+      internalID: 4298110957741772391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_28
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 135
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4418c20e088d277b0800000000000000
+      internalID: -5227878169395297980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_29
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 135
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc78318113a7530a0800000000000000
+      internalID: -6902476502599497777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_30
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 119
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f12fcb74c5f621430800000000000000
+      internalID: 3752183881684283935
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_31
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 115
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 716d4caf774542b10800000000000000
+      internalID: 1955781012470683159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_32
+      rect:
+        serializedVersion: 2
+        x: 191
+        y: 119
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e3ba58be9cf1bdc0800000000000000
+      internalID: -3624838466428554266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_33
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 115
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e64327db3f9e7470800000000000000
+      internalID: 8394321834826483427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_34
+      rect:
+        serializedVersion: 2
+        x: 239
+        y: 115
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 705fb9f826d4710d0800000000000000
+      internalID: -3452205503644699385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_35
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 111
+        width: 5
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba3fcc709d7f57b20800000000000000
+      internalID: 3131681627416884139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_36
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 107
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc1491e7dd833d890800000000000000
+      internalID: -7434536035904044595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_37
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 107
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c295fcbc1968eae0800000000000000
+      internalID: -1519849302087331130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_38
+      rect:
+        serializedVersion: 2
+        x: 239
+        y: 107
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5cfe4c8b5dae3b390800000000000000
+      internalID: -7803635525654089787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_39
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 99
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b1a987fd652d331d0800000000000000
+      internalID: -3372120425412126181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_40
+      rect:
+        serializedVersion: 2
+        x: 43
+        y: 99
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92a542abe85364930800000000000000
+      internalID: 4127044995656210985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_41
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 103
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 248861a9f4de7af40800000000000000
+      internalID: 5739817176250353730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_42
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 103
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 576a19db5ddc9ad70800000000000000
+      internalID: 9054994843697260149
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_43
+      rect:
+        serializedVersion: 2
+        x: 35
+        y: 91
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92ed18c5929008630800000000000000
+      internalID: 3927148948317396521
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_44
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 95
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c4995ddfe7924870800000000000000
+      internalID: 8665655689480869062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_45
+      rect:
+        serializedVersion: 2
+        x: 99
+        y: 91
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ecc6721da80d7f580800000000000000
+      internalID: -8793330452784517938
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_46
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 91
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb39be70d9c168b40800000000000000
+      internalID: 5442068660492145595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_47
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 87
+        width: 5
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 793fcbef8808db9c0800000000000000
+      internalID: -3909827575610018921
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_48
+      rect:
+        serializedVersion: 2
+        x: 119
+        y: 87
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9630955c57991f3a0800000000000000
+      internalID: -6633352045038861463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_49
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 75
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d04f7ab3da8038ba0800000000000000
+      internalID: -6088012731151551475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_50
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 79
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d4c21eeaa5c2a2b0800000000000000
+      internalID: -5574676050801933098
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_51
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 79
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18a3f16524b799ff0800000000000000
+      internalID: -28856397758252415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_52
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 63
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5de3ad4345fa8e800800000000000000
+      internalID: 641955723099127509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_53
+      rect:
+        serializedVersion: 2
+        x: 227
+        y: 67
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1389f92a5993f3120800000000000000
+      internalID: 2395696841625671729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_54
+      rect:
+        serializedVersion: 2
+        x: 239
+        y: 63
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 895922ee0fdf8b470800000000000000
+      internalID: 8410751515343623576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_55
+      rect:
+        serializedVersion: 2
+        x: 3
+        y: 55
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 527dda2452424b1b0800000000000000
+      internalID: -5641844690737309915
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_56
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 59
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e9d0597809320900800000000000000
+      internalID: 649144004852636135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_57
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 55
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84105dd9a196bef50800000000000000
+      internalID: 6911733616168206664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_58
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 47
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b234fe466e0cd730800000000000000
+      internalID: 4025107999536460464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_59
+      rect:
+        serializedVersion: 2
+        x: 159
+        y: 47
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35ebc486a8d9d03e0800000000000000
+      internalID: -2085837834621764013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_60
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 51
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16bb1be42ecf1f520800000000000000
+      internalID: 2734244497703680865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_61
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 35
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97d06dc3a2240ca10800000000000000
+      internalID: 1927613389691293049
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_62
+      rect:
+        serializedVersion: 2
+        x: 187
+        y: 31
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7116e401c4b595390800000000000000
+      internalID: -7829126094957682409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_63
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 31
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c180703f3352855e0800000000000000
+      internalID: -1920744336022632420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_64
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 27
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 016329c3c744455f0800000000000000
+      internalID: -768914335990663664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_65
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 19
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1201541809be8c030800000000000000
+      internalID: 3515318515039277089
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_66
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 19
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ac534cd382a1dc90800000000000000
+      internalID: -7146752446440448860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_67
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 15
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc96fa0d43d10c1a0800000000000000
+      internalID: -6791396125398046259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_68
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 19
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ad908cbd17c8bfd0800000000000000
+      internalID: -2325890277006336600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_69
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 19
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1bccb6e3e7986e480800000000000000
+      internalID: -8870251240753476431
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_70
+      rect:
+        serializedVersion: 2
+        x: 191
+        y: 19
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 741f5ce757b12cb30800000000000000
+      internalID: 4306034385171640647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_71
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 11
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2bfbef37171b4020800000000000000
+      internalID: 2326979021091109674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_72
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 7
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6a385ad9488f9e10800000000000000
+      internalID: 2206632193212037739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_73
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 3
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a90c76d179951afc0800000000000000
+      internalID: -3485406131039780710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_74
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 3
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6555e1acdab1262c0800000000000000
+      internalID: -4439955849399610026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Space_BG_4littlestars_75
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 3
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc06949904998d3f0800000000000000
+      internalID: -875781624794881841
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Space_BG_4littlestars_0: 1316846800600526514
+      Space_BG_4littlestars_1: -1560301345433034678
+      Space_BG_4littlestars_10: 3838226920344652776
+      Space_BG_4littlestars_11: -5607177548659321793
+      Space_BG_4littlestars_12: 7034800294441332637
+      Space_BG_4littlestars_13: 5420686027400177391
+      Space_BG_4littlestars_14: 5905761841512602645
+      Space_BG_4littlestars_15: -148184291644190813
+      Space_BG_4littlestars_16: -3877382302360058520
+      Space_BG_4littlestars_17: 2260796312734436122
+      Space_BG_4littlestars_18: 5854797205119364664
+      Space_BG_4littlestars_19: -7136459704101968014
+      Space_BG_4littlestars_2: 3937839004121610219
+      Space_BG_4littlestars_20: 2046825217712740196
+      Space_BG_4littlestars_21: 7372451201177603593
+      Space_BG_4littlestars_22: 6167353008277108403
+      Space_BG_4littlestars_23: 829291074067495367
+      Space_BG_4littlestars_24: 499657972352924737
+      Space_BG_4littlestars_25: 4651313432445540197
+      Space_BG_4littlestars_26: 5163751513837763504
+      Space_BG_4littlestars_27: 4298110957741772391
+      Space_BG_4littlestars_28: -5227878169395297980
+      Space_BG_4littlestars_29: -6902476502599497777
+      Space_BG_4littlestars_3: -639307254044149074
+      Space_BG_4littlestars_30: 3752183881684283935
+      Space_BG_4littlestars_31: 1955781012470683159
+      Space_BG_4littlestars_32: -3624838466428554266
+      Space_BG_4littlestars_33: 8394321834826483427
+      Space_BG_4littlestars_34: -3452205503644699385
+      Space_BG_4littlestars_35: 3131681627416884139
+      Space_BG_4littlestars_36: -7434536035904044595
+      Space_BG_4littlestars_37: -1519849302087331130
+      Space_BG_4littlestars_38: -7803635525654089787
+      Space_BG_4littlestars_39: -3372120425412126181
+      Space_BG_4littlestars_4: -452875312499222047
+      Space_BG_4littlestars_40: 4127044995656210985
+      Space_BG_4littlestars_41: 5739817176250353730
+      Space_BG_4littlestars_42: 9054994843697260149
+      Space_BG_4littlestars_43: 3927148948317396521
+      Space_BG_4littlestars_44: 8665655689480869062
+      Space_BG_4littlestars_45: -8793330452784517938
+      Space_BG_4littlestars_46: 5442068660492145595
+      Space_BG_4littlestars_47: -3909827575610018921
+      Space_BG_4littlestars_48: -6633352045038861463
+      Space_BG_4littlestars_49: -6088012731151551475
+      Space_BG_4littlestars_5: 6342775188154162318
+      Space_BG_4littlestars_50: -5574676050801933098
+      Space_BG_4littlestars_51: -28856397758252415
+      Space_BG_4littlestars_52: 641955723099127509
+      Space_BG_4littlestars_53: 2395696841625671729
+      Space_BG_4littlestars_54: 8410751515343623576
+      Space_BG_4littlestars_55: -5641844690737309915
+      Space_BG_4littlestars_56: 649144004852636135
+      Space_BG_4littlestars_57: 6911733616168206664
+      Space_BG_4littlestars_58: 4025107999536460464
+      Space_BG_4littlestars_59: -2085837834621764013
+      Space_BG_4littlestars_6: -9057168553153483626
+      Space_BG_4littlestars_60: 2734244497703680865
+      Space_BG_4littlestars_61: 1927613389691293049
+      Space_BG_4littlestars_62: -7829126094957682409
+      Space_BG_4littlestars_63: -1920744336022632420
+      Space_BG_4littlestars_64: -768914335990663664
+      Space_BG_4littlestars_65: 3515318515039277089
+      Space_BG_4littlestars_66: -7146752446440448860
+      Space_BG_4littlestars_67: -6791396125398046259
+      Space_BG_4littlestars_68: -2325890277006336600
+      Space_BG_4littlestars_69: -8870251240753476431
+      Space_BG_4littlestars_7: 189803309156639414
+      Space_BG_4littlestars_70: 4306034385171640647
+      Space_BG_4littlestars_71: 2326979021091109674
+      Space_BG_4littlestars_72: 2206632193212037739
+      Space_BG_4littlestars_73: -3485406131039780710
+      Space_BG_4littlestars_74: -4439955849399610026
+      Space_BG_4littlestars_75: -875781624794881841
+      Space_BG_4littlestars_8: 6715507074327688707
+      Space_BG_4littlestars_9: 122471112492104346
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
