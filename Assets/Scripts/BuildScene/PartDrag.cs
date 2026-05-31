@@ -151,8 +151,8 @@ public class PartDrag : MonoBehaviour {
         if (nullableSnapPos == null) {
             //Delete part
             PlacePart(gameObject, originalPosition); //Place part bc the part needs to be placed to be deleted
-            shipGrid.DeletePart(shipGrid.UnityPositionToGridCoordinates(originalPosition));
             if(stackedPart != null) stackedPart.GetComponent<PartDrag>().OnMouseUp();
+            shipGrid.DeletePart(shipGrid.UnityPositionToGridCoordinates(originalPosition));
             return;
         }
 
