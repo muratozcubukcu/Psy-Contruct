@@ -1,5 +1,7 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
+using System.Collections;
 
 /// <summary>
 /// In-scene popup that shows the score breakdown on victory or death.
@@ -12,6 +14,7 @@ public class ScoreBreakdownPopup : MonoBehaviour {
     [SerializeField] private GameObject panelRoot;
     [SerializeField] private TextMeshProUGUI titleText;
     [SerializeField] private TextMeshProUGUI breakdownText;
+    [SerializeField] private Image victoryBanner;
 
     [SerializeField] private bool showOnOrbitEntry = true;
 
@@ -45,6 +48,22 @@ public class ScoreBreakdownPopup : MonoBehaviour {
         }
 
         if (panelRoot != null) panelRoot.SetActive(true);
+
+        StartCoroutine(DropBanner());
+    }
+
+    private IEnumerator DropBanner()
+    {
+        float dropTime = 2f;
+        float elapsedTime = 0f;
+        Vector3 originalPosition = victoryBanner.transform.position;
+        Vector3 destination = new Vector3(1000,900,0);
+        while (dropTime > elapsedTime) {
+            elapsedTime += Time.deltaTime;
+            float t = Mathf.SmoothStep(0f, 1f, elapsedTime / dropTime);
+            victoryBanner.transform.position = Vector3.Lerp(originalPosition, destination, t);
+            yield return null;
+        }
     }
 
     private string BuildBreakdown(ScoreManager.ScoreBreakdown b) {
