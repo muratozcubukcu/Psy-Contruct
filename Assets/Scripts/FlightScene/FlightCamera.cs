@@ -58,7 +58,7 @@ public class FlightCamera : MonoBehaviour {
         
 
         boxCollider.size = new Vector2(GetCameraWidth() + .75f, GetCameraHeight() + .75f);
-        maxOffset = new Vector3(GetCameraWidth() / 2 - 2.75f, GetCameraHeight() / 2 - 2.75f);
+        maxOffset = new Vector3(GetCameraWidth() / 2 - 5.25f, GetCameraHeight() / 2 - 3.75f);
         minOffset = -maxOffset;
     }
     
