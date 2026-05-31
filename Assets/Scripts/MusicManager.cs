@@ -4,9 +4,7 @@ using UnityEngine.Serialization;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Music singleton. All stems loop in sync; layers mute/unmute per scene.
-/// MainMenu: chords + drums. Build/cutscenes: + bass. FlightScene: + arp + drum rotation
-/// (drums1 x N blocks -> 1.5 -> 2 -> 2.5 -> repeat, swaps on block boundaries).
+/// Music singleton.
 /// </summary>
 public class MusicManager : MonoBehaviour {
     public static MusicManager Instance { get; private set; }
@@ -35,27 +33,40 @@ public class MusicManager : MonoBehaviour {
     [Tooltip("How many blocks drums1 holds before the cycle moves into the transition + drum2 + transition phases (each 1 block). Only runs while in FlightScene.")]
     [FormerlySerializedAs("blocksPerMainDrum")]
     [SerializeField] private int blocksOfDrum1 = 4;
+    [Tooltip("How many musical blocks each flight arrangement phrase lasts before chord/arpeggio layers change.")]
+    [SerializeField] private int flightLayerPhraseBlocks = 1;
 
     [Header("Tuning")]
     [Tooltip("Master music multiplier applied on top of Settings.musicVolume.")]
     [Range(0f, 1f)]
     [SerializeField] private float musicVolumeScale = 0.25f;
-    [Tooltip("Seconds for chords/bass/arp to fade in/out when toggled (scene transitions).")]
-    [Range(0f, 5f)]
-    [SerializeField] private float layerFadeDuration = 1.5f;
-    [Tooltip("Seconds for drum layers (1, 1.5, 2, 2.5) to fade between phases. Keep tiny (0.05) so swaps are crisp on-beat instead of smeared.")]
-    [Range(0f, 1f)]
-    [SerializeField] private float drumLayerFadeDuration = 0.05f;
+    [Tooltip("Seconds for chords/bass/arpeggio to fade in/out when toggled.")]
+    [Range(0f, 10f)]
+    [SerializeField] private float layerFadeDuration = 20f;
+    [Tooltip("Seconds for chords/bass/arpeggio to fade out when toggled off.")]
+    [Range(0f, 10f)]
+    [SerializeField] private float layerFadeOutDuration = 4f;
+    [Tooltip("Seconds for drum layers to fade in/out when entering scenes or changing grooves.")]
+    [Range(0f, 10f)]
+    [SerializeField] private float drumLayerFadeDuration = 16f;
+    [Tooltip("Seconds for drum layers to fade out when toggled off.")]
+    [Range(0f, 10f)]
+    [SerializeField] private float drumLayerFadeOutDuration = 3f;
 
     [Header("Scene Names")]
+    [SerializeField] private string mainMenuSceneName = "MainMenuScene";
     [SerializeField] private string buildSceneName = "BuildScene";
     [SerializeField] private string flightSceneName = "FlightScene";
 
     // Drum rotation: 0=drums1, 1=drums1.5, 2=drums2, 3=drums2.5
     private int drumsPhase;
     private bool chordsActive;
+    private bool drumsActive;
     private bool bassActive;
     private bool arpActive;
+    private bool inFlightScene;
+    private int currentFlightLayerPhrase = -1;
+    private int flightLayerState;
 
     private double startDspTime;
     private Coroutine drumSwapCoroutine;
@@ -92,9 +103,11 @@ public class MusicManager : MonoBehaviour {
 
     private void ConfigureLoopSource(AudioSource src, AudioClip clip) {
         if (src == null) return;
+        src.Stop();
+        src.playOnAwake = false;
         src.clip = clip;
         src.loop = true;
-        src.playOnAwake = false;
+        src.mute = false;
         src.volume = 0f;
     }
 
@@ -108,12 +121,23 @@ public class MusicManager : MonoBehaviour {
     }
 
     private void ApplyLayersForScene(string sceneName) {
-        chordsActive = true;
-        bassActive = sceneName == buildSceneName || sceneName == flightSceneName || IsCutscene(sceneName);
-        arpActive = sceneName == flightSceneName;
+        if (sceneName == mainMenuSceneName) {
+            ResetToBassOnly();
+            return;
+        }
 
-        bool inFlight = sceneName == flightSceneName;
-        if (inFlight) {
+        bool inBuild = sceneName == buildSceneName;
+        bool inCutscene = IsCutscene(sceneName);
+        inFlightScene = sceneName == flightSceneName;
+
+        bassActive = true;
+        drumsActive = inBuild || inCutscene || inFlightScene;
+        chordsActive = inBuild || inCutscene || inFlightScene;
+        arpActive = inCutscene;
+        currentFlightLayerPhrase = -1;
+        flightLayerState = 0;
+
+        if (inFlightScene) {
             if (drumSwapCoroutine == null) {
                 drumsPhase = 0; // start fresh on drum 1 each time the player enters flight
                 drumSwapCoroutine = StartCoroutine(DrumRotationLoop());
@@ -125,6 +149,23 @@ public class MusicManager : MonoBehaviour {
             }
             drumsPhase = 0; // outside flight, drum layer stays on drum 1
         }
+    }
+
+    private void ResetToBassOnly() {
+        if (drumSwapCoroutine != null) {
+            StopCoroutine(drumSwapCoroutine);
+            drumSwapCoroutine = null;
+        }
+
+        inFlightScene = false;
+        drumsPhase = 0;
+        currentFlightLayerPhrase = -1;
+        flightLayerState = 0;
+
+        bassActive = true;
+        drumsActive = false;
+        chordsActive = false;
+        arpActive = false;
     }
 
     private bool IsCutscene(string sceneName) {
@@ -139,6 +180,7 @@ public class MusicManager : MonoBehaviour {
 
         while (true) {
             while (AudioSettings.dspTime < nextChangeDsp) yield return null;
+            // 0 -> 1.5 transition -> 2 -> 2.5 transition -> back to 1.
             drumsPhase = (drumsPhase + 1) % 4;
             nextChangeDsp += PhaseBlocks(drumsPhase) * blockLength;
         }
@@ -151,23 +193,42 @@ public class MusicManager : MonoBehaviour {
 
     private void Update() {
         float musicVol = CurrentMusicVolume();
-        UpdateLayerVolume(chordsSource, chordsActive, layerFadeDuration, musicVol);
-        UpdateLayerVolume(drums1Source, drumsPhase == 0, drumLayerFadeDuration, musicVol);
-        UpdateLayerVolume(drums15Source, drumsPhase == 1, drumLayerFadeDuration, musicVol);
-        UpdateLayerVolume(drums2Source, drumsPhase == 2, drumLayerFadeDuration, musicVol);
-        UpdateLayerVolume(drums25Source, drumsPhase == 3, drumLayerFadeDuration, musicVol);
-        UpdateLayerVolume(bassSource, bassActive, layerFadeDuration, musicVol);
-        UpdateLayerVolume(arpSource, arpActive, layerFadeDuration, musicVol);
+        if (inFlightScene) UpdateFlightLayerVariation();
+
+        UpdateLayerVolume(chordsSource, chordsActive, layerFadeDuration, layerFadeOutDuration, musicVol);
+        UpdateLayerVolume(drums1Source, drumsActive && drumsPhase == 0, drumLayerFadeDuration, drumLayerFadeOutDuration, musicVol);
+        UpdateLayerVolume(drums15Source, drumsActive && drumsPhase == 1, drumLayerFadeDuration, drumLayerFadeOutDuration, musicVol);
+        UpdateLayerVolume(drums2Source, drumsActive && drumsPhase == 2, drumLayerFadeDuration, drumLayerFadeOutDuration, musicVol);
+        UpdateLayerVolume(drums25Source, drumsActive && drumsPhase == 3, drumLayerFadeDuration, drumLayerFadeOutDuration, musicVol);
+        UpdateLayerVolume(bassSource, bassActive, layerFadeDuration, layerFadeOutDuration, musicVol);
+        UpdateLayerVolume(arpSource, arpActive, layerFadeDuration, layerFadeOutDuration, musicVol);
     }
 
-    private void UpdateLayerVolume(AudioSource src, bool active, float fadeDuration, float musicVol) {
+    private void UpdateFlightLayerVariation() {
+        int phraseBlocks = Mathf.Max(1, flightLayerPhraseBlocks);
+        float phraseLength = blockLength * phraseBlocks;
+        float elapsed = Mathf.Max(0f, (float)(AudioSettings.dspTime - startDspTime));
+        int phrase = Mathf.FloorToInt(elapsed / phraseLength);
+
+        if (phrase != currentFlightLayerPhrase) {
+            currentFlightLayerPhrase = phrase;
+            flightLayerState = flightLayerState == 0 ? Random.Range(0, 3) : 0;
+        }
+
+        // 0: full, 1: arp only, 2: chords only. Dropouts resolve after one block.
+        chordsActive = flightLayerState != 1;
+        arpActive = flightLayerState != 2;
+    }
+
+    private void UpdateLayerVolume(AudioSource src, bool active, float fadeInDuration, float fadeOutDuration, float musicVol) {
         if (src == null) return;
         float target = active ? musicVol : 0f;
+        float fadeDuration = active ? fadeInDuration : fadeOutDuration;
         if (fadeDuration <= 0f) {
             src.volume = target;
             return;
         }
-        float step = 1f / fadeDuration * Time.unscaledDeltaTime;
+        float step = Mathf.Max(target, src.volume) / fadeDuration * Time.unscaledDeltaTime;
         src.volume = Mathf.MoveTowards(src.volume, target, step);
     }
 
