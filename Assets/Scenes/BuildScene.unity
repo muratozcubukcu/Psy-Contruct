@@ -2578,6 +2578,10 @@ PrefabInstance:
       propertyPath: m_text
       value: Engine
       objectReference: {fileID: 0}
+    - target: {fileID: 7068144653252683184, guid: b5838c8dd365c41938fdeb829c872418, type: 3}
+      propertyPath: m_HorizontalAlignment
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7093587995926586007, guid: b5838c8dd365c41938fdeb829c872418, type: 3}
       propertyPath: m_Name
       value: EnginePart_Item
