@@ -153,6 +153,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   asteroidSize: 2
+  maxSpeed: 8
+  speedReductionPerSize: 1.4
+  speedVariance: 1.2
+  minimumScaledSpeed: 0.5
   direction: {x: 0, y: 0, z: 0}
   speed: 0
 --- !u!60 &-2090619582561320702

@@ -19,10 +19,12 @@ public class AsteroidController : MonoBehaviour {
     [SerializeField] private GameObject bigAsteroid;
     [SerializeField] private GameObject medAsteroid;
     [SerializeField] private GameObject smallAsteroid;
+    [SerializeField] private GameObject gargantuanAsteroid;
+    [SerializeField] private GameObject colossalAsteroid;
     [SerializeField] private Camera camera;
     [SerializeField] private bool noAsteroids;
 
-    public float largestAsteroidRadius = 6f; //If largest asteroid size changes, update this number.
+    public float largestAsteroidRadius = 8f; //If largest asteroid size changes, update this number.
     private float timeUntilNextAsteroidSpawn = 5f;
     private float distanceFromCameraBorder;
     private float defaultXSpawnRange;
@@ -60,7 +62,7 @@ public class AsteroidController : MonoBehaviour {
     private void SpawnAsteroid() {
         if (noAsteroids) return;
         
-        GameObject[] spawnPool = { hugeAsteroid, bigAsteroid, medAsteroid };
+        GameObject[] spawnPool = { hugeAsteroid, bigAsteroid, medAsteroid, gargantuanAsteroid, colossalAsteroid };
         GameObject nextAsteroid = spawnPool[UnityEngine.Random.Range(0, spawnPool.Length)];
 
         Vector3 spawnPosition = GetSpawnPosition();
@@ -94,8 +96,18 @@ public class AsteroidController : MonoBehaviour {
         if (OGAsterDamage.splitAster1 == splitAsterPrefab && OGAsterDamage.aster1Split) return;
         if (OGAsterDamage.splitAster2 == splitAsterPrefab && OGAsterDamage.aster2Split) return;
         
-        GameObject splitAster = Instantiate(splitAsterPrefab, splitAsterPrefab.transform.position, Quaternion.identity);
-        Destroy(splitAsterPrefab);
+        bool isSceneSplitObject = splitAsterPrefab.scene.IsValid();
+        Vector3 splitPosition = isSceneSplitObject
+            ? splitAsterPrefab.transform.position
+            : GetPrefabSplitPosition(splitAsterPrefab, originalAster);
+
+        if (float.IsNaN(splitPosition.x) || float.IsNaN(splitPosition.y) ||
+            float.IsInfinity(splitPosition.x) || float.IsInfinity(splitPosition.y)) {
+            splitPosition = originalAster.transform.position;
+        }
+
+        GameObject splitAster = Instantiate(splitAsterPrefab, splitPosition, Quaternion.identity);
+        if (isSceneSplitObject) Destroy(splitAsterPrefab);
         splitAster.SetActive(true);
         if (CanSpawnSplitAsteroid(splitAster, originalAster, contactAster)) {
             StartCoroutine(splitAster.GetComponent<AsteroidDamage>().HandlePostSplitImmunity());
@@ -103,6 +115,14 @@ public class AsteroidController : MonoBehaviour {
             offCameraLifetimes.Add(splitAster, 0f);
         }
         else Destroy(splitAster);
+    }
+
+    private Vector3 GetPrefabSplitPosition(GameObject splitAsterPrefab, GameObject originalAster) {
+        AsteroidDamage originalDamage = originalAster.GetComponent<AsteroidDamage>();
+        float offsetDistance = Mathf.Max(1f, originalAster.transform.localScale.x * 0.75f);
+        Vector3 offsetDirection = originalDamage.splitAster1 == splitAsterPrefab ? Vector3.left : Vector3.right;
+
+        return originalAster.transform.position + offsetDirection * offsetDistance;
     }
 
     private bool CanSpawnSplitAsteroid(GameObject splitAster, GameObject originalAster, GameObject contactAster) {

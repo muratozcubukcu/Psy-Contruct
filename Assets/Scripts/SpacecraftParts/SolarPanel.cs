@@ -21,10 +21,12 @@ public class SolarPanel : MonoBehaviour {
     private bool isCharging;
     private bool prevState;
     private bool soundActive;
+    private SpriteRenderer shineRenderer;
 
     public void Awake() => enabled = false;
 
     private void Start() {
+        CacheShineComponents();
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -80,6 +82,21 @@ public class SolarPanel : MonoBehaviour {
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
         solarPanelVisualShining.SetActive(false);
         solarPanelVisualDefault.SetActive(true);
+    }
+
+    public void SetMirroredVisual(bool mirrored) {
+        CacheShineComponents();
+
+        if (shineRenderer != null) {
+            shineRenderer.flipX = false;
+            shineRenderer.flipY = mirrored;
+        }
+    }
+
+    private void CacheShineComponents() {
+        if (solarPanelVisualShining == null) return;
+
+        if (shineRenderer == null) shineRenderer = solarPanelVisualShining.GetComponent<SpriteRenderer>();
     }
 
     private void OnDestroy() {

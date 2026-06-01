@@ -100,6 +100,8 @@ public class Spacecraft : MonoBehaviour {
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        if (mode == LoadSceneMode.Additive) return;
+
         if (scene.name == "MainMenuScene")
         {
             Destroy(gameObject);

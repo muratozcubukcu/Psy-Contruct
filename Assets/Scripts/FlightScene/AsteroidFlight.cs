@@ -1,14 +1,17 @@
-using System;
 using UnityEngine;
-using Random = System.Random;
 
 public class AsteroidFlight : MonoBehaviour {
     [SerializeField] public int asteroidSize;
+    [SerializeField] private float maxSpeed = 8f;
+    [SerializeField] private float speedReductionPerSize = 1.4f;
+    [SerializeField] private float speedVariance = 1.2f;
+    [SerializeField] private float minimumScaledSpeed = 0.5f;
+
     public Vector3 direction;
     public float speed;
 
     private void Awake() {
-        speed = UnityEngine.Random.Range(.5f, 8f);
+        speed = GetRandomSpeedForSize();
         GetDirection();
         GetComponent<Rigidbody2D>().angularVelocity = UnityEngine.Random.Range(15f, 100f);
         GetComponent<Rigidbody2D>().linearVelocity = direction * speed;
@@ -31,11 +34,20 @@ public class AsteroidFlight : MonoBehaviour {
     }
 
     public void ChangeMotion(Vector3 direction, float speed = -1f) {
-        if(speed == -1f) speed = UnityEngine.Random.Range(.5f, 8f);
+        if(speed == -1f) speed = GetRandomSpeedForSize();
 
         this.speed = speed;
         this.direction = direction;
         GetComponent<Rigidbody2D>().linearVelocity = direction * speed;
+    }
+
+    private float GetRandomSpeedForSize() {
+        int size = Mathf.Max(0, asteroidSize);
+        float sizePenalty = size * speedReductionPerSize;
+        float scaledMaxSpeed = Mathf.Max(minimumScaledSpeed, maxSpeed - sizePenalty);
+        float scaledMinSpeed = Mathf.Max(minimumScaledSpeed, scaledMaxSpeed - speedVariance);
+
+        return UnityEngine.Random.Range(scaledMinSpeed, scaledMaxSpeed);
     }
     
 }
