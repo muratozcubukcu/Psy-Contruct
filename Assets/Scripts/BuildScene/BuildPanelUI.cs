@@ -40,7 +40,7 @@ public class BuildPanelUI : MonoBehaviour {
         CanvasScaler scaler = canvasGO.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920, 1080);
-        scaler.matchWidthOrHeight = 0.5f;
+        scaler.matchWidthOrHeight = 0f;
 
         canvasGO.AddComponent<GraphicRaycaster>();
 
