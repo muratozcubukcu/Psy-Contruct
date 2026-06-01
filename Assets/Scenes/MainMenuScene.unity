@@ -1056,14 +1056,16 @@ MonoBehaviour:
   drums25Clip: {fileID: 8300000, guid: f084091f307e3a54b9f6ae535a8161f1, type: 3}
   bassClip: {fileID: 8300000, guid: 423cdfc3b9be43b438b33b892e795e98, type: 3}
   arpClip: {fileID: 8300000, guid: 06be7fbb3b05a4147b91a60d228fb324, type: 3}
-  blockLength: 38
+  blockLength: 38.4
   blocksOfDrum1: 2
   flightLayerPhraseBlocks: 1
   musicVolumeScale: 0.25
-  layerFadeDuration: 20
+  layerFadeDuration: 6
   layerFadeOutDuration: 4
-  drumLayerFadeDuration: 16
+  drumLayerFadeDuration: 4
   drumLayerFadeOutDuration: 3
+  syncCheckInterval: 2
+  syncToleranceSeconds: 0.04
   mainMenuSceneName: MainMenuScene
   buildSceneName: BuildScene
   flightSceneName: FlightScene

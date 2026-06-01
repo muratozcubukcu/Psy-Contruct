@@ -150,7 +150,7 @@ public class PartDrag : MonoBehaviour {
         Vector3? nullableSnapPos = shipGrid.PostionToGridPosition(transform.position);
         if (nullableSnapPos == null) {
             //Delete part
-            PlacePart(gameObject, originalPosition); //Place part bc the part needs to be placed to be deleted
+            PlacePart(gameObject, originalPosition, false); //Place part bc the part needs to be placed to be deleted
             if(stackedPart != null) stackedPart.GetComponent<PartDrag>().OnMouseUp();
             shipGrid.DeletePart(shipGrid.UnityPositionToGridCoordinates(originalPosition));
             return;
@@ -175,7 +175,8 @@ public class PartDrag : MonoBehaviour {
         }
         
         //Place part back where it originally was
-        PlacePart(gameObject, originalPosition);
+        BuildSceneSFX.Instance?.PlayInvalidPlacementSound();
+        PlacePart(gameObject, originalPosition, false);
         shipGrid.HandleLeftClick();
         highlightSprite.color = ShipBuildingGrid.colorHighlight;
         if(stackedPart != null) stackedPart.GetComponent<PartDrag>().OnMouseUp();
@@ -188,7 +189,7 @@ public class PartDrag : MonoBehaviour {
         return true;
     }
 
-    private void PlacePart(GameObject part, Vector3 worldPosition) {
+    private void PlacePart(GameObject part, Vector3 worldPosition, bool playSound = true) {
         part.transform.position = worldPosition;
         
         if(partDB.PartIsStackable(part)) {
@@ -211,7 +212,7 @@ public class PartDrag : MonoBehaviour {
         
         SetLayer(spacecraftLayer, part);
         
-        BuildSceneSFX.Instance.PlayRandomBuildSound();
+        if (playSound) BuildSceneSFX.Instance?.PlayRandomBuildSound();
         
         SetKinematicRB(part);
     }
