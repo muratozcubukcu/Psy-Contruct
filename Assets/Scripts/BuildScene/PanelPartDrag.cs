@@ -123,6 +123,7 @@ public class PanelPartDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         ShipBuildingGrid.Instance?.HandleLeftClick();
 
         if (!placed) {
+            BuildSceneSFX.Instance?.PlayInvalidPlacementSound();
             Tutorial.instance?.RestartDragHint();
         }
     }

@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7442969403076933007}
@@ -251,6 +251,8 @@ MonoBehaviour:
   damage: 10
   destroyOnCollision: 0
   disableAfterCollision: 0
+  aster1Split: 0
+  aster2Split: 0
 --- !u!114 &-6809580775993762356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -264,6 +266,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   asteroidSize: 3
+  maxSpeed: 8
+  speedReductionPerSize: 1.4
+  speedVariance: 1.2
+  minimumScaledSpeed: 0.5
   direction: {x: 0, y: 0, z: 0}
   speed: 0
 --- !u!1001 &2827891387762187989

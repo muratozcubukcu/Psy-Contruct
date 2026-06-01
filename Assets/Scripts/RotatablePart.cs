@@ -47,6 +47,10 @@ public class RotatablePart : MonoBehaviour {
                 if (mirrorOnOppositeDirection) SetSpriteFlip(false, true);
                 break;
         }
+
+        if (TryGetComponent(out SolarPanel solarPanel)) {
+            solarPanel.SetMirroredVisual(mirrorOnOppositeDirection && newConnectingDirection == ShipBuildingGrid.direction.right);
+        }
     }
 
     private void SetSpriteFlip(bool flipX, bool flipY) {
