@@ -10,6 +10,8 @@ public class Settings : MonoBehaviour
     public bool timerEnabled { get; private set; } = true;
     public float musicVolume { get; private set; } = 1f;
     public float sfxVolume { get; private set; } = 1f;
+    
+    public bool showFlightTutorialPopup { get; private set; } = true;
 
 
     // Difficulty: 0 = Easy, 1 = Medium, 2 = Hard
@@ -70,14 +72,13 @@ public class Settings : MonoBehaviour
         return difficulty;
     }
 
-    public bool toggleTutorial()
-    {
-        tutorialEnabled = !tutorialEnabled;
-        return tutorialEnabled;
+    public bool ToggleFlightTutorialPopup() {
+        showFlightTutorialPopup = !showFlightTutorialPopup;
+        Debug.Log(showFlightTutorialPopup);
+        return showFlightTutorialPopup;
     }
 
-    public bool toggleTutorial(bool newSetting)
-    {
+    public bool toggleTutorial(bool newSetting) {
         tutorialEnabled = newSetting;
         return tutorialEnabled;
     }
