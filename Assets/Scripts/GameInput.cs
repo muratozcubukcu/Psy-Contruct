@@ -1,8 +1,11 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
+using System.Collections;
 using UnityEditor;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 // =============================================================================
 // GameInput
@@ -32,8 +35,15 @@ public class GameInput : MonoBehaviour {
     public event EventHandler OnRotatePartPerformedAction;
 
     public event EventHandler OnSetFlightScenePerformedAction;
+    public event EventHandler OnAdditiveSettingsClosed;
     
     private InputSystem_Actions inputActions;
+    private string settingsReturnSceneName = "MainMenuScene";
+    private bool settingsSceneLoadedAdditively;
+    private string additiveSettingsReturnSceneName = "MainMenuScene";
+    private const int AdditiveSettingsSortingOrder = 1000;
+
+    public bool IsSettingsSceneOpenAdditively => settingsSceneLoadedAdditively;
     
     public class EngineEventArgs : EventArgs {
         public bool activated;
@@ -251,17 +261,126 @@ public class GameInput : MonoBehaviour {
     }
 
     public void SetSettingsScene() {
+        string currentSceneName = SceneManager.GetActiveScene().name;
+        SetSettingsScene(currentSceneName == "SettingsScene" ? settingsReturnSceneName : currentSceneName);
+    }
+
+    public void SetSettingsScene(string returnSceneName) {
+        settingsReturnSceneName = string.IsNullOrEmpty(returnSceneName) ? "MainMenuScene" : returnSceneName;
         SceneManager.LoadScene("SettingsScene");
 
         inputActions.Spacecraft.Disable();
         inputActions.SpacecraftBuilding.Disable();
     }
 
+    public void SetSettingsSceneAdditive(string returnSceneName) {
+        if (settingsSceneLoadedAdditively) return;
+
+        additiveSettingsReturnSceneName = string.IsNullOrEmpty(returnSceneName) ? SceneManager.GetActiveScene().name : returnSceneName;
+        settingsSceneLoadedAdditively = true;
+        Time.timeScale = 1f;
+
+        inputActions.Spacecraft.Disable();
+        inputActions.SpacecraftBuilding.Disable();
+
+        AsyncOperation loadOperation = SceneManager.LoadSceneAsync("SettingsScene", LoadSceneMode.Additive);
+        if (loadOperation != null) loadOperation.completed += _ => ConfigureAdditiveSettingsScene();
+    }
+
     public void SetMainMenuScene()
     {
+        if (settingsSceneLoadedAdditively) {
+            CloseAdditiveSettingsScene();
+            return;
+        }
+
+        if (SceneManager.GetActiveScene().name == "SettingsScene" && settingsReturnSceneName != "MainMenuScene") {
+            SetSceneFromSettingsReturn(settingsReturnSceneName);
+            settingsReturnSceneName = "MainMenuScene";
+            return;
+        }
+
         inputActions.Spacecraft.Disable();
         inputActions.SpacecraftBuilding.Disable();
         SceneManager.LoadScene("MainMenuScene");
+    }
+
+    private void SetSceneFromSettingsReturn(string sceneName) {
+        SceneManager.LoadScene(sceneName);
+
+        inputActions.Spacecraft.Disable();
+        inputActions.SpacecraftBuilding.Disable();
+
+        if (sceneName == "FlightScene") inputActions.Spacecraft.Enable();
+        else if (sceneName == "BuildScene") inputActions.SpacecraftBuilding.Enable();
+    }
+
+    private void ConfigureAdditiveSettingsScene() {
+        Scene settingsScene = SceneManager.GetSceneByName("SettingsScene");
+        if (!settingsScene.IsValid() || !settingsScene.isLoaded) return;
+
+        foreach (GameObject root in settingsScene.GetRootGameObjects()) {
+            foreach (Canvas canvas in root.GetComponentsInChildren<Canvas>(true)) {
+                canvas.overrideSorting = true;
+                canvas.sortingOrder = AdditiveSettingsSortingOrder;
+                EnsureSettingsDimmer(canvas);
+            }
+
+            foreach (Camera sceneCamera in root.GetComponentsInChildren<Camera>(true)) {
+                sceneCamera.enabled = false;
+            }
+
+            foreach (AudioListener audioListener in root.GetComponentsInChildren<AudioListener>(true)) {
+                audioListener.enabled = false;
+            }
+
+            foreach (EventSystem eventSystem in root.GetComponentsInChildren<EventSystem>(true)) {
+                eventSystem.enabled = false;
+            }
+        }
+    }
+
+    private void EnsureSettingsDimmer(Canvas canvas) {
+        const string dimmerName = "FlightSceneDimmer";
+
+        Transform existingDimmer = canvas.transform.Find(dimmerName);
+        if (existingDimmer != null) {
+            existingDimmer.SetAsFirstSibling();
+            return;
+        }
+
+        GameObject dimmer = new GameObject(dimmerName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        dimmer.transform.SetParent(canvas.transform, false);
+        dimmer.transform.SetAsFirstSibling();
+
+        RectTransform rectTransform = dimmer.GetComponent<RectTransform>();
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.one;
+        rectTransform.offsetMin = Vector2.zero;
+        rectTransform.offsetMax = Vector2.zero;
+
+        Image image = dimmer.GetComponent<Image>();
+        image.color = new Color(0.08f, 0.08f, 0.08f, 0.55f);
+        image.raycastTarget = true;
+    }
+
+    private void CloseAdditiveSettingsScene() {
+        settingsSceneLoadedAdditively = false;
+        Time.timeScale = 1f;
+
+        Scene settingsScene = SceneManager.GetSceneByName("SettingsScene");
+        if (settingsScene.IsValid() && settingsScene.isLoaded) {
+            SceneManager.UnloadSceneAsync(settingsScene);
+        }
+
+        inputActions.Spacecraft.Disable();
+        inputActions.SpacecraftBuilding.Disable();
+
+        if (additiveSettingsReturnSceneName == "FlightScene") inputActions.Spacecraft.Enable();
+        else if (additiveSettingsReturnSceneName == "BuildScene") inputActions.SpacecraftBuilding.Enable();
+
+        additiveSettingsReturnSceneName = "MainMenuScene";
+        OnAdditiveSettingsClosed?.Invoke(this, EventArgs.Empty);
     }
 
     public void SetGameOverScene(bool victory) {

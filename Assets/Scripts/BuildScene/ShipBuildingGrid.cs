@@ -203,7 +203,7 @@ public class ShipBuildingGrid : MonoBehaviour {
         if (someTileSelected) DeletePart(selectedTileCoords);
     }
 
-    public void DeletePart((int, int) partCoords) {
+    public void DeletePart((int, int) partCoords, bool playSound = true) {
         // Find the real part object in this tile
         if (!placedParts.TryGetValue(partCoords, out GameObject partToDelete) || partToDelete == null) return;
 
@@ -222,6 +222,8 @@ public class ShipBuildingGrid : MonoBehaviour {
 
         int newGridValue = placedParts.ContainsKey(partCoords) ? partDB.GetPartID(placedParts[partCoords]) : -1;
         SetGridCellValue(partCoords, newGridValue);
+
+        if (playSound) BuildSceneSFX.Instance?.PlayRandomRemovePartSound();
     }
 
     private void GameInput_OnLeftMouseClickAction(object sender, System.EventArgs e) {
@@ -412,8 +414,8 @@ public class ShipBuildingGrid : MonoBehaviour {
         if (!partDB.PartIsStackable(part) && 
             placedParts.TryGetValue(coordinates, out GameObject existing) && existing != null) {
             
-            DeletePart(coordinates);
-            if(placedParts.ContainsKey(coordinates)) DeletePart(coordinates); //In case we just deleted a stackable part
+            DeletePart(coordinates, false);
+            if(placedParts.ContainsKey(coordinates)) DeletePart(coordinates, false); //In case we just deleted a stackable part
         }
         
         SetGridCellValue(coordinates, partDB.GetPartID(part));

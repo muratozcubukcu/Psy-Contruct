@@ -850,10 +850,11 @@ MonoBehaviour:
       m_Calls: []
   m_text: "PSY-CONSTRUCTION\r\n\r\n\r\nCSDEV 26-15\r\n\r\n\r\nDEVELOPMENT TEAM\r\n\r\nOllie
     Purdy\r\nTimothy Lee\r\nElliott Cook\r\nMurat Ozcubukcu\r\n\r\n\r\nFACULTY ADVISOR\r\n\r\nBraxton
-    Cuneo\r\n\r\n\r\nPROJECT SPONSOR\r\n\r\nCassie Bowman\r\n\r\n\r\nART & DESIGN
-    \r\n\r\nIn collaboration with\r\nCornish College of the Arts\r\n\r\nJohn Bond\r\n\r\nAdditional
-    Artists\r\nComing Soon\r\n\r\n\r\n\u2500\u2500 SPECIAL THANKS \u2500\u2500\r\n\r\nSeattle
-    University\r\n\r\n\r\nOur playtesters & supporters\r\n\r\n\r\nThank you for playing!"
+    Cuneo\r\n\r\n\r\nPROJECT SPONSOR\r\n\r\nCassie Bowman\r\n\n\nSOUND DESIGN & MUSIC\n\nJames
+    Flahif\n\r\n\r\nART & DESIGN \r\n\r\nIn collaboration with\r\nCornish College
+    of the Arts\r\n\r\nJohn Bond\r\n\r\nAdditional Artists\r\nComing Soon\r\n\r\n\r\n\u2500\u2500
+    SPECIAL THANKS \u2500\u2500\r\n\r\nSeattle University\r\n\r\n\r\nOur playtesters
+    & supporters\r\n\r\n\r\nThank you for playing!"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 10754cda3c210d144ac6395862c902e0, type: 2}
   m_sharedMaterial: {fileID: 5379065754751089583, guid: 10754cda3c210d144ac6395862c902e0, type: 2}

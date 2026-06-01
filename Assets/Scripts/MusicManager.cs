@@ -28,8 +28,8 @@ public class MusicManager : MonoBehaviour {
     [SerializeField] private AudioClip arpClip;
 
     [Header("Timing")]
-    [Tooltip("Musical block length in seconds. All stems should be exact multiples of this. Measured from the 38.43s short stems (drums2/1.5/2.5/bass/arp).")]
-    [SerializeField] private float blockLength = 38.426122f;
+    [Tooltip("Musical block length in seconds. MP3 files include a tiny encoder padding tail, so the musical content is 38.4s even though the one-block files report about 38.426s.")]
+    [SerializeField] private float blockLength = 38.4f;
     [Tooltip("How many blocks drums1 holds before the cycle moves into the transition + drum2 + transition phases (each 1 block). Only runs while in FlightScene.")]
     [FormerlySerializedAs("blocksPerMainDrum")]
     [SerializeField] private int blocksOfDrum1 = 4;
@@ -42,16 +42,20 @@ public class MusicManager : MonoBehaviour {
     [SerializeField] private float musicVolumeScale = 0.25f;
     [Tooltip("Seconds for chords/bass/arpeggio to fade in/out when toggled.")]
     [Range(0f, 10f)]
-    [SerializeField] private float layerFadeDuration = 20f;
+    [SerializeField] private float layerFadeDuration = 6f;
     [Tooltip("Seconds for chords/bass/arpeggio to fade out when toggled off.")]
     [Range(0f, 10f)]
     [SerializeField] private float layerFadeOutDuration = 4f;
     [Tooltip("Seconds for drum layers to fade in/out when entering scenes or changing grooves.")]
     [Range(0f, 10f)]
-    [SerializeField] private float drumLayerFadeDuration = 16f;
+    [SerializeField] private float drumLayerFadeDuration = 4f;
     [Tooltip("Seconds for drum layers to fade out when toggled off.")]
     [Range(0f, 10f)]
     [SerializeField] private float drumLayerFadeOutDuration = 3f;
+    [Tooltip("How often each music stem is checked against the shared DSP clock for drift. MP3 padding is skipped every frame.")]
+    [SerializeField] private float syncCheckInterval = 2f;
+    [Tooltip("Maximum allowed music stem timing drift before it is snapped back into sync.")]
+    [SerializeField] private float syncToleranceSeconds = 0.04f;
 
     [Header("Scene Names")]
     [SerializeField] private string mainMenuSceneName = "MainMenuScene";
@@ -67,9 +71,11 @@ public class MusicManager : MonoBehaviour {
     private bool inFlightScene;
     private int currentFlightLayerPhrase = -1;
     private int flightLayerState;
+    private int previousDrumsPhase = -1;
 
     private double startDspTime;
     private Coroutine drumSwapCoroutine;
+    private float syncCheckTimer;
 
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -194,12 +200,18 @@ public class MusicManager : MonoBehaviour {
     private void Update() {
         float musicVol = CurrentMusicVolume();
         if (inFlightScene) UpdateFlightLayerVariation();
+        KeepSourcesSynced();
+
+        bool drumPhaseChanged = previousDrumsPhase != drumsPhase;
+        previousDrumsPhase = drumsPhase;
+        float activeDrumFadeIn = inFlightScene && drumPhaseChanged ? 0f : drumLayerFadeDuration;
+        float inactiveDrumFadeOut = inFlightScene && drumPhaseChanged ? 0f : drumLayerFadeOutDuration;
 
         UpdateLayerVolume(chordsSource, chordsActive, layerFadeDuration, layerFadeOutDuration, musicVol);
-        UpdateLayerVolume(drums1Source, drumsActive && drumsPhase == 0, drumLayerFadeDuration, drumLayerFadeOutDuration, musicVol);
-        UpdateLayerVolume(drums15Source, drumsActive && drumsPhase == 1, drumLayerFadeDuration, drumLayerFadeOutDuration, musicVol);
-        UpdateLayerVolume(drums2Source, drumsActive && drumsPhase == 2, drumLayerFadeDuration, drumLayerFadeOutDuration, musicVol);
-        UpdateLayerVolume(drums25Source, drumsActive && drumsPhase == 3, drumLayerFadeDuration, drumLayerFadeOutDuration, musicVol);
+        UpdateLayerVolume(drums1Source, drumsActive && drumsPhase == 0, activeDrumFadeIn, inactiveDrumFadeOut, musicVol);
+        UpdateLayerVolume(drums15Source, drumsActive && drumsPhase == 1, activeDrumFadeIn, inactiveDrumFadeOut, musicVol);
+        UpdateLayerVolume(drums2Source, drumsActive && drumsPhase == 2, activeDrumFadeIn, inactiveDrumFadeOut, musicVol);
+        UpdateLayerVolume(drums25Source, drumsActive && drumsPhase == 3, activeDrumFadeIn, inactiveDrumFadeOut, musicVol);
         UpdateLayerVolume(bassSource, bassActive, layerFadeDuration, layerFadeOutDuration, musicVol);
         UpdateLayerVolume(arpSource, arpActive, layerFadeDuration, layerFadeOutDuration, musicVol);
     }
@@ -230,6 +242,69 @@ public class MusicManager : MonoBehaviour {
         }
         float step = Mathf.Max(target, src.volume) / fadeDuration * Time.unscaledDeltaTime;
         src.volume = Mathf.MoveTowards(src.volume, target, step);
+    }
+
+    private void KeepSourcesSynced() {
+        double elapsed = AudioSettings.dspTime - startDspTime;
+        if (elapsed < 0d) return;
+
+        SkipClipPadding(chordsSource, elapsed);
+        SkipClipPadding(drums1Source, elapsed);
+        SkipClipPadding(drums15Source, elapsed);
+        SkipClipPadding(drums2Source, elapsed);
+        SkipClipPadding(drums25Source, elapsed);
+        SkipClipPadding(bassSource, elapsed);
+        SkipClipPadding(arpSource, elapsed);
+
+        syncCheckTimer -= Time.unscaledDeltaTime;
+        if (syncCheckTimer > 0f) return;
+
+        syncCheckTimer = Mathf.Max(0.25f, syncCheckInterval);
+
+        SyncSourceToDspClock(chordsSource, elapsed);
+        SyncSourceToDspClock(drums1Source, elapsed);
+        SyncSourceToDspClock(drums15Source, elapsed);
+        SyncSourceToDspClock(drums2Source, elapsed);
+        SyncSourceToDspClock(drums25Source, elapsed);
+        SyncSourceToDspClock(bassSource, elapsed);
+        SyncSourceToDspClock(arpSource, elapsed);
+    }
+
+    private void SkipClipPadding(AudioSource src, double elapsed) {
+        if (src == null || src.clip == null || !src.isPlaying) return;
+
+        int musicalLoopSamples = MusicalLoopSamples(src.clip);
+        if (musicalLoopSamples <= 0 || src.timeSamples < musicalLoopSamples) return;
+
+        src.timeSamples = ExpectedSample(src.clip, elapsed, musicalLoopSamples);
+    }
+
+    private void SyncSourceToDspClock(AudioSource src, double elapsed) {
+        if (src == null || src.clip == null || !src.isPlaying) return;
+
+        int musicalLoopSamples = MusicalLoopSamples(src.clip);
+        if (musicalLoopSamples <= 0) return;
+
+        int expectedSample = ExpectedSample(src.clip, elapsed, musicalLoopSamples);
+
+        int sampleDelta = Mathf.Abs(src.timeSamples - expectedSample);
+        sampleDelta = Mathf.Min(sampleDelta, musicalLoopSamples - sampleDelta);
+
+        int toleranceSamples = Mathf.RoundToInt(syncToleranceSeconds * src.clip.frequency);
+        if (sampleDelta > toleranceSamples) src.timeSamples = expectedSample;
+    }
+
+    private int MusicalLoopSamples(AudioClip clip) {
+        int blocks = Mathf.Max(1, Mathf.RoundToInt(clip.length / blockLength));
+        int samples = Mathf.RoundToInt(blocks * blockLength * clip.frequency);
+        return Mathf.Clamp(samples, 1, clip.samples);
+    }
+
+    private int ExpectedSample(AudioClip clip, double elapsed, int musicalLoopSamples) {
+        double expectedSampleDouble = elapsed * clip.frequency;
+        int expectedSample = (int)(expectedSampleDouble % musicalLoopSamples);
+        if (expectedSample < 0) expectedSample += musicalLoopSamples;
+        return expectedSample;
     }
 
     private float CurrentMusicVolume() {
