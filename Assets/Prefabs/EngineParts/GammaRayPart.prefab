@@ -219,6 +219,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spacecraft: {fileID: 0}
+  defaultSprite: {fileID: 8218429904198552881, guid: ac191c3d2124cc740b96099d2b2274be, type: 3}
+  glowSprite: {fileID: 1972919334225598597, guid: 960736c5dab9a8842b9eeb836356093c, type: 3}
 --- !u!114 &785314773661409220
 MonoBehaviour:
   m_ObjectHideFlags: 0

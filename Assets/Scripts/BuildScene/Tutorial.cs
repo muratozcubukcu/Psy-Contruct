@@ -316,7 +316,8 @@ public class Tutorial : MonoBehaviour {
             cg.alpha = accessible ? 1f : 0.3f;
 
             if (requiredSet.Contains(drag.PartName)) {
-                glowBorders[drag] = CreateGlowBorder(drag.gameObject);
+                GameObject glow = CreateGlowBorder(drag.gameObject);
+                if (glow != null) glowBorders[drag] = glow;
             }
         }
 
@@ -351,13 +352,21 @@ public class Tutorial : MonoBehaviour {
         rt.anchorMax = Vector2.one;
         rt.offsetMin = rt.offsetMax = Vector2.zero;
 
-        Color gold = new Color(1f, 0.85f, 0.2f, 1f);
-        const float T = 5f;
+        Color highlight = new Color(1f, 0.85f, 0.2f, 1f);
+        const float thickness = 4f;
 
-        AddStrip(root.transform, "Top",    new Vector2(0,1), new Vector2(1,1), new Vector2(0,-T),  new Vector2(0,0),  gold);
-        AddStrip(root.transform, "Bottom", new Vector2(0,0), new Vector2(1,0), new Vector2(0,0),   new Vector2(0,T),  gold);
-        AddStrip(root.transform, "Left",   new Vector2(0,0), new Vector2(0,1), new Vector2(0,T),   new Vector2(T,-T),  gold);
-        AddStrip(root.transform, "Right",  new Vector2(1,0), new Vector2(1,1), new Vector2(-T,T),  new Vector2(0,-T),  gold);
+        AddStrip(root.transform, "Top",
+            new Vector2(0f, 1f), new Vector2(1f, 1f),
+            new Vector2(0f, -thickness), Vector2.zero, highlight);
+        AddStrip(root.transform, "Bottom",
+            Vector2.zero, new Vector2(1f, 0f),
+            Vector2.zero, new Vector2(0f, thickness), highlight);
+        AddStrip(root.transform, "Left",
+            Vector2.zero, new Vector2(0f, 1f),
+            Vector2.zero, new Vector2(thickness, 0f), highlight);
+        AddStrip(root.transform, "Right",
+            new Vector2(1f, 0f), Vector2.one,
+            new Vector2(-thickness, 0f), Vector2.zero, highlight);
 
         return root;
     }

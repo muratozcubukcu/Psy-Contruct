@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
+using System.Collections;
 using UnityEditor;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -277,7 +278,7 @@ public class GameInput : MonoBehaviour {
 
         additiveSettingsReturnSceneName = string.IsNullOrEmpty(returnSceneName) ? SceneManager.GetActiveScene().name : returnSceneName;
         settingsSceneLoadedAdditively = true;
-        Time.timeScale = 0f;
+        Time.timeScale = 1f;
 
         inputActions.Spacecraft.Disable();
         inputActions.SpacecraftBuilding.Disable();
@@ -365,6 +366,7 @@ public class GameInput : MonoBehaviour {
 
     private void CloseAdditiveSettingsScene() {
         settingsSceneLoadedAdditively = false;
+        Time.timeScale = 1f;
 
         Scene settingsScene = SceneManager.GetSceneByName("SettingsScene");
         if (settingsScene.IsValid() && settingsScene.isLoaded) {

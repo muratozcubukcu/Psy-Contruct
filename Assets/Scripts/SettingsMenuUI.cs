@@ -89,15 +89,15 @@ public class SettingsMenuUI : MonoBehaviour
         menuOpen = true;
         SetMenuVisible(false);
         SetSettingsButtonVisible(true);
-        Time.timeScale = 0f;
+        Time.timeScale = 1f;
         GameInput.Instance.SetSettingsSceneAdditive("FlightScene");
     }
 
     private void GameInput_OnAdditiveSettingsClosed(object sender, System.EventArgs e) {
-        menuOpen = true;
-        SetMenuVisible(true);
+        menuOpen = false;
+        SetMenuVisible(false);
         SetSettingsButtonVisible(true);
-        Time.timeScale = 0f;
+        Time.timeScale = 1f;
     }
 
     private GameObject FindSibling(string siblingName) {

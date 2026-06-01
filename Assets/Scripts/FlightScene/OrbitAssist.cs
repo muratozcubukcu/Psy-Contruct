@@ -27,6 +27,7 @@ public class OrbitAssist : MonoBehaviour {
         GameInput.Instance.OnEnginePerformedAction += GameInput_OnEngineAction;
         GameInput.Instance.OnEngineCanceledAction += GameInput_OnEngineAction;
         SceneManager.sceneLoaded += OnSceneLoaded;
+        SetSceneState(SceneManager.GetActiveScene());
     }
     
     void Update() {
@@ -140,12 +141,13 @@ public class OrbitAssist : MonoBehaviour {
     }
     
     void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
-        if (scene.name == "FlightScene") {
-            inFlightScene = true;
-            return;
-        }
+        SetSceneState(scene);
+    }
 
-        inFlightScene = false;
-        inOrbit = false;
+    private void SetSceneState(Scene scene) {
+        inFlightScene = scene.name == "FlightScene";
+        if (!inFlightScene) {
+            inOrbit = false;
+        }
     }
 }

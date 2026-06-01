@@ -90,7 +90,6 @@ public class Spacecraft : MonoBehaviour {
 
     private void Update() {
        if(IsFlightMode) SpacecraftMotionUI.Instance.UpdateMotion(rb.linearVelocity.magnitude, rb.linearVelocity.normalized);
-        if (IsFlightMode) Debug.Log($"Speed: {rb.linearVelocity.magnitude:F2}");
     }
 
     private void FixedUpdate() {
