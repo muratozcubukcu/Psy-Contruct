@@ -5306,15 +5306,15 @@ RectTransform:
   m_GameObject: {fileID: 496425495}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.39, y: 0.39, z: 0.39}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 689113118}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -138.2, y: 0}
-  m_SizeDelta: {x: 315.1, y: 219.075}
+  m_AnchoredPosition: {x: -188.3, y: 0}
+  m_SizeDelta: {x: 530, y: 616}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &496425497
 MonoBehaviour:
@@ -5363,7 +5363,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c351fb97969104f3795943bbe374300e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  videoFilename: FuelEnergyVid.mp4
+  videoFilename: FuelEnergyVid1.mp4
   videoPlayer: {fileID: 496425500}
 --- !u!328 &496425500
 VideoPlayer:
@@ -13650,15 +13650,15 @@ RectTransform:
   m_GameObject: {fileID: 1413346009}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.34, y: 0.34, z: 0.34}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 689113118}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 147, y: 4}
-  m_SizeDelta: {x: 315.1, y: 219.075}
+  m_AnchoredPosition: {x: 147, y: -16.1}
+  m_SizeDelta: {x: 738, y: 850}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1413346011
 MonoBehaviour:
@@ -13672,7 +13672,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c351fb97969104f3795943bbe374300e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  videoFilename: ShipFlyingVid.mp4
+  videoFilename: ShipVid1.mp4
   videoPlayer: {fileID: 1413346012}
 --- !u!328 &1413346012
 VideoPlayer:
@@ -14761,7 +14761,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1592167133
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17462,7 +17462,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1920372711
 RectTransform:
   m_ObjectHideFlags: 0
