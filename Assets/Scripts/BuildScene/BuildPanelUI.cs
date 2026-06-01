@@ -8,6 +8,11 @@ using TMPro;
 /// Auto-created by ShipBuildingGrid
 /// </summary>
 public class BuildPanelUI : MonoBehaviour {
+    private static readonly Color PartButtonColor = new(0.18431373f, 0f, 0.5647059f, 1f);
+    private const float PartButtonHeight = 96f;
+    private const float PanelWidth = 320f;
+    private const float PartIconWidth = 56f;
+    private const float PartTextLeftPadding = 76f;
 
     private void Start() {
         SpacecraftPartDatabase partDB = SpacecraftPartDatabase.Instance;
@@ -47,7 +52,7 @@ public class BuildPanelUI : MonoBehaviour {
         panelRect.anchorMin = new Vector2(0, 0);
         panelRect.anchorMax = new Vector2(0, 1);
         panelRect.pivot = new Vector2(0, 0.5f);
-        panelRect.sizeDelta = new Vector2(200, 0);
+        panelRect.sizeDelta = new Vector2(PanelWidth, 0);
         panelRect.anchoredPosition = Vector2.zero;
 
         Image panelBg = panelGO.AddComponent<Image>();
@@ -110,23 +115,16 @@ public class BuildPanelUI : MonoBehaviour {
         itemGO.transform.SetParent(parent, false);
 
         RectTransform itemRect = itemGO.AddComponent<RectTransform>();
-        itemRect.sizeDelta = new Vector2(0, 70);
-
-        // Item background uses the part's color tinted dark so it's identifiable.
-        // When the SO supplies an explicit icon, prefer a neutral dark background.
-        SpriteRenderer partVisual = partSO.part.GetComponentInChildren<SpriteRenderer>();
-        Color partColor = partSO.icon != null
-            ? Color.white
-            : (partVisual != null ? partVisual.color : Color.white);
+        itemRect.sizeDelta = new Vector2(0, PartButtonHeight);
 
         Image itemBg = itemGO.AddComponent<Image>();
-        itemBg.color = new Color(partColor.r * 0.3f, partColor.g * 0.3f, partColor.b * 0.3f, 0.95f);
+        itemBg.color = PartButtonColor;
         itemBg.raycastTarget = true;
 
         // LayoutElement to ensure the layout knows our height
         LayoutElement le = itemGO.AddComponent<LayoutElement>();
-        le.minHeight = 70;
-        le.preferredHeight = 70;
+        le.minHeight = PartButtonHeight;
+        le.preferredHeight = PartButtonHeight;
 
         // Attach drag handler
         PanelPartDrag drag = itemGO.AddComponent<PanelPartDrag>();
@@ -141,12 +139,14 @@ public class BuildPanelUI : MonoBehaviour {
         swatchRect.anchorMax = new Vector2(0, 0.9f);
         swatchRect.pivot = new Vector2(0, 0.5f);
         swatchRect.anchoredPosition = new Vector2(8, 0);
-        swatchRect.sizeDelta = new Vector2(50, 0);
+        swatchRect.sizeDelta = new Vector2(PartIconWidth, 0);
 
         Image swatchImg = swatchGO.AddComponent<Image>();
         swatchImg.raycastTarget = false;
 
         // Prefer the SO-defined icon. Fall back to the prefab's SpriteRenderer.
+        SpriteRenderer partVisual = partSO.part.GetComponentInChildren<SpriteRenderer>();
+        Color partColor = partVisual != null ? partVisual.color : Color.white;
         Sprite partSprite = partSO.icon != null
             ? partSO.icon
             : (partVisual != null ? partVisual.sprite : null);
@@ -166,8 +166,8 @@ public class BuildPanelUI : MonoBehaviour {
         RectTransform nameRect = nameGO.AddComponent<RectTransform>();
         nameRect.anchorMin = new Vector2(0, 0);
         nameRect.anchorMax = new Vector2(1, 1);
-        nameRect.offsetMin = new Vector2(65, 4);
-        nameRect.offsetMax = new Vector2(-6, -4);
+        nameRect.offsetMin = new Vector2(PartTextLeftPadding, 8);
+        nameRect.offsetMax = new Vector2(-10, -8);
 
         TextMeshProUGUI nameText = nameGO.AddComponent<TextMeshProUGUI>();
         nameText.text = FormatPartName(partSO.part.name);

@@ -12,6 +12,9 @@ public class TutorialOverlay : MonoBehaviour {
 
     private CanvasGroup borderGroup;
     private RectTransform borderTop, borderBottom, borderLeft, borderRight;
+    private CanvasGroup shapeBorderGroup;
+    private RectTransform shapeBorder;
+    private Image shapeBorderImage;
 
     private Coroutine pulseCoroutine;
 
@@ -50,6 +53,15 @@ public class TutorialOverlay : MonoBehaviour {
         borderBottom = MakeBorderStrip(borderRoot.transform, "BB");
         borderLeft   = MakeBorderStrip(borderRoot.transform, "BL");
         borderRight  = MakeBorderStrip(borderRoot.transform, "BR");
+
+        GameObject shapeRoot = new GameObject("SpotlightShapeBorder", typeof(RectTransform), typeof(CanvasGroup), typeof(Image));
+        shapeRoot.transform.SetParent(transform, false);
+        shapeBorder = shapeRoot.GetComponent<RectTransform>();
+        shapeBorderGroup = shapeRoot.GetComponent<CanvasGroup>();
+        shapeBorderImage = shapeRoot.GetComponent<Image>();
+        shapeBorderImage.raycastTarget = false;
+        shapeBorderImage.fillCenter = false;
+        shapeBorderImage.color = BorderColor;
 
         SetAllInactive();
     }
@@ -112,30 +124,37 @@ public class TutorialOverlay : MonoBehaviour {
                 darkRight.gameObject.SetActive(true);
             }
 
-            const float BX = 12f / 1920f;
-            const float BY = 12f / 1080f;
-            float insetY = Mathf.Min(BY * 0.5f, Mathf.Max(0f, (sT - sB) * 0.5f));
+            if (TryShowShapeBorder(targets, sL, sB, sR, sT)) {
+                borderTop.gameObject.SetActive(false);
+                borderBottom.gameObject.SetActive(false);
+                borderLeft.gameObject.SetActive(false);
+                borderRight.gameObject.SetActive(false);
+            } else {
+                const float BX = 12f / 1920f;
+                const float BY = 12f / 1080f;
+                float insetY = Mathf.Min(BY * 0.5f, Mathf.Max(0f, (sT - sB) * 0.5f));
 
-            borderTop.anchorMin    = new Vector2(sL, sT);
-            borderTop.anchorMax    = new Vector2(sR, sT);
-            borderTop.offsetMin    = new Vector2(0,  -BY * 1080f * 0.5f);
-            borderTop.offsetMax    = new Vector2(0,   BY * 1080f * 0.5f);
-            borderBottom.anchorMin = new Vector2(sL, sB);
-            borderBottom.anchorMax = new Vector2(sR, sB);
-            borderBottom.offsetMin = new Vector2(0,  -BY * 1080f * 0.5f);
-            borderBottom.offsetMax = new Vector2(0,   BY * 1080f * 0.5f);
-            borderLeft.anchorMin   = new Vector2(sL, sB + insetY);
-            borderLeft.anchorMax   = new Vector2(sL, sT - insetY);
-            borderLeft.offsetMin   = new Vector2(-BX * 1920f * 0.5f, 0);
-            borderLeft.offsetMax   = new Vector2( BX * 1920f * 0.5f, 0);
-            borderRight.anchorMin  = new Vector2(sR, sB + insetY);
-            borderRight.anchorMax  = new Vector2(sR, sT - insetY);
-            borderRight.offsetMin  = new Vector2(-BX * 1920f * 0.5f, 0);
-            borderRight.offsetMax  = new Vector2( BX * 1920f * 0.5f, 0);
-            borderTop.gameObject.SetActive(true);
-            borderBottom.gameObject.SetActive(true);
-            borderLeft.gameObject.SetActive(true);
-            borderRight.gameObject.SetActive(true);
+                borderTop.anchorMin    = new Vector2(sL, sT);
+                borderTop.anchorMax    = new Vector2(sR, sT);
+                borderTop.offsetMin    = new Vector2(0,  -BY * 1080f * 0.5f);
+                borderTop.offsetMax    = new Vector2(0,   BY * 1080f * 0.5f);
+                borderBottom.anchorMin = new Vector2(sL, sB);
+                borderBottom.anchorMax = new Vector2(sR, sB);
+                borderBottom.offsetMin = new Vector2(0,  -BY * 1080f * 0.5f);
+                borderBottom.offsetMax = new Vector2(0,   BY * 1080f * 0.5f);
+                borderLeft.anchorMin   = new Vector2(sL, sB + insetY);
+                borderLeft.anchorMax   = new Vector2(sL, sT - insetY);
+                borderLeft.offsetMin   = new Vector2(-BX * 1920f * 0.5f, 0);
+                borderLeft.offsetMax   = new Vector2( BX * 1920f * 0.5f, 0);
+                borderRight.anchorMin  = new Vector2(sR, sB + insetY);
+                borderRight.anchorMax  = new Vector2(sR, sT - insetY);
+                borderRight.offsetMin  = new Vector2(-BX * 1920f * 0.5f, 0);
+                borderRight.offsetMax  = new Vector2( BX * 1920f * 0.5f, 0);
+                borderTop.gameObject.SetActive(true);
+                borderBottom.gameObject.SetActive(true);
+                borderLeft.gameObject.SetActive(true);
+                borderRight.gameObject.SetActive(true);
+            }
 
         }
 
@@ -157,7 +176,26 @@ public class TutorialOverlay : MonoBehaviour {
         borderBottom?.gameObject.SetActive(false);
         borderLeft?.gameObject.SetActive(false);
         borderRight?.gameObject.SetActive(false);
+        shapeBorder?.gameObject.SetActive(false);
         if (pulseCoroutine != null) { StopCoroutine(pulseCoroutine); pulseCoroutine = null; }
+    }
+
+    private bool TryShowShapeBorder(RectTransform[] targets, float sL, float sB, float sR, float sT) {
+        if (targets == null || targets.Length != 1 || targets[0] == null || shapeBorder == null) return false;
+
+        Image sourceImage = targets[0].GetComponent<Image>();
+        if (sourceImage == null || sourceImage.sprite == null) return false;
+
+        shapeBorder.anchorMin = new Vector2(sL, sB);
+        shapeBorder.anchorMax = new Vector2(sR, sT);
+        shapeBorder.offsetMin = Vector2.zero;
+        shapeBorder.offsetMax = Vector2.zero;
+        shapeBorderImage.sprite = sourceImage.sprite;
+        shapeBorderImage.type = sourceImage.type;
+        shapeBorderImage.fillCenter = false;
+        shapeBorderImage.color = BorderColor;
+        shapeBorder.gameObject.SetActive(true);
+        return true;
     }
 
     private static void SetPanel(RectTransform rt, float xMin, float xMax, float yMin, float yMax) {
@@ -170,6 +208,8 @@ public class TutorialOverlay : MonoBehaviour {
         while (true) {
             if (borderGroup != null)
                 borderGroup.alpha = Mathf.Lerp(0.45f, 1f, Mathf.PingPong(Time.time * 1.8f, 1f));
+            if (shapeBorderGroup != null)
+                shapeBorderGroup.alpha = Mathf.Lerp(0.45f, 1f, Mathf.PingPong(Time.time * 1.8f, 1f));
             yield return null;
         }
     }
