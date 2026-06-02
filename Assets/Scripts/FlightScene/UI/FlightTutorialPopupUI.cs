@@ -4,12 +4,16 @@ using UnityEngine.UI;
 public class FlightTutorialPopupUI : MonoBehaviour {
     [SerializeField] private GameObject[] allCards;
 
-    private void Awake() => allCards[0].SetActive(Settings.Instance.showFlightTutorialPopup);
+    private void Awake() {
+        allCards[0].SetActive(Settings.Instance.showFlightTutorialPopup);
+
+        if (Settings.Instance.showFlightTutorialPopup) Time.timeScale = 0f;
+    }
 
     public void GoToNextCard(GameObject currCard) {
         int index = System.Array.IndexOf(allCards, currCard);
         
-        if(index == -1) {
+        if(index == -1 || index >= allCards.Length) {
             Exit();
             return;
         }
@@ -18,7 +22,10 @@ public class FlightTutorialPopupUI : MonoBehaviour {
         allCards[index].SetActive(false);
     }
 
-    public void Exit() => gameObject.SetActive(false);
+    public void Exit() {
+        gameObject.SetActive(false);
+        Time.timeScale = 1f;
+    }
 
     public void ToggleDontShowAgain(GameObject currCard) {
         foreach (Toggle toggle in transform.GetComponentsInChildren<Toggle>(true)) {
