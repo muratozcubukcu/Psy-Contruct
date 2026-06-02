@@ -6,7 +6,6 @@ public class FlightTutorialPopupUI : MonoBehaviour {
 
     private void Awake() {
         allCards[0].SetActive(Settings.Instance.showFlightTutorialPopup);
-
         if (Settings.Instance.showFlightTutorialPopup) Time.timeScale = 0f;
     }
 
