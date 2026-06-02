@@ -67,7 +67,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -105,7 +105,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -146,10 +146,10 @@ TextureImporter:
       name: Smaller_Fire_SpriteSheet_0
       rect:
         serializedVersion: 2
-        x: 7
-        y: 439
-        width: 34
-        height: 45
+        x: 0
+        y: 436
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -168,10 +168,10 @@ TextureImporter:
       name: Smaller_Fire_SpriteSheet_1
       rect:
         serializedVersion: 2
-        x: 7
-        y: 395
-        width: 34
-        height: 42
+        x: 0
+        y: 388
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -190,10 +190,10 @@ TextureImporter:
       name: Smaller_Fire_SpriteSheet_2
       rect:
         serializedVersion: 2
-        x: 7
-        y: 343
-        width: 34
-        height: 46
+        x: 0
+        y: 340
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -212,10 +212,10 @@ TextureImporter:
       name: Smaller_Fire_SpriteSheet_3
       rect:
         serializedVersion: 2
-        x: 7
-        y: 295
-        width: 34
-        height: 46
+        x: 0
+        y: 292
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -234,10 +234,10 @@ TextureImporter:
       name: Smaller_Fire_SpriteSheet_4
       rect:
         serializedVersion: 2
-        x: 7
-        y: 251
-        width: 34
-        height: 42
+        x: 0
+        y: 244
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -256,10 +256,10 @@ TextureImporter:
       name: Smaller_Fire_SpriteSheet_5
       rect:
         serializedVersion: 2
-        x: 7
-        y: 203
-        width: 34
-        height: 42
+        x: 0
+        y: 196
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -278,10 +278,10 @@ TextureImporter:
       name: Smaller_Fire_SpriteSheet_6
       rect:
         serializedVersion: 2
-        x: 7
-        y: 155
-        width: 34
-        height: 42
+        x: 0
+        y: 148
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -300,10 +300,10 @@ TextureImporter:
       name: Smaller_Fire_SpriteSheet_7
       rect:
         serializedVersion: 2
-        x: 7
-        y: 107
-        width: 34
-        height: 42
+        x: 0
+        y: 100
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -322,10 +322,10 @@ TextureImporter:
       name: Smaller_Fire_SpriteSheet_8
       rect:
         serializedVersion: 2
-        x: 19
-        y: 103
-        width: 6
-        height: 6
+        x: 0
+        y: 52
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -344,10 +344,10 @@ TextureImporter:
       name: Smaller_Fire_SpriteSheet_9
       rect:
         serializedVersion: 2
-        x: 7
-        y: 55
-        width: 34
-        height: 46
+        x: 0
+        y: 4
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -362,33 +362,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: Smaller_Fire_SpriteSheet_10
-      rect:
-        serializedVersion: 2
-        x: 7
-        y: 7
-        width: 34
-        height: 46
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: bde902c037672aba0800000000000000
-      internalID: -6079166310499967269
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 100cedb02b3d745faa88c02b85d9a795
     internalID: 0
     vertices: []
     indices: 
@@ -400,7 +378,6 @@ TextureImporter:
     nameFileIdTable:
       Smaller_Fire_SpriteSheet_0: -382016865019286
       Smaller_Fire_SpriteSheet_1: -1519823961774018272
-      Smaller_Fire_SpriteSheet_10: -6079166310499967269
       Smaller_Fire_SpriteSheet_2: 3811769144093718272
       Smaller_Fire_SpriteSheet_3: 599247238016468730
       Smaller_Fire_SpriteSheet_4: -655289641712818413

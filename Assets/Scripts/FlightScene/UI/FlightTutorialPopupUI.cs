@@ -4,29 +4,29 @@ using UnityEngine.UI;
 public class FlightTutorialPopupUI : MonoBehaviour {
     [SerializeField] private GameObject[] allCards;
 
-    private void OnAwake() {
-        if(Settings.Instance.showFlightTutorialPopup) allCards[0].SetActive(true);
-    }
+    private void Awake() => allCards[0].SetActive(Settings.Instance.showFlightTutorialPopup);
 
-    public void GoToNextCard() {
-        int index = System.Array.IndexOf(allCards, gameObject);
+    public void GoToNextCard(GameObject currCard) {
+        int index = System.Array.IndexOf(allCards, currCard);
         
-        if(index != -1) allCards[index + 1].SetActive(true);
-        
-        Exit();
-    }
-
-    public void Exit() {
-        gameObject.SetActive(false);
-    }
-
-    public void ToggleDontShowAgain() {
-        foreach (Toggle toggle in transform.parent.GetComponentsInChildren<Toggle>()) {
-            if (toggle.gameObject == gameObject) continue;
-            
-            toggle.isOn = !toggle.isOn;
+        if(index == -1) {
+            Exit();
+            return;
         }
         
+        allCards[index + 1].SetActive(true);
+        allCards[index].SetActive(false);
+    }
+
+    public void Exit() => gameObject.SetActive(false);
+
+    public void ToggleDontShowAgain(GameObject currCard) {
+        foreach (Toggle toggle in transform.GetComponentsInChildren<Toggle>(true)) {
+            if (toggle.transform.parent.gameObject == currCard) continue;
+        
+            toggle.SetIsOnWithoutNotify(!toggle.isOn);
+        }
+    
         Settings.Instance.ToggleFlightTutorialPopup();
     }
 }

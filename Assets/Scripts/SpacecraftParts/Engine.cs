@@ -143,7 +143,7 @@ public class Engine : MonoBehaviour {
         }
     }
 
-    private void ApplyVisualState(bool firing) {
+    public void ApplyVisualState(bool firing) {
         if (engineVisual != null) {
             Sprite target = firing ? engineOnSprite : engineOffSprite;
             if (target == null) return;
